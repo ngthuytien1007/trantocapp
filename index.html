@@ -1,264 +1,255 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bản đồ Gia phả Trần Tộc</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Vue 3 -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <!-- PapaParse for CSV -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Tộc Trần</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <style>
-        body { margin: 0; overflow: hidden; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        #app { height: 100vh; display: flex; flex-direction: column; transition: all 0.3s ease; }
-        
-        /* Themes Setup */
-        .theme-dark { background-color: #1a202c; color: #f7fafc; }
-        .theme-light { background-color: #f8fafc; color: #1e293b; }
-        .theme-light .input-field { background-color: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.2); color: #1e293b; }
-        .theme-light .input-field::placeholder { color: #64748b; }
-        .theme-light .theme-btn { color: #1a202c; border-color: rgba(0,0,0,0.1); }
-        
-        .theme-pattern { 
-            background-color: #2b2013; 
-            /* Simple traditional-like pattern with SVG */
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23d4af37' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E");
-            color: #fcf8f2; 
-        }
+    <link
+        href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
 
-        .gold-text { color: #d4af37; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        
-        /* Input Field Styling */
-        .input-field {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: inherit;
-        }
-        .input-field:focus { border-color: #d4af37; }
-        .input-field::placeholder { color: rgba(255, 255, 255, 0.5); }
-        
-        /* Interactive Utilities */
-        .touch-target { min-height: 44px; min-width: 44px; }
-    </style>
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+    <!-- Template Main CSS Files -->
+    <link href="assets/css/variables.css" rel="stylesheet">
+    <link href="assets/css/main.css" rel="stylesheet">
+
+    <!-- =======================================================
+  * Template Name: ZenBlog
+  * Updated: Sep 18 2023 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/zenblog-bootstrap-blog-template/
+  * Author: BootstrapMade.com
+  * License: https:///bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
-    <div id="app" :class="themeClass">
-        <!-- Floating Theme Switcher -->
-        <div class="absolute top-4 right-4 z-50">
-            <button @click="toggleThemeMenu" class="theme-btn touch-target rounded-full bg-black bg-opacity-20 flex items-center justify-center backdrop-blur-sm shadow border border-white border-opacity-10 transition-transform active:scale-95">
-                <i class="fas fa-palette text-xl"></i>
-            </button>
-            
-            <div v-if="showThemeMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl z-50 py-2 text-gray-800 overflow-hidden border border-gray-100">
-                <button @click="setTheme('dark')" class="block w-full text-left px-5 py-3 hover:bg-gray-100 touch-target font-medium"><i class="fas fa-moon mr-2 w-5 text-center text-gray-600"></i> Nền tối</button>
-                <button @click="setTheme('light')" class="block w-full text-left px-5 py-3 hover:bg-gray-100 touch-target font-medium"><i class="fas fa-sun mr-2 w-5 text-center text-yellow-500"></i> Nền sáng</button>
-                <button @click="setTheme('pattern')" class="block w-full text-left px-5 py-3 hover:bg-gray-100 touch-target font-medium"><i class="fas fa-fan mr-2 w-5 text-center text-red-500"></i> Nền truyền thống</button>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+            <a href="index.html" class="logo d-flex align-items-center">
+                <!-- Uncomment the line below if you also wish to use an image logo -->
+                <!-- <img src="assets/img/logo.png" alt=""> -->
+                <h1>Tộc Trần</h1>
+            </a>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="lich-su-toc.html">Lịch sử Tộc Trần</a></li>
+                    <li><a href="gia-pha.html">Gia phả</a></li>
+                    <li><a href="trantocgiapha.html">Gia phả Mobile (MVP)</a></li>
+                    <li><a href="lien-he.html">Liên hệ</a></li>
+                </ul>
+            </nav><!-- .navbar -->
+
+            <div class="position-relative">
+                <a href="https://www.facebook.com/thanhnguyenhuu11" class="mx-2"><span class="bi-facebook"></span></a>
+                <a href="https://www.facebook.com/thanhnguyenhuu11" class="mx-2"><span class="bi-twitter"></span></a>
+                <a href="https://www.facebook.com/thanhnguyenhuu11" class="mx-2"><span class="bi-instagram"></span></a>
+
+                <a href="#" class="mx-2 js-search-open"><span class="bi-search"></span></a>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+
+                <!-- ======= Search Form ======= -->
+                <div class="search-form-wrap js-search-form-wrap">
+                    <form action="#" class="search-form">
+                        <span class="icon bi-search"></span>
+                        <input type="text" placeholder="Search" class="form-control">
+                        <button class="btn js-search-close"><span class="bi-x"></span></button>
+                    </form>
+                </div><!-- End Search Form -->
+
             </div>
-            <!-- Overlay to close dropdown menu -->
-            <div v-if="showThemeMenu" @click="showThemeMenu = false" class="fixed inset-0 z-40"></div>
+
         </div>
 
-        <!-- AUTHENTICATION VIEW -->
-        <div v-if="!isAuthenticated" class="flex-1 flex flex-col justify-between p-6 h-full relative z-10">
-            <!-- Header Section -->
-            <div class="text-center pt-10">
-                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 mx-auto flex items-center justify-center mb-6 shadow-xl border-2 border-yellow-300">
-                    <span class="text-3xl font-bold text-white font-serif tracking-wider">TRẦN</span>
-                </div>
-                <h1 class="text-2xl font-bold uppercase gold-text tracking-widest mb-3 font-serif drop-shadow-sm leading-tight">BẢN ĐỒ GIA PHẢ<br>TRẦN TỘC</h1>
-                <p class="text-sm opacity-80 italic font-serif">Nơi lưu giữ cội nguồn và kết nối dòng họ</p>
-            </div>
+    </header><!-- End Header -->
 
-            <!-- Form Section -->
-            <div class="w-full max-w-sm mx-auto my-auto pt-4">
-                <label class="block text-center text-sm mb-5 font-medium opacity-90 tracking-wide">Nhập mã truy cập để xem chi tiết gia phả</label>
-                <div class="relative mb-2">
-                    <input :type="showPassword ? 'text' : 'password'" 
-                           v-model="accessCode" 
-                           @keyup.enter="handleLogin"
-                           placeholder="Mã truy cập..." 
-                           class="input-field w-full px-5 py-4 rounded-xl border focus:outline-none transition-all backdrop-blur-sm text-center text-lg shadow-inner">
-                    <button @click="showPassword = !showPassword" class="touch-target absolute right-2 top-1/2 transform -translate-y-1/2 opacity-60 hover:opacity-100 flex items-center justify-center">
-                        <i class="fas text-lg" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                    </button>
-                </div>
-                <!-- Error Message Area -->
-                <div class="h-6 mb-4 flex items-center justify-center">
-                    <p v-if="errorMsg" class="text-red-500 text-sm font-medium animate-pulse">{{ errorMsg }}</p>
-                </div>
+    <main id="main">
 
-                <!-- Submit Button -->
-                <button @click="handleLogin" :disabled="isLoading" class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all transform active:scale-[0.98] flex justify-center items-center touch-target text-lg tracking-wider">
-                    <span v-if="!isLoading">XÁC NHẬN</span>
-                    <i v-else class="fas fa-circle-notch fa-spin text-2xl"></i>
-                </button>
-            </div>
+        <!-- ======= Hero Slider Section ======= -->
+        <section id="hero-slider" class="hero-slider">
+            <div class="container-md" data-aos="fade-in">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="swiper sliderFeaturedPosts">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <a href="le-khai-kinh-thinh-phat.html" class="img-bg d-flex align-items-end"
+                                        style="background-image: url('assets/img/s-post-slide-1.jpg');">
+                                        <div class="img-bg-inner">
+                                            <h2>Đại Lễ Dâng Hương Nghinh Đón Tổ Tiên Tộc Trần Về Với Con Cháu</h2>
+                                        </div>
+                                    </a>
+                                </div>
 
-            <!-- Footer Section -->
-            <div class="text-center pb-6">
-                <p class="text-sm opacity-70 mb-3 font-medium">Nếu chưa có mã truy cập, vui lòng liên hệ Ban quản trị tộc:</p>
-                <a href="https://zalo.me/0795777607" class="inline-flex items-center justify-center bg-[#0068FF] text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors shadow-lg touch-target w-full max-w-xs mx-auto active:scale-95">
-                    <i class="fas fa-comment-dots mr-2 text-lg"></i> Liên hệ qua Zalo: 0795.777.607
-                </a>
-            </div>
-        </div>
+                                <div class="swiper-slide">
+                                    <a href="le-khai-kinh-thinh-phat.html" class="img-bg d-flex align-items-end"
+                                        style="background-image: url('assets/img/s-post-slide-2.jpg');">
+                                        <div class="img-bg-inner">
+                                            <h2>Trăm Năm Tích Đức - Ngàn Năm Rạng Rỡ Truyền Thống Gia Tộc</h2>
+                                        </div>
+                                    </a>
+                                </div>
 
-        <!-- AUTHENTICATED / LOADING VIEW -->
-        <div v-else class="flex-1 flex flex-col items-center justify-center h-full w-full">
-            <!-- Loading State for Data Fetch -->
-            <div v-if="isFetchingData" class="text-center">
-                <i class="fas fa-circle-notch fa-spin text-5xl gold-text mb-6 drop-shadow-md"></i>
-                <p class="text-lg opacity-90 font-medium tracking-wide">Đang tải dữ liệu gia phả...</p>
-            </div>
-            
-            <!-- Main App Content (Tree Interface Placeholder) -->
-            <div v-else class="w-full h-full flex flex-col bg-white text-gray-800">
-                <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 shadow-sm">
-                    <h2 class="font-bold text-yellow-700 text-lg font-serif">Gia Phả Trần Tộc</h2>
-                    <button @click="logout" class="text-sm text-gray-500 hover:text-gray-800 touch-target px-2 font-medium">Đăng xuất</button>
-                </div>
-                <div class="flex-1 p-6 overflow-auto">
-                    <div class="text-center py-10">
-                        <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
-                        <h3 class="text-xl font-bold mb-2">Xác thực thành công!</h3>
-                        <p class="text-gray-600 mb-6">Dữ liệu từ Google Sheet đã được tải.<br>Giao diện cây gia phả sẽ được tích hợp tại đây trong giai đoạn tiếp theo.</p>
-                        
-                        <div class="bg-gray-100 rounded-lg p-4 text-left overflow-auto text-xs font-mono max-h-64 shadow-inner">
-                            <p class="font-bold text-gray-500 mb-2">// Dữ liệu mẫu nhận được (CSV -> JSON):</p>
-                            <pre>{{ JSON.stringify(parsedData.slice(0, 3), null, 2) }}</pre>
-                            <p v-if="parsedData.length > 3" class="text-gray-400 mt-2">... và {{ parsedData.length - 3 }} bản ghi khác.</p>
+                                <div class="swiper-slide">
+                                    <a href="le-khai-kinh-thinh-phat.html" class="img-bg d-flex align-items-end"
+                                        style="background-image: url('assets/img/s-post-slide-3.jpg');">
+                                        <div class="img-bg-inner">
+                                            <h2>Ngày Hội Tụ Đồng Tông - Gắn Kết Tình Máu Mủ Ruột Rà</h2>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div class="swiper-slide">
+                                    <a href="le-khai-kinh-thinh-phat.html" class="img-bg d-flex align-items-end"
+                                        style="background-image: url('assets/img/s-post-slide-4.jpg');">
+                                        <div class="img-bg-inner">
+                                            <h2>Khánh Thành Trùng Tu Từ Đường Thiêng Liêng Tộc Trần</h2>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="custom-swiper-button-next">
+                                <span class="bi-chevron-right"></span>
+                            </div>
+                            <div class="custom-swiper-button-prev">
+                                <span class="bi-chevron-left"></span>
+                            </div>
+
+                            <div class="swiper-pagination"></div>
                         </div>
                     </div>
                 </div>
             </div>
+        </section><!-- End Hero Slider Section -->
+
+        <!-- ======= Post Grid Section ======= -->
+        <section id="posts" class="posts">
+            <div class="container" data-aos="fade-up">
+                <div class="row g-5">
+                    <div class="col-lg-4">
+                        <div class="post-entry-1 lg">
+                            <a href="le-khai-kinh-thinh-phat.html"><img src="assets/img/s-post-slide-3.jpg" alt=""
+                                    class="img-fluid"></a>
+                            <div class="post-meta"><span class="date">Lễ hội</span> <span class="mx-1">&bullet;</span>
+                                <span>12/12/2023</span></div>
+                            <h2><a href="le-khai-kinh-thinh-phat.html">Đại Lễ Dâng Hương Nghinh Đón Tổ Tiên Tộc Trần</a>
+                            </h2>
+                            <p class="mb-4 d-block">Lễ hội thường niên nhằm ghi nhớ công ơn sâu nặng của các bậc tiền
+                                nhân đã khai sáng dòng họ. Toàn thể con cháu gần xa tề tựu về trước linh điện, một lòng
+                                thành kính dâng lên những nén tâm nhang, nguyện cầu cho gia tộc đời đời phồn thịnh, hưng
+                                vượng.</p>
+
+                            <div class="d-flex align-items-center author">
+                                <div class="photo"><img src="assets/img/person-1.jpg" alt="" class="img-fluid"></div>
+                                <div class="name">
+                                    <h3 class="m-0 p-0">Thanh Nguyen</h3>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div> <!-- End .row -->
+                </div>
+        </section> <!-- End Post Grid Section -->
+    </main><!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer">
+
+        <div class="footer-content">
+            <div class="container">
+
+                <div class="row g-5">
+                    <div class="col-lg-4">
+                        <h3 class="footer-heading">Tộc Trần</h3>
+                        <p>Cây có gốc mới nở cành xanh ngọn, nước có nguồn mới bể rộng sông sâu. Người ta sinh trưởng
+                            bởi đâu, gốc là Tiên Tổ về sau mới có mình. Tộc Trần chúng ta tự hào là một trong những dòng
+                            họ lâu đời, mang trong mình khí phách hào hùng và truyền thống hiếu đạo thiêng liêng. Nơi
+                            đây là cội nguồn tình thân, là mái nhà chung gắn kết muôn thế hệ con cháu.</p>
+                        <p><a href="lich-su-toc.html" class="footer-link-more">Đọc thêm</a></p>
+                    </div>
+
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Application Logic -->
-    <script>
-        const { createApp, ref, computed, onMounted } = Vue;
+        <div class="footer-legal">
+            <div class="container">
 
-        createApp({
-            setup() {
-                // State
-                const theme = ref('dark'); // Default theme
-                const showThemeMenu = ref(false);
-                const isAuthenticated = ref(false);
-                const accessCode = ref('');
-                const showPassword = ref(false);
-                const errorMsg = ref('');
-                const isLoading = ref(false);
-                const isFetchingData = ref(false);
-                const parsedData = ref([]);
+                <div class="row justify-content-between">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        <div class="copyright">
+                            © Bản quyền <strong><span>Thanh Nguyen</span></strong>
+                        </div>
 
-                // Constants config (Hardcoded for now as per SRS)
-                const VALID_CODE = "trantoc2024"; // Mã truy cập được phép
-                const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTxxuQv61XJ_6o6L6p4_L-L7_u_x_M/pub?output=csv"; // Placeholder Google Sheet CSV URL
+                        <div class="credits">
+                            <!-- All the links in the footer should remain intact. -->
+                            <!-- You can delete the links only if you purchased the pro version. -->
+                            <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                            <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/herobiz-bootstrap-business-template/ -->
+                            Thiết kế của <a href="https://www.facebook.com/thanhnguyenhuu11">Thanh Nguyen</a>
+                        </div>
 
-                const themeClass = computed(() => `theme-${theme.value}`);
+                    </div>
 
-                // Methods
-                const toggleThemeMenu = () => {
-                    showThemeMenu.value = !showThemeMenu.value;
-                };
+                    <div class="col-md-6">
+                        <div class="social-links mb-3 mb-lg-0 text-center text-md-end">
+                            <a href="https://www.facebook.com/thanhnguyenhuu11" class="twitter"><i
+                                    class="bi bi-twitter"></i></a>
+                            <a href="https://www.facebook.com/thanhnguyenhuu11" class="facebook"><i
+                                    class="bi bi-facebook"></i></a>
+                            <a href="https://www.facebook.com/thanhnguyenhuu11" class="instagram"><i
+                                    class="bi bi-instagram"></i></a>
+                            <a href="https://www.facebook.com/thanhnguyenhuu11" class="google-plus"><i
+                                    class="bi bi-skype"></i></a>
+                            <a href="https://www.facebook.com/thanhnguyenhuu11" class="linkedin"><i
+                                    class="bi bi-linkedin"></i></a>
+                        </div>
 
-                const setTheme = (newTheme) => {
-                    theme.value = newTheme;
-                    localStorage.setItem('trantoc_theme', newTheme);
-                    showThemeMenu.value = false;
-                };
+                    </div>
 
-                const handleLogin = () => {
-                    errorMsg.value = '';
-                    if (!accessCode.value.trim()) {
-                        errorMsg.value = 'Vui lòng nhập mã truy cập!';
-                        return;
-                    }
-                    
-                    isLoading.value = true;
-                    
-                    // Simulate network processing delay for better UX
-                    setTimeout(() => {
-                        isLoading.value = false;
-                        if (accessCode.value === VALID_CODE || accessCode.value === '123456') { // 123456 để test nhanh
-                            localStorage.setItem('trantoc_access_granted', 'true');
-                            isAuthenticated.value = true;
-                            fetchFamilyData();
-                        } else {
-                            errorMsg.value = 'Mã truy cập không chính xác. Vui lòng kiểm tra lại!';
-                        }
-                    }, 800);
-                };
+                </div>
 
-                const fetchFamilyData = () => {
-                    isFetchingData.value = true;
-                    
-                    // Demo purpose: Simulate fetching from CSV and parsing
-                    setTimeout(() => {
-                        // Fake data map following SRS structure
-                        parsedData.value = [
-                            { id: "1", name: "Trần Văn A", pid: "", mid: "", partnerId: "2", title: "Cụ tổ", dob: "1900", photo: "", isAlive: "false" },
-                            { id: "2", name: "Nguyễn Thị B", pid: "", mid: "", partnerId: "1", title: "Cụ bà", dob: "1905", photo: "", isAlive: "false" },
-                            { id: "3", name: "Trần Văn C", pid: "1", mid: "2", partnerId: "", title: "Trưởng họ", dob: "1930", photo: "", isAlive: "false" }
-                        ];
-                        isFetchingData.value = false;
-                    }, 1500);
+            </div>
+        </div>
 
-                    /* 
-                    // ACTUAL IMPLEMENTATION WHEN REAL GOOGLE SHEET LINK IS PROVIDED
-                    Papa.parse(SHEET_CSV_URL, {
-                        download: true,
-                        header: true,
-                        complete: function(results) {
-                            parsedData.value = results.data;
-                            isFetchingData.value = false;
-                        },
-                        error: function(error) {
-                            console.error("Lỗi khi tải dữ liệu CSV:", error);
-                            isFetchingData.value = false;
-                        }
-                    });
-                    */
-                };
+    </footer>
 
-                const logout = () => {
-                    localStorage.removeItem('trantoc_access_granted');
-                    isAuthenticated.value = false;
-                    accessCode.value = '';
-                };
+    <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
 
-                // Lifecycle Hook (Auto Login)
-                onMounted(() => {
-                    // 1. Restore theme from LocalStorage
-                    const savedTheme = localStorage.getItem('trantoc_theme');
-                    if (savedTheme) {
-                        theme.value = savedTheme;
-                    }
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
 
-                    // 2. Check Auto-Login
-                    const accessGranted = localStorage.getItem('trantoc_access_granted');
-                    if (accessGranted === 'true') {
-                        isAuthenticated.value = true;
-                        fetchFamilyData();
-                    }
-                });
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
 
-                return {
-                    theme, themeClass, showThemeMenu, toggleThemeMenu, setTheme,
-                    isAuthenticated, accessCode, showPassword, errorMsg, isLoading, handleLogin,
-                    isFetchingData, parsedData, logout
-                };
-            }
-        }).mount('#app');
-    </script>
 </body>
+
 </html>
