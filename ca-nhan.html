@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cá Nhân & Thiết Lập - Trần Tộc</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* THEMES CONFIGURATION */
+        /* Dark Theme (Default) */
+        .theme-dark { background-color: #1a202c; color: #f7fafc; }
+        .theme-dark .card-bg { background-color: #2d3748; border-color: #4a5568; }
+        .theme-dark .text-muted { color: #a0aec0; }
+        .theme-dark .text-body { color: #e2e8f0; }
+        .theme-dark .divider { border-color: #4a5568; }
+        .theme-dark .input-bg { background-color: #1a202c; border-color: #4a5568; color: white; }
+
+        /* Light Theme */
+        .theme-light { background-color: #f3f4f6; color: #1e293b; }
+        .theme-light .card-bg { background-color: #ffffff; border-color: #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .theme-light .text-muted { color: #64748b; }
+        .theme-light .text-body { color: #334155; }
+        .theme-light .divider { border-color: #e5e7eb; }
+        .theme-light .input-bg { background-color: #f9fafb; border-color: #e5e7eb; color: #1e293b; }
+
+        /* Traditional Pattern Theme */
+        .theme-pattern { 
+            background-color: #2b2013; 
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23d4af37' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E");
+            color: #fcf8f2; 
+        }
+        .theme-pattern .card-bg { background-color: rgba(30, 20, 10, 0.7); border-color: rgba(212, 175, 55, 0.2); backdrop-filter: blur(8px); }
+        .theme-pattern .text-muted { color: rgba(255,255,255,0.6); }
+        .theme-pattern .text-body { color: rgba(255,255,255,0.9); }
+        .theme-pattern .divider { border-color: rgba(212, 175, 55, 0.15); }
+        .theme-pattern .input-bg { background-color: rgba(0,0,0,0.3); border-color: rgba(212, 175, 55, 0.3); color: white; }
+
+        /* Utilities */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Modal Transitions */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        
+        .scale-enter-active, .scale-leave-active { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .scale-enter-from, .scale-leave-to { transform: scale(0.95); opacity: 0; }
+        
+        /* Custom Radio for Themes */
+        .theme-radio:checked + div { border-color: #d4af37; border-width: 2px; }
+        .theme-radio:checked + div .check-icon { opacity: 1; transform: scale(1); }
+    </style>
+</head>
+<body>
+    <div id="app" :class="themeClass" class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300">
+        
+        <!-- Top App Bar -->
+        <header class="card-bg border-b shadow-sm z-10 flex-shrink-0 relative pt-safe">
+            <div class="flex items-center justify-between px-4 py-3">
+                <a href="index.html" class="text-muted p-2 hover:bg-black/5 rounded-full transition"><i class="fas fa-arrow-left text-lg"></i></a>
+                <h1 class="text-lg font-bold font-serif">Hồ Sơ Cá Nhân</h1>
+                <div class="w-8"></div> <!-- Spacer -->
+            </div>
+        </header>
+
+        <!-- Main Content (Scrollable List) -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-5 pb-24">
+            
+            <!-- 2.1 Khối Thông Tin Cá Nhân (Profile Header) -->
+            <div v-if="currentUser" class="card-bg rounded-2xl p-6 border flex flex-col items-center text-center relative overflow-hidden">
+                <!-- BG Decor -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-600 rounded-full mix-blend-multiply filter blur-2xl opacity-20"></div>
+                
+                <div class="relative">
+                    <img :src="currentUser.avatar" alt="Avatar" class="w-24 h-24 rounded-full object-cover border-4 border-yellow-500 shadow-lg">
+                    <div class="absolute bottom-0 right-0 bg-yellow-500 text-white w-7 h-7 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                        <i class="fas fa-camera text-xs"></i>
+                    </div>
+                </div>
+                
+                <h2 class="text-xl font-bold mt-4 mb-1 tracking-wide">{{ currentUser.name }}</h2>
+                <span class="inline-block bg-yellow-500/10 text-yellow-600 border border-yellow-500/20 px-3 py-1 rounded-full text-xs font-bold mb-2">
+                    {{ currentUser.branch }}
+                </span>
+                
+                <div class="flex items-center justify-center space-x-4 mt-3 text-sm text-muted">
+                    <div class="text-center"><p class="font-bold text-body">1970</p><p class="text-[10px] uppercase tracking-wider">Năm sinh</p></div>
+                    <div class="w-px h-8 bg-gray-500/30"></div>
+                    <div class="text-center"><p class="font-bold text-body">{{ children.length }}</p><p class="text-[10px] uppercase tracking-wider">Hậu duệ</p></div>
+                </div>
+            </div>
+
+            <!-- 2.2 Khối Nhánh Trực Hệ -->
+            <div class="card-bg rounded-2xl p-5 border">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg"><i class="fas fa-code-branch text-yellow-500 mr-2"></i> Con/Cháu trực hệ của tôi</h3>
+                    <span class="text-xs text-muted bg-black/5 px-2 py-1 rounded-md">{{ children.length }} người</span>
+                </div>
+                
+                <div class="space-y-3">
+                    <div v-if="children.length === 0" class="text-center py-4 text-muted text-sm italic">
+                        Chưa có dữ liệu con/cháu trực hệ.
+                    </div>
+                    
+                    <div v-for="child in children" :key="child.id" class="flex items-center justify-between p-3 rounded-xl bg-black/5 hover:bg-black/10 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <img :src="child.avatar" class="w-12 h-12 rounded-full object-cover border border-black/10">
+                            <div>
+                                <p class="font-bold text-sm text-body">{{ child.name }}</p>
+                                <p class="text-xs text-muted">Sinh năm: {{ child.dob }}</p>
+                            </div>
+                        </div>
+                        <button @click="openUpdateModal(child)" class="w-9 h-9 flex items-center justify-center rounded-full bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500 hover:text-white transition-colors">
+                            <i class="fas fa-pen text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.3 Khối Tiện Ích & Xuất Bản -->
+            <div class="card-bg rounded-2xl p-5 border">
+                <h3 class="font-bold text-lg mb-4"><i class="fas fa-toolbox text-blue-500 mr-2"></i> Tiện ích dòng tộc</h3>
+                
+                <button @click="showExportModal = true" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-transform active:scale-[0.98] flex items-center justify-center">
+                    <i class="fas fa-print mr-2 text-lg"></i> Xuất file gia phả để in ấn
+                </button>
+                <p class="text-xs text-muted text-center mt-3">Hỗ trợ định dạng PDF/SVG độ phân giải cao, tương thích font tiếng Việt UTF-8.</p>
+            </div>
+
+            <!-- 2.4 Khối Cài Đặt Giao Diện -->
+            <div class="card-bg rounded-2xl p-5 border">
+                <h3 class="font-bold text-lg mb-4"><i class="fas fa-paint-roller text-purple-500 mr-2"></i> Thiết lập giao diện</h3>
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <!-- Dark -->
+                    <label class="cursor-pointer text-center relative block">
+                        <input type="radio" name="theme" value="dark" v-model="theme" class="hidden theme-radio">
+                        <div class="h-16 rounded-xl bg-[#1a202c] border border-gray-600 flex items-center justify-center transition-all shadow-sm">
+                            <i class="fas fa-moon text-gray-400"></i>
+                            <div class="check-icon absolute top-1 right-1 bg-yellow-500 text-white w-4 h-4 rounded-full flex items-center justify-center opacity-0 scale-0 transition-all shadow">
+                                <i class="fas fa-check text-[8px]"></i>
+                            </div>
+                        </div>
+                        <span class="text-xs mt-2 block font-medium">Nền Tối</span>
+                    </label>
+                    
+                    <!-- Light -->
+                    <label class="cursor-pointer text-center relative block">
+                        <input type="radio" name="theme" value="light" v-model="theme" class="hidden theme-radio">
+                        <div class="h-16 rounded-xl bg-[#f3f4f6] border border-gray-300 flex items-center justify-center transition-all shadow-sm">
+                            <i class="fas fa-sun text-yellow-500"></i>
+                            <div class="check-icon absolute top-1 right-1 bg-yellow-500 text-white w-4 h-4 rounded-full flex items-center justify-center opacity-0 scale-0 transition-all shadow">
+                                <i class="fas fa-check text-[8px]"></i>
+                            </div>
+                        </div>
+                        <span class="text-xs mt-2 block font-medium">Nền Sáng</span>
+                    </label>
+
+                    <!-- Pattern -->
+                    <label class="cursor-pointer text-center relative block">
+                        <input type="radio" name="theme" value="pattern" v-model="theme" class="hidden theme-radio">
+                        <div class="h-16 rounded-xl bg-[#2b2013] border border-[#d4af37]/30 flex items-center justify-center transition-all shadow-sm relative overflow-hidden">
+                            <i class="fas fa-fan text-[#d4af37] absolute opacity-30 text-3xl"></i>
+                            <i class="fas fa-om text-[#d4af37] z-10"></i>
+                            <div class="check-icon absolute top-1 right-1 bg-yellow-500 text-white w-4 h-4 rounded-full flex items-center justify-center opacity-0 scale-0 transition-all shadow">
+                                <i class="fas fa-check text-[8px]"></i>
+                            </div>
+                        </div>
+                        <span class="text-xs mt-2 block font-medium">Truyền Thống</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 2.5 Khối Lối Vào Quản Trị (Admin Gateway) - CONDITIONAL RENDERING -->
+            <div v-if="isAdmin" class="pt-2">
+                <div class="divider border-t mb-6"></div>
+                <a href="quan-tri.html" class="w-full bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center decoration-none">
+                    <i class="fas fa-shield-alt mr-2 text-xl"></i> VÀO TRANG QUẢN TRỊ DÒNG TỘC
+                </a>
+                <p class="text-xs text-center text-red-500 mt-2 font-medium">Khu vực dành riêng cho Ban trị sự / Tộc trưởng.</p>
+            </div>
+            
+        </main>
+
+        <!-- Bottom Navigation Bar (App-wide) -->
+        <nav class="bg-white dark:bg-[#1a202c] border-t border-gray-200 dark:border-gray-800 flex-shrink-0 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.02)] relative z-0" :class="{'theme-light': theme === 'light', 'theme-dark': theme !== 'light'}">
+            <div class="flex justify-around items-center h-[68px]">
+                <a href="index.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 dark:hover:text-white transition">
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Trang chủ</span>
+                </a>
+                <a href="gia-pha.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 dark:hover:text-white transition">
+                    <i class="fas fa-sitemap text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Cây Gia Phả</span>
+                </a>
+                <a href="su-kien-tam-linh.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 dark:hover:text-white transition">
+                    <i class="fas fa-om text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Tâm Linh</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-yellow-600">
+                    <i class="fas fa-user-circle text-2xl mb-1 drop-shadow-sm"></i>
+                    <span class="text-[10px] font-bold">Cá nhân</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- MODAL: Cập nhật thông tin con cháu -->
+        <transition name="fade">
+            <div v-if="editingChild" class="fixed inset-0 bg-black/70 z-[100] backdrop-blur-sm flex items-center justify-center p-4">
+                <transition name="scale" appear>
+                    <div class="card-bg w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border">
+                        <div class="p-4 border-b divider flex justify-between items-center">
+                            <h3 class="font-bold text-lg">Yêu cầu cập nhật</h3>
+                            <button @click="editingChild = null" class="text-muted hover:text-body"><i class="fas fa-times text-lg"></i></button>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <p class="text-sm text-muted mb-2">Đang sửa thông tin cho: <strong class="text-body">{{ editingChild.name }}</strong></p>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Họ và Tên</label>
+                                <input type="text" :value="editingChild.name" class="w-full input-bg rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Năm sinh</label>
+                                <input type="number" :value="editingChild.dob" class="w-full input-bg rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Năm mất (Nếu có)</label>
+                                <input type="number" placeholder="Bỏ trống nếu còn sống" class="w-full input-bg rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                            </div>
+
+                            <p class="text-xs text-yellow-600 italic mt-2"><i class="fas fa-info-circle"></i> Thông tin sẽ được gửi lên Ban trị sự phê duyệt trước khi cập nhật chính thức vào cây gia phả.</p>
+                        </div>
+                        <div class="p-4 border-t divider flex space-x-3 bg-black/5">
+                            <button @click="editingChild = null" class="flex-1 py-2.5 rounded-xl font-medium text-sm text-muted bg-black/5 hover:bg-black/10 transition-colors">Hủy</button>
+                            <button @click="submitUpdate" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-white bg-yellow-600 hover:bg-yellow-700 transition-colors">Gửi yêu cầu</button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+        <!-- MODAL: Xuất file Gia Phả -->
+        <transition name="fade">
+            <div v-if="showExportModal" class="fixed inset-0 bg-black/70 z-[100] backdrop-blur-sm flex items-end sm:items-center justify-center pb-safe">
+                <transition name="scale" appear>
+                    <div class="card-bg w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden border">
+                        <div class="p-5 border-b divider">
+                            <h3 class="font-bold text-xl text-center text-body">Xuất File In Ấn</h3>
+                            <p class="text-sm text-center text-muted mt-1">Chọn phạm vi cây gia phả muốn tải về</p>
+                        </div>
+                        <div class="p-2">
+                            <label class="flex items-start p-4 hover:bg-black/5 transition-colors cursor-pointer border-b divider">
+                                <input type="radio" name="export_type" v-model="exportType" value="all" class="mt-1 mr-3 w-4 h-4 text-yellow-600 focus:ring-yellow-500">
+                                <div>
+                                    <span class="block font-bold text-body mb-0.5">Xuất Toàn Bộ Dòng Tộc</span>
+                                    <span class="block text-xs text-muted">Sơ đồ lớn nhất, bao gồm tất cả các chi nhánh từ Thủy tổ đến nay. Khuyên dùng cho nhà thờ họ.</span>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start p-4 hover:bg-black/5 transition-colors cursor-pointer">
+                                <input type="radio" name="export_type" v-model="exportType" value="branch" class="mt-1 mr-3 w-4 h-4 text-yellow-600 focus:ring-yellow-500">
+                                <div>
+                                    <span class="block font-bold text-body mb-0.5">Chỉ Xuất Nhánh Của Tôi</span>
+                                    <span class="block text-xs text-muted">Sơ đồ thu gọn, lấy bạn làm gốc rễ hoặc lấy Ông nội bạn làm gốc. Khuyên dùng để treo ở nhà riêng.</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="p-4 border-t divider flex space-x-3 bg-black/5">
+                            <button @click="showExportModal = false" class="flex-1 py-3 rounded-xl font-medium text-sm text-muted bg-black/5 hover:bg-black/10 transition-colors">Đóng</button>
+                            <button @click="executeExport" class="flex-[2] py-3 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                <i class="fas fa-download mr-2"></i> Tải Xuống (PDF)
+                            </button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, watch } = Vue;
+
+        createApp({
+            setup() {
+                // THEME MANAGEMENT
+                const theme = ref('dark'); // Default
+                const themeClass = computed(() => `theme-${theme.value}`);
+
+                // Watch theme changes to sync with localStorage immediately
+                watch(theme, (newTheme) => {
+                    localStorage.setItem('trantoc_theme', newTheme);
+                    // Có thể dispatch một custom event để các tab khác (nếu mở iframe hoặc cách điệu) tự cập nhật
+                    window.dispatchEvent(new Event('theme_changed'));
+                });
+
+                // MOCK DATA: Giả lập Google Sheet Dữ Liệu Thành Viên
+                const mockSheetData = [
+                    { id: 'u_001', name: 'Trần Văn Long', role: 'admin', dob: '1970', branch: 'Đời thứ 5 - Nhánh Trưởng', avatar: 'https://i.pravatar.cc/150?img=11', pid: '', mid: '' },
+                    { id: 'u_002', name: 'Trần Thị Thu', role: 'member', dob: '1995', branch: 'Đời thứ 6 - Nhánh Trưởng', avatar: 'https://i.pravatar.cc/150?img=5', pid: 'u_001', mid: '' },
+                    { id: 'u_003', name: 'Trần Văn Minh', role: 'member', dob: '1998', branch: 'Đời thứ 6 - Nhánh Trưởng', avatar: 'https://i.pravatar.cc/150?img=12', pid: 'u_001', mid: '' },
+                    { id: 'u_004', name: 'Người Khác', role: 'member', dob: '1990', branch: 'Đời thứ 6 - Nhánh Hai', avatar: 'https://i.pravatar.cc/150?img=8', pid: 'u_999', mid: '' }
+                ];
+
+                // Logic định danh người dùng hiện tại
+                const currentUser = ref(null);
+                const children = ref([]);
+                
+                // MOCK: Giả lập ID đang đăng nhập được lưu ở LocalStorage
+                // Trong luồng thật, ID này được set ở trang Index sau khi nhập mã & chọn tên
+                const currentUserId = 'u_001'; 
+
+                const isAdmin = computed(() => {
+                    return currentUser.value && (currentUser.value.role === 'admin' || currentUser.value.role === 'toctruong');
+                });
+
+                // MODALS STATE
+                const editingChild = ref(null);
+                const showExportModal = ref(false);
+                const exportType = ref('all');
+
+                const openUpdateModal = (child) => {
+                    editingChild.value = child;
+                };
+
+                const submitUpdate = () => {
+                    alert('Yêu cầu cập nhật đã được gửi lên hệ thống chờ duyệt thành công!');
+                    editingChild.value = null;
+                };
+
+                const executeExport = () => {
+                    // Mô phỏng gọi hàm thư viện FamilyTreeJS 
+                    // familyTree.exportPDF({ format: "A4", orientation: "landscape" });
+                    
+                    alert(`Đang khởi tạo thư viện đồ họa để xuất file PDF cho: ${exportType.value === 'all' ? 'Toàn bộ dòng họ' : 'Nhánh của bạn'}.\nFile tải về sẽ được mã hóa font UTF-8 chuẩn xác.`);
+                    showExportModal.value = false;
+                };
+
+                onMounted(() => {
+                    // 1. Phục hồi Theme
+                    const savedTheme = localStorage.getItem('trantoc_theme');
+                    if (savedTheme) {
+                        theme.value = savedTheme;
+                    } else {
+                        // Lưu default nếu chưa có
+                        localStorage.setItem('trantoc_theme', 'dark');
+                    }
+
+                    // 2. Tìm User Profile
+                    currentUser.value = mockSheetData.find(user => user.id === currentUserId);
+
+                    // 3. Lọc Con/Cháu trực hệ (dựa vào parent id)
+                    if (currentUser.value) {
+                        children.value = mockSheetData.filter(user => user.pid === currentUserId || user.mid === currentUserId);
+                    }
+                });
+
+                return {
+                    theme, themeClass,
+                    currentUser, children, isAdmin,
+                    editingChild, openUpdateModal, submitUpdate,
+                    showExportModal, exportType, executeExport
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

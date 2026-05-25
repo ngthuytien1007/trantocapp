@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bảng Quản Trị Dòng Họ - Trần Tộc</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* ELDER-FRIENDLY & ACCESSIBILITY STYLING */
+        /* Extra large tap targets and legible base font size */
+        input, select, textarea, button, a {
+            font-size: 16px !important; /* Prevent iOS zoom, ensure readability */
+        }
+        
+        /* THEMES CONFIGURATION (Sync with ca-nhan.html) */
+        /* Dark Theme */
+        .theme-dark { background-color: #111827; color: #f9fafb; }
+        .theme-dark .card-bg { background-color: #1f2937; border-color: #374151; }
+        .theme-dark .text-muted { color: #9ca3af; }
+        .theme-dark .text-body { color: #f3f4f6; }
+        .theme-dark .divider { border-color: #374151; }
+        .theme-dark .input-bg { background-color: #111827; border-color: #4b5563; color: white; }
+        .theme-dark .tab-active { border-color: #ef4444; color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
+        .theme-dark .tab-inactive { color: #9ca3af; }
+        .theme-dark .table-header { background-color: #374151; color: #f3f4f6; }
+        .theme-dark .table-row-even { background-color: #1f2937; }
+        .theme-dark .table-row-odd { background-color: #1b2431; }
+
+        /* Light Theme */
+        .theme-light { background-color: #f3f4f6; color: #1f2937; }
+        .theme-light .card-bg { background-color: #ffffff; border-color: #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .theme-light .text-muted { color: #6b7280; }
+        .theme-light .text-body { color: #1f2937; }
+        .theme-light .divider { border-color: #e5e7eb; }
+        .theme-light .input-bg { background-color: #f9fafb; border-color: #d1d5db; color: #1f2937; }
+        .theme-light .tab-active { border-color: #dc2626; color: #dc2626; background-color: rgba(220, 38, 38, 0.08); }
+        .theme-light .tab-inactive { color: #6b7280; }
+        .theme-light .table-header { background-color: #e5e7eb; color: #1f2937; }
+        .theme-light .table-row-even { background-color: #ffffff; }
+        .theme-light .table-row-odd { background-color: #f9fafb; }
+
+        /* Traditional Pattern Theme */
+        .theme-pattern { 
+            background-color: #2b1f15; 
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23d4af37' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            color: #fdfaf2; 
+        }
+        .theme-pattern .card-bg { background-color: rgba(43, 31, 21, 0.85); border-color: rgba(212, 175, 55, 0.25); backdrop-filter: blur(8px); }
+        .theme-pattern .text-muted { color: rgba(253, 250, 242, 0.6); }
+        .theme-pattern .text-body { color: rgba(253, 250, 242, 0.95); }
+        .theme-pattern .divider { border-color: rgba(212, 175, 55, 0.15); }
+        .theme-pattern .input-bg { background-color: rgba(17, 12, 8, 0.6); border-color: rgba(212, 175, 55, 0.4); color: #fdfaf2; }
+        .theme-pattern .tab-active { border-color: #d4af37; color: #d4af37; background-color: rgba(212, 175, 55, 0.1); }
+        .theme-pattern .tab-inactive { color: rgba(253, 250, 242, 0.6); }
+        .theme-pattern .table-header { background-color: rgba(212, 175, 55, 0.15); color: #d4af37; }
+        .theme-pattern .table-row-even { background-color: rgba(43, 31, 21, 0.6); }
+        .theme-pattern .table-row-odd { background-color: rgba(25, 18, 12, 0.6); }
+
+        /* Utilities */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Modal and general Transitions */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        
+        .scale-enter-active, .scale-leave-active { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .scale-enter-from, .scale-leave-to { transform: scale(0.96); opacity: 0; }
+    </style>
+</head>
+<body>
+    <div id="app" :class="themeClass" class="h-screen w-full flex flex-col overflow-hidden transition-colors duration-300">
+        
+        <!-- Top App Bar -->
+        <header class="card-bg border-b shadow-sm z-10 flex-shrink-0 relative pt-safe">
+            <div class="flex items-center justify-between px-4 py-3">
+                <a href="ca-nhan.html" class="text-muted p-2 hover:bg-black/5 rounded-full transition flex items-center justify-center w-10 h-10">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-xl font-bold font-serif text-red-600 dark:text-red-500 uppercase tracking-wide">Trang Quản Trị</h1>
+                <button @click="showTechGuide = true" class="text-blue-500 hover:text-blue-600 font-bold p-2 text-sm flex items-center gap-1">
+                    <i class="fas fa-code text-lg"></i>
+                    <span class="hidden sm:inline">Kỹ Thuật</span>
+                </button>
+            </div>
+            
+            <!-- Tab Navigation Bar (Top Tabs) - BIG AND CLEAR -->
+            <div class="flex border-t divider w-full overflow-x-auto no-scrollbar">
+                <button 
+                    @click="activeTab = 'requests'" 
+                    :class="activeTab === 'requests' ? 'tab-active font-extrabold border-b-4' : 'tab-inactive font-medium border-b-2 border-transparent'"
+                    class="flex-1 py-4 text-center text-[15px] sm:text-base transition-all whitespace-nowrap px-4 flex items-center justify-center gap-2 min-h-[58px]"
+                >
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Duyệt Yêu Cầu</span>
+                    <span v-if="requests.length > 0" class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold ml-1">{{ requests.length }}</span>
+                </button>
+                <button 
+                    @click="activeTab = 'tree'" 
+                    :class="activeTab === 'tree' ? 'tab-active font-extrabold border-b-4' : 'tab-inactive font-medium border-b-2 border-transparent'"
+                    class="flex-1 py-4 text-center text-[15px] sm:text-base transition-all whitespace-nowrap px-4 flex items-center justify-center gap-2 min-h-[58px]"
+                >
+                    <i class="fas fa-sitemap"></i>
+                    <span>Quản Lý Cây</span>
+                </button>
+                <button 
+                    @click="activeTab = 'forms'" 
+                    :class="activeTab === 'forms' ? 'tab-active font-extrabold border-b-4' : 'tab-inactive font-medium border-b-2 border-transparent'"
+                    class="flex-1 py-4 text-center text-[15px] sm:text-base transition-all whitespace-nowrap px-4 flex items-center justify-center gap-2 min-h-[58px]"
+                >
+                    <i class="fas fa-pen-nib"></i>
+                    <span>Đăng Tin & Thu Chi</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-20">
+            
+            <!-- ================= TAB 1: DUYỆT YÊU CẦU ================= -->
+            <div v-if="activeTab === 'requests'" class="space-y-4">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fas fa-bell text-red-500"></i> Đề xuất chờ Ban trị sự duyệt
+                    </h2>
+                    <span class="text-sm text-muted">Có {{ requests.length }} yêu cầu</span>
+                </div>
+                
+                <div v-if="requests.length === 0" class="card-bg rounded-2xl p-8 text-center border">
+                    <i class="fas fa-check-circle text-green-500 text-5xl mb-3"></i>
+                    <p class="font-bold text-lg">Đã duyệt hết yêu cầu!</p>
+                    <p class="text-sm text-muted mt-1">Không có đề xuất mới nào từ con cháu cần xử lý lúc này.</p>
+                </div>
+
+                <div v-else class="space-y-4">
+                    <!-- Cards List of Requests -->
+                    <div v-for="req in requests" :key="req.id" class="card-bg rounded-2xl p-5 border shadow-md space-y-4">
+                        <!-- Sender info and Type -->
+                        <div class="flex items-start justify-between border-b divider pb-3">
+                            <div>
+                                <h3 class="font-bold text-lg text-body flex items-center gap-2">
+                                    <i class="fas" :class="req.type === 'edit' ? 'fa-user-pen text-yellow-500' : 'fa-user-plus text-green-500'"></i>
+                                    {{ req.type === 'edit' ? 'Sửa thông tin thành viên' : 'Thêm con cháu mới' }}
+                                </h3>
+                                <p class="text-sm text-muted mt-1">
+                                    Người gửi: <strong class="text-body">{{ req.sender }}</strong> ({{ req.senderBranch }})
+                                </p>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full uppercase"
+                                  :class="req.type === 'edit' ? 'bg-yellow-500/10 text-yellow-600 border border-yellow-500/20' : 'bg-green-500/10 text-green-600 border border-green-500/20'">
+                                {{ req.type === 'edit' ? 'Sửa đổi' : 'Thêm mới' }}
+                            </span>
+                        </div>
+
+                        <!-- Side by Side / Vertical Comparison (CRITICAL!) -->
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-muted mb-2">So sánh đối chiếu thông tin:</p>
+                            
+                            <!-- If type is edit (Comparison) -->
+                            <div v-if="req.type === 'edit'" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                <!-- Old Data (Red theme) -->
+                                <div class="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-4 rounded-xl">
+                                    <p class="font-bold text-xs uppercase tracking-wider mb-2 text-red-700 dark:text-red-300">
+                                        <i class="fas fa-history mr-1"></i> Dữ liệu cũ trên cây
+                                    </p>
+                                    <div class="space-y-1 font-medium">
+                                        <p><strong>Họ tên:</strong> {{ req.oldData.name }}</p>
+                                        <p><strong>Năm sinh:</strong> {{ req.oldData.dob }}</p>
+                                        <p><strong>Đời:</strong> Đời thứ {{ req.oldData.generation }}</p>
+                                        <p><strong>Mộ phần/An táng:</strong> {{ req.oldData.burial || 'Không rõ' }}</p>
+                                        <p><strong>Trạng thái:</strong> {{ req.oldData.isDead ? 'Đã mất' : 'Còn sống' }}</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- New Proposed Data (Green theme) -->
+                                <div class="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 p-4 rounded-xl">
+                                    <p class="font-bold text-xs uppercase tracking-wider mb-2 text-green-700 dark:text-green-300">
+                                        <i class="fas fa-circle-check mr-1"></i> Đề xuất thay đổi mới
+                                    </p>
+                                    <div class="space-y-1 font-bold">
+                                        <p><strong>Họ tên:</strong> <span class="underline">{{ req.newData.name }}</span></p>
+                                        <p><strong>Năm sinh:</strong> <span class="underline">{{ req.newData.dob }}</span></p>
+                                        <p><strong>Đời:</strong> <span class="underline">Đời thứ {{ req.newData.generation }}</span></p>
+                                        <p><strong>Mộ phần/An táng:</strong> <span class="underline">{{ req.newData.burial || 'Chưa cập nhật' }}</span></p>
+                                        <p><strong>Trạng thái:</strong> <span class="underline">{{ req.newData.isDead ? 'Đã mất' : 'Còn sống' }}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- If type is add (New Member) -->
+                            <div v-else class="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 p-4 rounded-xl text-sm">
+                                <p class="font-bold text-xs uppercase tracking-wider mb-2 text-green-700 dark:text-green-300">
+                                    <i class="fas fa-circle-check mr-1"></i> Thông tin thành viên đề xuất thêm mới
+                                </p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 font-bold">
+                                    <p><strong>Họ và tên:</strong> {{ req.newData.name }}</p>
+                                    <p><strong>Năm sinh:</strong> {{ req.newData.dob }}</p>
+                                    <p><strong>Thế hệ:</strong> Đời thứ {{ req.newData.generation }}</p>
+                                    <p><strong>Vai vế:</strong> {{ req.newData.relation }}</p>
+                                    <p><strong>Liên kết Cha:</strong> {{ req.newData.parentName }}</p>
+                                    <p><strong>Ghi chú thêm:</strong> {{ req.newData.notes || 'Không có' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Big action buttons for easy clicking on mobile -->
+                        <div class="flex gap-4 pt-2 border-t divider">
+                            <button 
+                                @click="rejectRequest(req)" 
+                                class="flex-1 min-h-[54px] bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow transition active:scale-[0.98]"
+                            >
+                                <i class="fas fa-trash-can text-lg"></i>
+                                <span>Từ Chối</span>
+                            </button>
+                            <button 
+                                @click="approveRequest(req)" 
+                                class="flex-1 min-h-[54px] bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow transition active:scale-[0.98]"
+                            >
+                                <i class="fas fa-check-double text-lg"></i>
+                                <span>Duyệt Cập Nhật</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB 2: QUẢN LÝ CÂY (PAGINATED FLAT LIST) ================= -->
+            <div v-if="activeTab === 'tree'" class="space-y-4">
+                
+                <!-- Tools Panel: Search, Filter & Add Button -->
+                <div class="card-bg rounded-2xl p-4 border space-y-4">
+                    <h2 class="text-base font-bold text-muted uppercase tracking-wider mb-2">Thanh công cụ tra cứu & hành động</h2>
+                    
+                    <!-- Search Bar - LARGE AND ACCESSIBLE -->
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <i class="fas fa-magnifying-glass text-gray-400 text-lg"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            v-model="searchQuery" 
+                            placeholder="Tìm nhanh thành viên (Có dấu hoặc không dấu)..." 
+                            class="w-full pl-11 pr-4 py-3.5 input-bg rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-red-500 border shadow-sm placeholder:text-gray-400"
+                        >
+                        <button 
+                            v-if="searchQuery" 
+                            @click="searchQuery = ''" 
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600"
+                        >
+                            <i class="fas fa-circle-xmark text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Double Filters (Generation & Branch) -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-muted uppercase mb-1">Lọc theo Đời:</label>
+                            <select v-model="filterGeneration" class="w-full p-3 input-bg rounded-xl font-medium border shadow-sm">
+                                <option value="">Tất cả các đời</option>
+                                <option v-for="g in generationList" :key="g" :value="g">Đời thứ {{ g }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-muted uppercase mb-1">Lọc theo Chi/Nhánh:</label>
+                            <select v-model="filterBranch" class="w-full p-3 input-bg rounded-xl font-medium border shadow-sm">
+                                <option value="">Tất cả chi/nhánh</option>
+                                <option v-for="b in branchList" :key="b" :value="b">{{ b }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Add New Member Button - HIGHLY VISIBLE -->
+                    <button 
+                        @click="openAddModal" 
+                        class="w-full min-h-[54px] bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition active:scale-[0.98]"
+                    >
+                        <i class="fas fa-user-plus text-lg"></i>
+                        <span>THÊM THÀNH VIÊN MỚI</span>
+                    </button>
+                </div>
+
+                <!-- Responsive Table or List -->
+                <div class="card-bg rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="px-4 py-3.5 border-b divider flex justify-between items-center bg-black/5">
+                        <span class="font-bold text-sm">Danh sách thành viên ({{ filteredMembers.length }} người)</span>
+                        <span class="text-xs text-muted">Trang {{ currentPage }} / {{ totalPages }}</span>
+                    </div>
+
+                    <!-- Horizontal Scroll Table for Small Screens -->
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left border-collapse text-[15px]">
+                            <thead>
+                                <tr class="table-header border-b divider font-bold text-sm">
+                                    <th class="py-3 px-4">ID</th>
+                                    <th class="py-3 px-4 whitespace-nowrap">Họ và Tên</th>
+                                    <th class="py-3 px-4">Đời</th>
+                                    <th class="py-3 px-4 whitespace-nowrap">Vai vế / Chi</th>
+                                    <th class="py-3 px-4 text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divider">
+                                <tr 
+                                    v-for="(member, index) in paginatedMembers" 
+                                    :key="member.id"
+                                    :class="index % 2 === 0 ? 'table-row-even' : 'table-row-odd'"
+                                    class="hover:bg-black/5 transition-colors"
+                                >
+                                    <td class="py-3.5 px-4 font-mono text-xs text-muted">{{ member.id }}</td>
+                                    <td class="py-3.5 px-4 font-bold whitespace-nowrap text-body">
+                                        {{ member.name }}
+                                        <span v-if="member.isDead" class="text-xs font-normal text-muted ml-1">(Đã mất)</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 font-semibold text-center whitespace-nowrap">Đời {{ member.generation }}</td>
+                                    <td class="py-3.5 px-4 text-sm text-muted whitespace-nowrap">{{ member.relation }} / {{ member.branch }}</td>
+                                    <td class="py-3.5 px-4">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button 
+                                                @click="openEditModal(member)"
+                                                class="px-3.5 py-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white font-bold text-xs flex items-center gap-1 transition"
+                                            >
+                                                <i class="fas fa-pen"></i> Sửa
+                                            </button>
+                                            <button 
+                                                @click="confirmDelete(member)"
+                                                class="px-3.5 py-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white font-bold text-xs flex items-center gap-1 transition"
+                                            >
+                                                <i class="fas fa-trash-can"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-if="paginatedMembers.length === 0">
+                                    <td colspan="5" class="py-8 px-4 text-center text-muted italic">
+                                        Không tìm thấy thành viên dòng họ phù hợp.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Controls - LARGE AND ACCESSIBLE BUTTONS -->
+                    <div class="px-4 py-4 border-t divider flex items-center justify-between bg-black/5 select-none">
+                        <button 
+                            @click="prevPage" 
+                            :disabled="currentPage === 1"
+                            class="min-h-[48px] px-4 bg-black/10 hover:bg-black/20 text-body font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                            <i class="fas fa-chevron-left"></i>
+                            <span>Trước</span>
+                        </button>
+                        
+                        <div class="text-sm font-bold text-body">
+                            Trang {{ currentPage }} / {{ totalPages || 1 }}
+                        </div>
+
+                        <button 
+                            @click="nextPage" 
+                            :disabled="currentPage >= totalPages"
+                            class="min-h-[48px] px-4 bg-black/10 hover:bg-black/20 text-body font-bold rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-30 disabled:pointer-events-none"
+                        >
+                            <span>Sau</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB 3: ĐĂNG TIN & THU CHI ================= -->
+            <div v-if="activeTab === 'forms'" class="space-y-6">
+                
+                <!-- Form 1: Đăng Tin Tức Mới -->
+                <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-4">
+                    <h2 class="text-lg font-bold border-b divider pb-2.5 flex items-center gap-2 text-red-600 dark:text-red-500">
+                        <i class="fas fa-bullhorn"></i> Form 1: Đăng tin tức mới lên bảng tin
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-muted uppercase mb-1">Chọn loại tin tức:</label>
+                            <select v-model="newsForm.type" class="w-full p-3.5 input-bg rounded-xl font-medium border shadow-sm">
+                                <option value="tin-buon">Tin buồn (Hiếu)</option>
+                                <option value="tin-vui">Tin vui (Hỷ/Cưới hỏi)</option>
+                                <option value="vinh-danh">Vinh danh (Học tập/Công danh)</option>
+                                <option value="thong-bao">Thông báo chung của tộc</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-muted uppercase mb-1">Tiêu đề bài viết:</label>
+                            <input 
+                                type="text" 
+                                v-model="newsForm.title" 
+                                placeholder="Nhập tiêu đề ngắn gọn..." 
+                                class="w-full p-3.5 input-bg rounded-xl font-semibold border shadow-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-muted uppercase mb-1">Nội dung chi tiết bài đăng:</label>
+                        <textarea 
+                            v-model="newsForm.content" 
+                            rows="4" 
+                            placeholder="Nhập nội dung đầy đủ bài viết ở đây..." 
+                            class="w-full p-3.5 input-bg rounded-xl font-medium border shadow-sm"
+                        ></textarea>
+                    </div>
+
+                    <!-- Image Upload Simulator -->
+                    <div>
+                        <label class="block text-sm font-bold text-muted uppercase mb-1">Ảnh đại diện bài đăng:</label>
+                        <div class="border-2 border-dashed border-gray-500/30 hover:border-blue-500/50 rounded-xl p-6 text-center cursor-pointer transition-colors relative" @click="simulateImageUpload">
+                            <input type="file" ref="newsImageInput" class="hidden" accept="image/*" @change="onImageSelected">
+                            
+                            <div v-if="!newsForm.image" class="space-y-2">
+                                <i class="fas fa-cloud-arrow-up text-3xl text-blue-500"></i>
+                                <p class="font-bold text-sm text-body">Bấm để chọn ảnh từ Điện thoại / Máy tính</p>
+                                <p class="text-xs text-muted">Hỗ trợ JPG, PNG dung lượng dưới 5MB</p>
+                            </div>
+                            <div v-else class="flex flex-col items-center gap-2">
+                                <img :src="newsForm.image" class="w-24 h-24 object-cover rounded-lg border shadow-sm">
+                                <button @click.stop="newsForm.image = null" class="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-bold">
+                                    <i class="fas fa-trash-can mr-1"></i> Xóa ảnh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button 
+                        @click="submitNewsForm" 
+                        class="w-full min-h-[54px] bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition active:scale-[0.98]"
+                    >
+                        <i class="fas fa-paper-plane text-lg"></i>
+                        <span>ĐĂNG BÀI VIẾT NGAY</span>
+                    </button>
+                </div>
+
+                <!-- Form 2: Cập Nhật Thu Chi Quỹ Tộc -->
+                <div class="card-bg rounded-2xl p-5 border shadow-sm space-y-4">
+                    <h2 class="text-lg font-bold border-b divider pb-2.5 flex items-center gap-2 text-green-600 dark:text-green-500">
+                        <i class="fas fa-scale-balanced"></i> Form 2: Cập nhật sổ thu chi quỹ tộc
+                    </h2>
+
+                    <!-- Fund select -->
+                    <div>
+                        <label class="block text-sm font-bold text-muted uppercase mb-2">Chọn Quỹ:</label>
+                        <select v-model="fundForm.fundType" class="w-full p-3.5 input-bg rounded-xl font-medium border shadow-sm">
+                            <option value="chung">Quỹ chung đóng góp dòng tộc</option>
+                            <option value="khuyen-hoc">Quỹ khuyến học & phát triển tài năng trẻ</option>
+                        </select>
+                    </div>
+
+                    <!-- Transaction Type (Radio buttons - BIG CLICK TARGETS) -->
+                    <div>
+                        <label class="block text-sm font-bold text-muted uppercase mb-2">Loại Giao Dịch:</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="cursor-pointer">
+                                <input type="radio" v-model="fundForm.type" value="in" class="hidden peer">
+                                <div class="min-h-[54px] flex items-center justify-center gap-2 rounded-xl border border-gray-500/30 peer-checked:border-green-500 peer-checked:bg-green-500/10 peer-checked:text-green-600 dark:peer-checked:text-green-400 font-bold transition text-body">
+                                    <i class="fas fa-circle-plus text-lg"></i>
+                                    <span>Thu tiền vào (+)</span>
+                                </div>
+                            </label>
+                            
+                            <label class="cursor-pointer">
+                                <input type="radio" v-model="fundForm.type" value="out" class="hidden peer">
+                                <div class="min-h-[54px] flex items-center justify-center gap-2 rounded-xl border border-gray-500/30 peer-checked:border-red-500 peer-checked:bg-red-500/10 peer-checked:text-red-600 dark:peer-checked:text-red-400 font-bold transition text-body">
+                                    <i class="fas fa-circle-minus text-lg"></i>
+                                    <span>Chi tiền ra (-)</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Amount & Content -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-muted uppercase mb-1">Số tiền (VNĐ):</label>
+                            <input 
+                                type="number" 
+                                v-model="fundForm.amount" 
+                                placeholder="Ví dụ: 500000" 
+                                class="w-full p-3.5 input-bg rounded-xl font-bold border shadow-sm"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-muted uppercase mb-1">Lý do / Nội dung chi tiết:</label>
+                            <input 
+                                type="text" 
+                                v-model="fundForm.notes" 
+                                placeholder="Ví dụ: Anh Trần Văn B đóng quỹ 2026..." 
+                                class="w-full p-3.5 input-bg rounded-xl font-medium border shadow-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <button 
+                        @click="submitFundForm" 
+                        class="w-full min-h-[54px] bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition active:scale-[0.98]"
+                    >
+                        <i class="fas fa-floppy-disk text-lg"></i>
+                        <span>CẬP NHẬT QUỸ TỘC</span>
+                    </button>
+
+                    <!-- Summary Balance simulated widget -->
+                    <div class="bg-black/5 border border-gray-500/15 p-4 rounded-xl flex justify-between items-center text-sm font-bold">
+                        <div>
+                            <p class="text-xs text-muted uppercase">Số dư mô phỏng hiện tại:</p>
+                            <p class="text-base text-body font-extrabold mt-0.5">Quỹ Chung: {{ formatCurrency(simulatedBalances.chung) }}</p>
+                        </div>
+                        <div class="text-right border-l divider pl-4">
+                            <p class="text-xs text-muted uppercase">Quỹ Khuyến Học:</p>
+                            <p class="text-base text-body font-extrabold mt-0.5">{{ formatCurrency(simulatedBalances.khuyenHoc) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+
+        <!-- ================= MODALS & SLIDE-OVERS ================= -->
+
+        <!-- MODAL 1: THÊM THÀNH VIÊN MỚI (FORM TRỐNG LỚN) -->
+        <transition name="fade">
+            <div v-if="showAddModal" class="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto pt-safe pb-safe">
+                <transition name="scale" appear>
+                    <div class="card-bg w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border my-auto flex flex-col max-h-[90vh]">
+                        <div class="p-4 border-b divider flex justify-between items-center bg-black/5">
+                            <h3 class="font-extrabold text-lg flex items-center gap-2 text-blue-500">
+                                <i class="fas fa-user-plus text-xl"></i>
+                                Thêm thành viên mới vào cây
+                            </h3>
+                            <button @click="showAddModal = false" class="text-muted hover:text-body w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/10"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        
+                        <div class="p-5 space-y-4 overflow-y-auto no-scrollbar flex-1">
+                            <div>
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Họ và Tên thành viên (Bắt buộc)</label>
+                                <input type="text" v-model="newMember.name" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Đời thứ mấy (Số)</label>
+                                    <input type="number" v-model="newMember.generation" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Vai vế</label>
+                                    <input type="text" v-model="newMember.relation" placeholder="Ví dụ: Con trưởng, Chi 2..." class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Năm sinh</label>
+                                    <input type="text" v-model="newMember.dob" placeholder="1990" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Tên Chi/Nhánh</label>
+                                    <input type="text" v-model="newMember.branch" placeholder="Nhánh Trưởng" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Họ tên Cha (Nếu có)</label>
+                                    <select v-model="newMember.pid" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                        <option value="">Không rõ hoặc Thủy tổ</option>
+                                        <option v-for="m in mockMembers" :key="m.id" :value="m.id">{{ m.name }} (Đời {{ m.generation }})</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Họ tên Mẹ (Nếu có)</label>
+                                    <input type="text" v-model="newMember.motherName" placeholder="Tên mẹ..." class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center gap-3 cursor-pointer p-3 bg-black/5 rounded-xl border border-gray-500/10 select-none">
+                                    <input type="checkbox" v-model="newMember.isDead" class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500">
+                                    <span class="text-sm font-bold text-body">Thành viên này Đã Mất</span>
+                                </label>
+                            </div>
+
+                            <div v-if="newMember.isDead">
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Nơi an táng / Mộ phần</label>
+                                <input type="text" v-model="newMember.burial" placeholder="Nghĩa trang quê nhà, hàng mộ số 3..." class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="p-4 border-t divider flex space-x-3 bg-black/5 flex-shrink-0">
+                            <button @click="showAddModal = false" class="flex-1 min-h-[50px] rounded-xl font-bold text-muted bg-black/5 hover:bg-black/10 border transition">Hủy bỏ</button>
+                            <button @click="saveNewMember" class="flex-1 min-h-[50px] rounded-xl font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-md transition">Lưu thành viên</button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+        <!-- MODAL 2: SỬA NHANH THÔNG TIN THÀNH VIÊN -->
+        <transition name="fade">
+            <div v-if="editingMember" class="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto pt-safe pb-safe">
+                <transition name="scale" appear>
+                    <div class="card-bg w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border my-auto flex flex-col max-h-[90vh]">
+                        <div class="p-4 border-b divider flex justify-between items-center bg-black/5">
+                            <h3 class="font-extrabold text-lg flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
+                                <i class="fas fa-user-pen text-xl"></i>
+                                Sửa nhanh thông tin thành viên
+                            </h3>
+                            <button @click="editingMember = null" class="text-muted hover:text-body w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/10"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        
+                        <div class="p-5 space-y-4 overflow-y-auto no-scrollbar flex-1">
+                            <p class="text-sm font-bold text-yellow-600"><i class="fas fa-info-circle mr-1"></i> ID Thành viên: {{ editingMember.id }}</p>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Họ và Tên thành viên</label>
+                                <input type="text" v-model="editingMember.name" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Đời thứ mấy (Số)</label>
+                                    <input type="number" v-model="editingMember.generation" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Vai vế</label>
+                                    <input type="text" v-model="editingMember.relation" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Năm sinh</label>
+                                    <input type="text" v-model="editingMember.dob" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Tên Chi/Nhánh</label>
+                                    <input type="text" v-model="editingMember.branch" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Cha là ai</label>
+                                    <select v-model="editingMember.pid" class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                        <option value="">Không rõ hoặc Thủy tổ</option>
+                                        <option v-for="m in mockMembers" :key="m.id" :value="m.id" v-show="m.id !== editingMember.id">{{ m.name }} (Đời {{ m.generation }})</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Mẹ là ai (Họ tên)</label>
+                                    <input type="text" v-model="editingMember.motherName" placeholder="Tên mẹ..." class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center gap-3 cursor-pointer p-3 bg-black/5 rounded-xl border border-gray-500/10 select-none">
+                                    <input type="checkbox" v-model="editingMember.isDead" class="w-5 h-5 rounded text-yellow-600 focus:ring-yellow-500">
+                                    <span class="text-sm font-bold text-body">Thành viên này Đã Mất</span>
+                                </label>
+                            </div>
+
+                            <div v-if="editingMember.isDead">
+                                <label class="block text-xs font-bold text-muted uppercase tracking-wider mb-1">Nơi an táng / Mộ phần</label>
+                                <input type="text" v-model="editingMember.burial" placeholder="Địa chỉ an táng..." class="w-full input-bg rounded-xl px-3.5 py-3 font-semibold border shadow-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="p-4 border-t divider flex space-x-3 bg-black/5 flex-shrink-0">
+                            <button @click="editingMember = null" class="flex-1 min-h-[50px] rounded-xl font-bold text-muted bg-black/5 hover:bg-black/10 border transition">Hủy bỏ</button>
+                            <button @click="saveEditingMember" class="flex-1 min-h-[50px] rounded-xl font-extrabold text-white bg-yellow-600 hover:bg-yellow-700 shadow-md transition">Cập nhật ngay</button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+        <!-- MODAL 3: CẢNH BÁO XÁC NHẬN XÓA (CỰC KỲ RÕ RÀNG!) -->
+        <transition name="fade">
+            <div v-if="deletingMember" class="fixed inset-0 bg-black/90 z-[100] backdrop-blur-sm flex items-center justify-center p-4">
+                <transition name="scale" appear>
+                    <div class="card-bg w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-red-500/40">
+                        <div class="p-5 text-center space-y-4">
+                            <div class="mx-auto w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-triangle-exclamation text-3xl"></i>
+                            </div>
+                            <h3 class="font-extrabold text-xl text-red-600 dark:text-red-500">Cảnh báo nghiêm trọng!</h3>
+                            
+                            <p class="text-sm text-body leading-relaxed font-bold">
+                                Hành động này sẽ xóa vĩnh viễn thành viên <span class="underline text-red-500">{{ deletingMember.name }}</span> khỏi cây gia phả chính.
+                            </p>
+                            
+                            <p class="text-xs text-muted bg-red-500/5 p-3 rounded-lg border border-red-500/10 font-bold italic">
+                                Chú ý: Hành động này không thể hoàn tác. Mọi liên kết cha con của thành viên này cũng sẽ bị gián đoạn. Bạn có chắc chắn muốn tiếp tục không?
+                            </p>
+                        </div>
+                        <div class="p-4 border-t divider flex space-x-3 bg-black/5">
+                            <button @click="deletingMember = null" class="flex-1 py-3 rounded-xl font-bold text-sm text-muted bg-black/5 hover:bg-black/10 border transition-colors">Không, Hủy bỏ</button>
+                            <button @click="executeDelete" class="flex-1 py-3 rounded-xl font-extrabold text-sm text-white bg-red-600 hover:bg-red-700 shadow-md transition-colors">Tôi chắc chắn, Xóa!</button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+        <!-- TECHNICAL DEVELOPER GUIDE (SLIDE-OVER / MODAL) -->
+        <transition name="fade">
+            <div v-if="showTechGuide" class="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm flex items-center justify-center p-4">
+                <transition name="scale" appear>
+                    <div class="card-bg w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden border flex flex-col max-h-[85vh]">
+                        <div class="p-4 border-b divider flex justify-between items-center bg-blue-600 text-white">
+                            <h3 class="font-extrabold text-lg flex items-center gap-2">
+                                <i class="fas fa-code-merge"></i>
+                                Hướng dẫn tích hợp Google Sheet Web API
+                            </h3>
+                            <button @click="showTechGuide = false" class="text-white/80 hover:text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        
+                        <div class="p-5 space-y-4 overflow-y-auto font-sans text-sm text-body flex-1">
+                            <div class="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                                <p class="font-bold text-blue-600 dark:text-blue-400">Giải pháp ghi dữ liệu hai chiều (Read-Write Sync)</p>
+                                <p class="text-xs mt-1 text-muted">Do file CSV đã xuất bản ở chế độ Read-only, ta sử dụng một Google Apps Script làm Web API trung gian để tiếp nhận dữ liệu từ Frontend gửi lên rồi lưu lại vào Sheet.</p>
+                            </div>
+                            
+                            <h4 class="font-bold text-base border-b pb-1 text-body">Bước 1: Cài đặt Apps Script trên Google Sheets</h4>
+                            <ol class="list-decimal list-inside space-y-2 text-xs text-muted pl-1">
+                                <li>Mở file Google Sheet dữ liệu gia phả dòng họ.</li>
+                                <li>Vào thanh menu: <strong class="text-body">Tiện ích mở rộng (Extensions) > Apps Script</strong>.</li>
+                                <li>Xóa toàn bộ mã mặc định và dán đoạn mã Google Apps Script mẫu bên dưới vào.</li>
+                                <li>Bấm vào nút <strong class="text-body">Triển khai (Deploy) > Triển khai mới (New deployment)</strong>.</li>
+                                <li>Chọn loại cấu hình là <strong class="text-body">Ứng dụng Web (Web app)</strong>.</li>
+                                <li>Đặt quyền truy cập là <strong class="text-body">Bất kỳ ai (Anyone)</strong> (Để Frontend có thể fetch).</li>
+                                <li>Copy lại đường link URL Ứng dụng Web được cấp.</li>
+                            </ol>
+
+                            <h4 class="font-bold text-base border-b pb-1 text-body">Bước 2: Đoạn mã Google Apps Script mẫu</h4>
+                            <div class="relative">
+                                <pre class="bg-black/80 text-green-400 p-4 rounded-xl font-mono text-xs overflow-x-auto select-all max-h-[250px] border border-gray-600">
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet();
+  var membersSheet = sheet.getSheetByName("Members"); // Hoặc tên Tab chứa thành viên
+  var newsSheet = sheet.getSheetByName("News");
+  var fundsSheet = sheet.getSheetByName("Funds");
+  
+  var payload = JSON.parse(e.postData.contents);
+  var action = payload.action;
+  var data = payload.data;
+  
+  try {
+    if (action === "approve_request" || action === "add_member") {
+      // Tìm dòng trống cuối và chèn thành viên mới
+      membersSheet.appendRow([
+        data.id, 
+        data.name, 
+        data.generation, 
+        data.relation, 
+        data.dob, 
+        data.branch, 
+        data.pid, 
+        data.motherName, 
+        data.isDead ? "YES" : "NO", 
+        data.burial || ""
+      ]);
+    } else if (action === "update_member") {
+      // Tìm thành viên theo ID và cập nhật các cột tương ứng
+      var rows = membersSheet.getDataRange().getValues();
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i][0] === data.id) {
+          var rowNum = i + 1;
+          membersSheet.getRange(rowNum, 2).setValue(data.name);
+          membersSheet.getRange(rowNum, 3).setValue(data.generation);
+          membersSheet.getRange(rowNum, 4).setValue(data.relation);
+          membersSheet.getRange(rowNum, 5).setValue(data.dob);
+          membersSheet.getRange(rowNum, 6).setValue(data.branch);
+          membersSheet.getRange(rowNum, 7).setValue(data.pid);
+          membersSheet.getRange(rowNum, 8).setValue(data.motherName || "");
+          membersSheet.getRange(rowNum, 9).setValue(data.isDead ? "YES" : "NO");
+          membersSheet.getRange(rowNum, 10).setValue(data.burial || "");
+          break;
+        }
+      }
+    } else if (action === "delete_member") {
+      // Tìm thành viên theo ID và xóa dòng tương ứng
+      var rows = membersSheet.getDataRange().getValues();
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i][0] === data.id) {
+          membersSheet.deleteRow(i + 1);
+          break;
+        }
+      }
+    } else if (action === "add_news") {
+      newsSheet.appendRow([new Date(), data.type, data.title, data.content, data.image || ""]);
+    } else if (action === "update_fund") {
+      fundsSheet.appendRow([new Date(), data.fundType, data.type, data.amount, data.notes]);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ "status": 200, "message": "Success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({ "status": 500, "message": error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+                            </div>
+
+                            <h4 class="font-bold text-base border-b pb-1 text-body">Bước 3: Tải lại và xóa Cache (Reload Sync)</h4>
+                            <p class="text-xs text-muted leading-relaxed">
+                                Sau khi Frontend nhận được kết quả Status 200 từ Web App Apps Script, hàm Javascript trên Frontend lập tức gọi hàm xóa cache cục bộ (`localStorage.removeItem('trantoc_csv_data')`) và kích hoạt gọi lại bộ nạp dữ liệu để cập nhật bảng giao diện ngay lập tức cho Admin thấy kết quả tức thì.
+                            </p>
+                        </div>
+                        
+                        <div class="p-4 border-t divider bg-black/5 flex justify-end flex-shrink-0">
+                            <button @click="showTechGuide = false" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition">Đã Hiểu</button>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        const { createApp, ref, computed, onMounted, watch } = Vue;
+
+        createApp({
+            setup() {
+                // THEME SYSTEM
+                const theme = ref('dark'); // Default
+                const themeClass = computed(() => `theme-${theme.value}`);
+
+                // SYSTEM NAVIGATION TAB
+                const activeTab = ref('tree'); // Prioritize Tree Management first as requested by USER
+
+                // SEARCH & PAGINATION
+                const searchQuery = ref('');
+                const filterGeneration = ref('');
+                const filterBranch = ref('');
+                const currentPage = ref(1);
+                const itemsPerPage = 8; // Small count per page to easily demo pagination on mobiles
+
+                // DIACRITIC REMOVER HELPERS (CRITICAL for Vietnamese Search!)
+                const removeDiacritics = (str) => {
+                    if (!str) return '';
+                    return str.normalize("NFD")
+                              .replace(/[\u0300-\u036f]/g, "")
+                              .replace(/đ/g, "d")
+                              .replace(/Đ/g, "D");
+                };
+
+                // MOCK LIST MEMBERS (Tree flat list representation)
+                const mockMembers = ref([
+                    { id: 'T_001', name: 'Trần Cụ Tổ', generation: 1, relation: 'Thủy Tổ', branch: 'Ngành Cả', dob: '1850', pid: '', motherName: 'Lê Thị A', isDead: true, burial: 'Khu lăng mộ tổ Trần Tộc Nghĩa Trang Quê Hương' },
+                    { id: 'T_002', name: 'Trần Khai Nguyên', generation: 2, relation: 'Con Trưởng', branch: 'Ngành Cả', dob: '1875', pid: 'T_001', motherName: 'Lê Thị A', isDead: true, burial: 'Mộ cổ họ Trần tại đồi Sơn Trang' },
+                    { id: 'T_003', name: 'Trần Văn Long', generation: 3, relation: 'Cháu Đích Tôn', branch: 'Ngành Cả', dob: '1900', pid: 'T_002', motherName: 'Nguyễn Thị B', isDead: true, burial: 'Khu lăng mộ tổ Trần Tộc Nghĩa Trang Quê Hương' },
+                    { id: 'T_004', name: 'Trần Hữu Đại', generation: 4, relation: 'Con Thứ', branch: 'Nhánh Hai', dob: '1930', pid: 'T_003', motherName: 'Phạm Thị C', isDead: true, burial: 'Nghĩa trang huyện Hòa Vang' },
+                    { id: 'T_005', name: 'Trần Văn Thịnh', generation: 5, relation: 'Con Trưởng', branch: 'Ngành Cả', dob: '1960', pid: 'T_003', motherName: 'Phạm Thị C', isDead: false, burial: '' },
+                    { id: 'T_006', name: 'Trần Thị Thu', generation: 6, relation: 'Con Út', branch: 'Ngành Cả', dob: '1985', pid: 'T_005', motherName: 'Hoàng Thị D', isDead: false, burial: '' },
+                    { id: 'T_007', name: 'Trần Văn Minh', generation: 6, relation: 'Con Trưởng', branch: 'Ngành Cả', dob: '1990', pid: 'T_005', motherName: 'Hoàng Thị D', isDead: false, burial: '' },
+                    { id: 'T_008', name: 'Trần Đức Hạnh', generation: 5, relation: 'Con Thứ', branch: 'Nhánh Hai', dob: '1965', pid: 'T_004', motherName: 'Lâm Thị E', isDead: false, burial: '' },
+                    { id: 'T_009', name: 'Trần Thị Mai', generation: 6, relation: 'Con Thứ', branch: 'Nhánh Hai', dob: '1992', pid: 'T_008', motherName: 'Bùi Thị F', isDead: false, burial: '' },
+                    { id: 'T_010', name: 'Trần Văn Sơn', generation: 6, relation: 'Con Trưởng', branch: 'Nhánh Hai', dob: '1995', pid: 'T_008', motherName: 'Bùi Thị F', isDead: false, burial: '' },
+                    { id: 'T_011', name: 'Trần Thị Ngọc', generation: 7, relation: 'Cháu Ngoại', branch: 'Nhánh Hai', dob: '2020', pid: 'T_010', motherName: 'Lê Thị G', isDead: false, burial: '' }
+                ]);
+
+                // MOCK PENDING REQUESTS (Side by side comparison data)
+                const requests = ref([
+                    {
+                        id: 'req_001',
+                        sender: 'Trần Văn Minh',
+                        senderBranch: 'Đời thứ 6 - Ngành Cả',
+                        type: 'edit',
+                        oldData: {
+                            id: 'T_007',
+                            name: 'Trần Văn Minh',
+                            generation: 6,
+                            relation: 'Con Trưởng',
+                            branch: 'Ngành Cả',
+                            dob: '1992', // Wrong DOB on tree
+                            isDead: false,
+                            burial: ''
+                        },
+                        newData: {
+                            id: 'T_007',
+                            name: 'Trần Văn Minh',
+                            generation: 6,
+                            relation: 'Con Trưởng',
+                            branch: 'Ngành Cả',
+                            dob: '1990', // Corrected to 1990
+                            isDead: false,
+                            burial: ''
+                        }
+                    },
+                    {
+                        id: 'req_002',
+                        sender: 'Trần Văn Sơn',
+                        senderBranch: 'Đời thứ 6 - Nhánh Hai',
+                        type: 'add',
+                        newData: {
+                            name: 'Trần Đức Bình',
+                            generation: 7,
+                            relation: 'Con Út',
+                            branch: 'Nhánh Hai',
+                            dob: '2025',
+                            parentName: 'Trần Văn Sơn (Đời 6)',
+                            pid: 'T_010',
+                            motherName: 'Lê Thị G',
+                            isDead: false,
+                            notes: 'Em bé mới sinh vào dòng họ'
+                        }
+                    }
+                ]);
+
+                // SELECTABLE FILTERS
+                const generationList = computed(() => {
+                    const gens = mockMembers.value.map(m => m.generation);
+                    return [...new Set(gens)].sort((a,b) => a-b);
+                });
+
+                const branchList = computed(() => {
+                    const branches = mockMembers.value.map(m => m.branch);
+                    return [...new Set(branches)].filter(Boolean);
+                });
+
+                // SEARCH & FILTER LOGIC
+                const filteredMembers = computed(() => {
+                    let result = mockMembers.value;
+
+                    // 1. Search Query (Accent-insensitive, Case-insensitive)
+                    if (searchQuery.value.trim()) {
+                        const normalizedSearch = removeDiacritics(searchQuery.value.toLowerCase());
+                        result = result.filter(m => {
+                            const nameWithDiacritics = m.name.toLowerCase();
+                            const nameWithoutDiacritics = removeDiacritics(nameWithDiacritics);
+                            return nameWithDiacritics.includes(normalizedSearch) || 
+                                   nameWithoutDiacritics.includes(normalizedSearch);
+                        });
+                    }
+
+                    // 2. Generation Filter
+                    if (filterGeneration.value) {
+                        result = result.filter(m => m.generation === parseInt(filterGeneration.value));
+                    }
+
+                    // 3. Branch Filter
+                    if (filterBranch.value) {
+                        result = result.filter(m => m.branch === filterBranch.value);
+                    }
+
+                    return result;
+                });
+
+                // PAGINATION LOGIC
+                const totalPages = computed(() => {
+                    return Math.ceil(filteredMembers.value.length / itemsPerPage);
+                });
+
+                const paginatedMembers = computed(() => {
+                    const start = (currentPage.value - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    return filteredMembers.value.slice(start, end);
+                });
+
+                // Reset page on search or filter change
+                watch([searchQuery, filterGeneration, filterBranch], () => {
+                    currentPage.value = 1;
+                });
+
+                const nextPage = () => {
+                    if (currentPage.value < totalPages.value) {
+                        currentPage.value++;
+                    }
+                };
+
+                const prevPage = () => {
+                    if (currentPage.value > 1) {
+                        currentPage.value--;
+                    }
+                };
+
+                // MODAL FORMS STATE
+                const showAddModal = ref(false);
+                const showTechGuide = ref(false);
+                
+                const newMember = ref({
+                    name: '',
+                    generation: '',
+                    relation: '',
+                    branch: '',
+                    dob: '',
+                    pid: '',
+                    motherName: '',
+                    isDead: false,
+                    burial: ''
+                });
+
+                const openAddModal = () => {
+                    newMember.value = {
+                        name: '',
+                        generation: mockMembers.value.length > 0 ? Math.max(...mockMembers.value.map(m => m.generation)) : 1,
+                        relation: '',
+                        branch: 'Ngành Cả',
+                        dob: '',
+                        pid: '',
+                        motherName: '',
+                        isDead: false,
+                        burial: ''
+                    };
+                    showAddModal.value = true;
+                };
+
+                const saveNewMember = () => {
+                    if (!newMember.value.name.trim()) {
+                        alert('Vui lòng nhập Họ và Tên thành viên!');
+                        return;
+                    }
+                    if (!newMember.value.generation) {
+                        alert('Vui lòng nhập Đời thứ mấy!');
+                        return;
+                    }
+
+                    const generatedId = `T_0${mockMembers.value.length + 1}`;
+                    const createdMember = {
+                        id: generatedId,
+                        name: newMember.value.name,
+                        generation: parseInt(newMember.value.generation),
+                        relation: newMember.value.relation || 'Thành viên',
+                        branch: newMember.value.branch || 'Chưa phân chi',
+                        dob: newMember.value.dob || 'Chưa rõ',
+                        pid: newMember.value.pid || '',
+                        motherName: newMember.value.motherName || '',
+                        isDead: newMember.value.isDead,
+                        burial: newMember.value.isDead ? newMember.value.burial : ''
+                    };
+
+                    mockMembers.value.push(createdMember);
+                    alert(`Đã thêm thành viên "${createdMember.name}" thành công! Dữ liệu đã lưu tạm vào bộ nhớ.`);
+                    showAddModal.value = false;
+                };
+
+                // EDIT MODAL STATE
+                const editingMember = ref(null);
+
+                const openEditModal = (member) => {
+                    // Deep copy to prevent modifying in-place before saving
+                    editingMember.value = JSON.parse(JSON.stringify(member));
+                };
+
+                const saveEditingMember = () => {
+                    if (!editingMember.value.name.trim()) {
+                        alert('Tên thành viên không được để trống!');
+                        return;
+                    }
+
+                    const index = mockMembers.value.findIndex(m => m.id === editingMember.value.id);
+                    if (index !== -1) {
+                        mockMembers.value[index] = { ...editingMember.value };
+                        alert(`Đã cập nhật thông tin thành viên "${editingMember.value.name}" thành công!`);
+                        editingMember.value = null;
+                    }
+                };
+
+                // DELETE CONFIRMATION STATE
+                const deletingMember = ref(null);
+
+                const confirmDelete = (member) => {
+                    deletingMember.value = member;
+                };
+
+                const executeDelete = () => {
+                    if (deletingMember.value) {
+                        const index = mockMembers.value.findIndex(m => m.id === deletingMember.value.id);
+                        if (index !== -1) {
+                            const name = deletingMember.value.name;
+                            mockMembers.value.splice(index, 1);
+                            alert(`Đã xóa thành công thành viên "${name}" khỏi cây gia phả.`);
+                            deletingMember.value = null;
+                            // Recalculate pagination if page is empty
+                            if (paginatedMembers.value.length === 0 && currentPage.value > 1) {
+                                currentPage.value--;
+                            }
+                        }
+                    }
+                };
+
+                // TAB 1 ACTIONS (APPROVE / REJECT)
+                const approveRequest = (req) => {
+                    if (req.type === 'edit') {
+                        // Sửa thành viên hiện tại
+                        const index = mockMembers.value.findIndex(m => m.id === req.newData.id);
+                        if (index !== -1) {
+                            mockMembers.value[index] = { ...req.newData };
+                        }
+                    } else if (req.type === 'add') {
+                        // Thêm thành viên mới
+                        const generatedId = `T_0${mockMembers.value.length + 1}`;
+                        const createdMember = {
+                            id: generatedId,
+                            name: req.newData.name,
+                            generation: parseInt(req.newData.generation),
+                            relation: req.newData.relation || 'Thành viên',
+                            branch: req.newData.branch || 'Chưa phân chi',
+                            dob: req.newData.dob || 'Chưa rõ',
+                            pid: req.newData.pid || '',
+                            motherName: req.newData.motherName || '',
+                            isDead: req.newData.isDead,
+                            burial: req.newData.burial || ''
+                        };
+                        mockMembers.value.push(createdMember);
+                    }
+
+                    // Remove from request list
+                    requests.value = requests.value.filter(r => r.id !== req.id);
+                    alert(`Phê duyệt thành công đề xuất từ con cháu! Thông tin đã được cập nhật trực tiếp vào hệ thống gia phả Trần Tộc.`);
+                };
+
+                const rejectRequest = (req) => {
+                    requests.value = requests.value.filter(r => r.id !== req.id);
+                    alert(`Đã từ chối và hủy bỏ đề xuất. Cây gia phả không có thay đổi nào.`);
+                };
+
+                // TAB 3: FORMS STATE
+                const newsForm = ref({
+                    type: 'thong-bao',
+                    title: '',
+                    content: '',
+                    image: null
+                });
+
+                const newsImageInput = ref(null);
+
+                const simulateImageUpload = () => {
+                    newsImageInput.value.click();
+                };
+
+                const onImageSelected = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            newsForm.value.image = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+
+                const submitNewsForm = () => {
+                    if (!newsForm.value.title.trim()) {
+                        alert('Vui lòng nhập Tiêu đề bài viết!');
+                        return;
+                    }
+                    if (!newsForm.value.content.trim()) {
+                        alert('Vui lòng nhập Nội dung bài viết!');
+                        return;
+                    }
+
+                    alert(`Đã đăng bài viết thành công lên bảng tin dòng họ Trần Tộc!\nTiêu đề: ${newsForm.value.title}\nPhân loại: ${newsForm.value.type}`);
+                    
+                    // Reset Form
+                    newsForm.value = {
+                        type: 'thong-bao',
+                        title: '',
+                        content: '',
+                        image: null
+                    };
+                };
+
+                // Fund Balance Widget Sim
+                const simulatedBalances = ref({
+                    chung: 58500000,
+                    khuyenHoc: 24200000
+                });
+
+                const fundForm = ref({
+                    fundType: 'chung',
+                    type: 'in',
+                    amount: '',
+                    notes: ''
+                });
+
+                const submitFundForm = () => {
+                    if (!fundForm.value.amount || fundForm.value.amount <= 0) {
+                        alert('Vui lòng nhập số tiền hợp lệ (> 0)!');
+                        return;
+                    }
+                    if (!fundForm.value.notes.trim()) {
+                        alert('Vui lòng nhập Nội dung/Lý do thu chi để công khai minh bạch!');
+                        return;
+                    }
+
+                    const val = parseInt(fundForm.value.amount);
+                    if (fundForm.value.fundType === 'chung') {
+                        if (fundForm.value.type === 'in') {
+                            simulatedBalances.value.chung += val;
+                        } else {
+                            simulatedBalances.value.chung -= val;
+                        }
+                    } else {
+                        if (fundForm.value.type === 'in') {
+                            simulatedBalances.value.khuyenHoc += val;
+                        } else {
+                            simulatedBalances.value.khuyenHoc -= val;
+                        }
+                    }
+
+                    alert(`Cập nhật Quỹ Dòng Họ thành công!\nSố tiền: ${fundForm.value.type === 'in' ? '+' : '-'}${formatCurrency(val)}\nNội dung: ${fundForm.value.notes}`);
+                    
+                    // Reset Form
+                    fundForm.value.amount = '';
+                    fundForm.value.notes = '';
+                };
+
+                const formatCurrency = (val) => {
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+                };
+
+                onMounted(() => {
+                    // Sync theme configuration from ca-nhan.html
+                    const savedTheme = localStorage.getItem('trantoc_theme');
+                    if (savedTheme) {
+                        theme.value = savedTheme;
+                    }
+
+                    // Auto-listen to global theme change events
+                    window.addEventListener('theme_changed', () => {
+                        const newTheme = localStorage.getItem('trantoc_theme');
+                        if (newTheme) theme.value = newTheme;
+                    });
+                });
+
+                return {
+                    theme, themeClass,
+                    activeTab,
+                    searchQuery, filterGeneration, filterBranch,
+                    generationList, branchList,
+                    filteredMembers, paginatedMembers, currentPage, totalPages, nextPage, prevPage,
+                    showAddModal, openAddModal, newMember, saveNewMember, mockMembers,
+                    editingMember, openEditModal, saveEditingMember,
+                    deletingMember, confirmDelete, executeDelete,
+                    requests, approveRequest, rejectRequest,
+                    newsForm, newsImageInput, simulateImageUpload, onImageSelected, submitNewsForm,
+                    fundForm, submitFundForm, simulatedBalances, formatCurrency,
+                    showTechGuide
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
