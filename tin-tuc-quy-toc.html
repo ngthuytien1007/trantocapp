@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tin Tức & Quỹ Tộc - Trần Tộc</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .tab-active { border-bottom: 3px solid #d4af37; color: #b48600; font-weight: 600; }
+        .tab-inactive { color: #6b7280; font-weight: 500; }
+        
+        /* Hide scrollbar for smooth UI */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Safe area for mobile notch */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+
+        /* Bottom Sheet Animation */
+        .slide-up-enter-active, .slide-up-leave-active { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="h-screen flex flex-col overflow-hidden bg-gray-50 pt-safe">
+        <!-- Top App Bar -->
+        <header class="bg-white shadow-sm z-10 flex-shrink-0 relative">
+            <div class="flex items-center justify-between px-4 py-3">
+                <a href="index.html" class="text-gray-600 p-2 hover:bg-gray-100 rounded-full transition"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-lg font-bold text-gray-800 font-serif">Tin Tức & Quỹ Tộc</h1>
+                <div class="w-8"></div> <!-- Spacer for flex centering -->
+            </div>
+            
+            <!-- Top Tabs -->
+            <div class="flex border-b border-gray-200 bg-white">
+                <button @click="changeTab('tintuc')" :class="currentTab === 'tintuc' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
+                    <i class="fas fa-newspaper mr-1"></i> Bảng Tin
+                </button>
+                <button @click="changeTab('quytoc')" :class="currentTab === 'quytoc' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
+                    <i class="fas fa-piggy-bank mr-1"></i> Quỹ Tộc
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area with Touch Gestures -->
+        <main class="flex-1 relative overflow-hidden" 
+              @touchstart="handleTouchStart" 
+              @touchend="handleTouchEnd">
+            
+            <!-- TAB 1: BẢNG TIN -->
+            <div v-show="currentTab === 'tintuc'" class="h-full overflow-y-auto no-scrollbar pb-24 bg-gray-100">
+                <div class="space-y-4 p-3">
+                    <div v-for="post in posts" :key="post.id" class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                        <!-- Post Header -->
+                        <div class="p-4 pb-2 flex justify-between items-start">
+                            <div>
+                                <span :class="getTagColor(post.loai_tin)" class="px-2.5 py-1 text-xs font-bold rounded-md mb-2 inline-block">
+                                    {{ post.loai_tin }}
+                                </span>
+                                <h2 class="text-[17px] font-bold text-gray-800 leading-tight">{{ post.tieu_de }}</h2>
+                                <p class="text-xs text-gray-500 mt-1"><i class="far fa-clock mr-1"></i> {{ post.ngay_dang }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Post Content -->
+                        <div class="px-4 py-2">
+                            <p :class="{'line-clamp-3': !post.expanded}" class="text-[15px] text-gray-700 leading-relaxed whitespace-pre-line">{{ post.noi_dung }}</p>
+                            <button v-if="post.noi_dung.length > 150" @click="post.expanded = !post.expanded" class="text-blue-600 text-sm font-medium mt-1">
+                                {{ post.expanded ? 'Thu gọn' : 'Xem thêm' }}
+                            </button>
+                        </div>
+                        
+                        <!-- Post Image (if any) -->
+                        <div v-if="post.link_anh" class="w-full mt-2">
+                            <img :src="post.link_anh" alt="Cover" class="w-full h-48 object-cover">
+                        </div>
+                        
+                        <!-- Interaction Bar -->
+                        <div class="px-4 py-3 border-t border-gray-100 flex justify-between items-center bg-gray-50">
+                            <div class="flex space-x-6">
+                                <button @click="toggleLike(post)" class="flex items-center space-x-1.5 transition-colors" :class="post.isLiked ? 'text-red-500' : 'text-gray-500'">
+                                    <i :class="post.isLiked ? 'fas fa-heart text-xl' : 'far fa-heart text-xl'"></i>
+                                    <span class="font-medium text-sm">{{ post.likes }}</span>
+                                </button>
+                                <button @click="openComments(post)" class="flex items-center space-x-1.5 text-gray-500 hover:text-blue-600 transition-colors">
+                                    <i class="far fa-comment text-xl"></i>
+                                    <span class="font-medium text-sm">Bình luận</span>
+                                </button>
+                            </div>
+                            <button class="text-gray-400 hover:text-gray-600"><i class="fas fa-share-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: QUỸ TỘC -->
+            <div v-show="currentTab === 'quytoc'" class="h-full overflow-y-auto no-scrollbar pb-24 bg-gray-50">
+                <!-- Dashboard Tóm tắt số dư -->
+                <div class="p-4 bg-gradient-to-b from-yellow-700 to-yellow-600 text-white rounded-b-3xl shadow-md">
+                    <h2 class="text-sm opacity-80 mb-4 text-center">TỔNG QUAN TÀI CHÍNH DÒNG HỌ</h2>
+                    
+                    <!-- Ngang vuốt cho nhiều quỹ (Xếp ngang - Horizontal Scroll) -->
+                    <div class="flex overflow-x-auto space-x-4 no-scrollbar pb-2">
+                        <div v-for="fund in funds" :key="fund.id" class="min-w-[240px] bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/30 flex-1">
+                            <h3 class="text-xs font-bold tracking-wider mb-1 uppercase">{{ fund.ten_quy }}</h3>
+                            <p class="text-2xl font-bold text-yellow-100 font-mono tracking-tight">{{ formatCurrency(fund.so_du_hien_tai) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lịch sử giao dịch -->
+                <div class="p-4 mt-2">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg">Lịch sử giao dịch</h3>
+                        <div class="text-xs bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">
+                            <i class="fas fa-filter text-gray-400 mr-1"></i> Tất cả
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div v-for="(tx, index) in transactions" :key="tx.id" 
+                             class="flex justify-between items-center p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                             :class="{'border-b-0': index === transactions.length - 1}">
+                            
+                            <!-- Left: Icon & Info -->
+                            <div class="flex items-center flex-1 pr-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0"
+                                     :class="tx.loai_giao_dich === 'THU' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'">
+                                    <i class="fas" :class="tx.loai_giao_dich === 'THU' ? 'fa-arrow-down' : 'fa-arrow-up'"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <p class="font-bold text-[15px] text-gray-800 truncate">{{ tx.noi_dung_giao_dich }}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        {{ tx.ngay_giao_dich }} • <span class="text-gray-400">{{ tx.ten_quy }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Amount -->
+                            <div class="text-right flex-shrink-0 font-mono">
+                                <p class="font-bold text-[16px]" :class="tx.loai_giao_dich === 'THU' ? 'text-green-600' : 'text-red-500'">
+                                    {{ tx.loai_giao_dich === 'THU' ? '+' : '-' }} {{ formatCurrency(tx.so_tien) }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation Bar (App-wide) -->
+        <nav class="bg-white border-t border-gray-200 flex-shrink-0 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.02)] relative z-0">
+            <div class="flex justify-around items-center h-[68px]">
+                <a href="index.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Trang chủ</span>
+                </a>
+                <a href="gia-pha.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
+                    <i class="fas fa-sitemap text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Cây Gia Phả</span>
+                </a>
+                <a href="su-kien-tam-linh.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
+                    <i class="fas fa-om text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Tâm Linh</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-yellow-600">
+                    <i class="fas fa-newspaper text-2xl mb-1 drop-shadow-sm"></i>
+                    <span class="text-[10px] font-bold">Cộng đồng</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- BOTTOM SHEET CHO BÌNH LUẬN -->
+        <transition name="fade">
+            <div v-if="showCommentSheet" @click="closeComments" class="fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm"></div>
+        </transition>
+        <transition name="slide-up">
+            <div v-if="showCommentSheet" class="fixed bottom-0 left-0 right-0 bg-white z-[100] rounded-t-3xl shadow-2xl flex flex-col" style="max-height: 85vh; height: 600px;">
+                <!-- Drag Handle -->
+                <div class="flex justify-center pt-3 pb-2" @click="closeComments">
+                    <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+                </div>
+                
+                <!-- Sheet Header -->
+                <div class="px-5 pb-3 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
+                    <h3 class="font-bold text-lg text-gray-800">Bình luận ({{ activePost?.comments || 0 }})</h3>
+                    <button @click="closeComments" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Comments List -->
+                <div class="flex-1 overflow-y-auto p-5 no-scrollbar bg-gray-50">
+                    <div class="text-center text-gray-400 text-sm py-10" v-if="!activePost?.comments">
+                        <i class="far fa-comments text-4xl mb-3 opacity-50"></i>
+                        <p>Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+                    </div>
+                    <!-- Giả lập UI bình luận -->
+                    <div v-else class="space-y-4">
+                        <div class="flex space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold flex-shrink-0 text-xs">A</div>
+                            <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100">
+                                <p class="font-bold text-sm text-gray-800">Trần Văn A</p>
+                                <p class="text-[14px] text-gray-600 mt-1">Quá tuyệt vời! Chúc mừng dòng họ.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Input Box (Optimized for safe-area-inset-bottom) -->
+                <div class="p-3 bg-white border-t border-gray-200 pb-safe flex-shrink-0 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+                    <div class="flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 border border-gray-200 focus-within:border-yellow-400 focus-within:bg-white transition-colors">
+                        <input type="text" placeholder="Viết lời nhắn..." class="flex-1 bg-transparent border-none focus:outline-none text-[15px] py-2">
+                        <button class="text-yellow-600 w-10 h-10 flex items-center justify-center flex-shrink-0 hover:text-yellow-700">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                // TAB STATE
+                const tabs = ['tintuc', 'quytoc'];
+                const currentTab = ref('quytoc'); // Ưu tiên hiển thị Quỹ Tộc trước theo yêu cầu
+                
+                // SWIPE GESTURE LOGIC
+                let touchStartX = 0;
+                let touchEndX = 0;
+                
+                const handleTouchStart = (e) => { touchStartX = e.changedTouches[0].screenX; };
+                const handleTouchEnd = (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                };
+                
+                const handleSwipe = () => {
+                    const SWIPE_THRESHOLD = 50;
+                    if (touchEndX < touchStartX - SWIPE_THRESHOLD) {
+                        const currentIndex = tabs.indexOf(currentTab.value);
+                        if (currentIndex < tabs.length - 1) changeTab(tabs[currentIndex + 1]);
+                    }
+                    if (touchEndX > touchStartX + SWIPE_THRESHOLD) {
+                        const currentIndex = tabs.indexOf(currentTab.value);
+                        if (currentIndex > 0) changeTab(tabs[currentIndex - 1]);
+                    }
+                };
+
+                const changeTab = (tab) => { currentTab.value = tab; };
+                
+                // DATA: BẢNG TIN
+                const posts = ref([
+                    { id: 1, loai_tin: 'Vinh Danh / Khuyến Học', tieu_de: 'Cháu Trần Hương Lan thi đỗ Đại học Bách Khoa', noi_dung: 'Tin vui từ nhánh họ ở Đà Nẵng, cháu Hương Lan đã xuất sắc đạt 28 điểm khối A. Ban khuyến học dòng họ sẽ tổ chức trao phần thưởng khích lệ cháu vào dịp Tảo mộ đầu năm sắp tới. Chúc cháu luôn giữ vững tinh thần hiếu học của gia tộc.', link_anh: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60', ngay_dang: 'Hôm nay, 08:30', likes: 12, comments: 5, expanded: false },
+                    { id: 2, loai_tin: 'Tin Buồn', tieu_de: 'Kính báo tin buồn cụ Tổ Khảo đời 4', noi_dung: 'Ban liên lạc dòng họ vô cùng thương tiếc báo tin. Cụ Trần Văn Đ, nguyên trưởng chi 2 đã từ trần do tuổi cao sức yếu. Lễ viếng sẽ diễn ra vào lúc 9h sáng mai tại nhà thờ chi tộc.', link_anh: '', ngay_dang: 'Hôm qua, 15:20', likes: 2, comments: 10, expanded: false },
+                    { id: 3, loai_tin: 'Thông Báo Chung', tieu_de: 'Kêu gọi đóng góp tu bổ lại cổng Từ đường', noi_dung: 'Kính thưa các cụ, các ông bà và toàn thể anh em nội ngoại. Hiện tại phần cổng nhà thờ tộc đã có dấu hiệu xuống cấp. Ban quản trị kêu gọi tấm lòng hảo tâm đóng góp của mọi người. Chi tiết dự toán và danh sách đóng góp sẽ được cập nhật liên tục tại Tab Quỹ Tộc.', link_anh: '', ngay_dang: '12/04/2026', likes: 45, comments: 0, expanded: false },
+                    { id: 4, loai_tin: 'Tin Vui / Hỷ Sự', tieu_de: 'Mừng đám cưới cháu Tuấn (Chi 3)', noi_dung: 'Chúc hai cháu Tuấn - Ngọc trăm năm hạnh phúc.', link_anh: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&auto=format&fit=crop&q=60', ngay_dang: '10/04/2026', likes: 30, comments: 2, expanded: false }
+                ]);
+
+                const getTagColor = (loai) => {
+                    if (loai === 'Tin Buồn') return 'bg-gray-200 text-gray-700';
+                    if (loai.includes('Tin Vui') || loai.includes('Hỷ Sự')) return 'bg-pink-100 text-pink-700';
+                    if (loai.includes('Vinh Danh')) return 'bg-blue-100 text-blue-700';
+                    if (loai === 'Thông Báo Chung') return 'bg-green-100 text-green-700';
+                    return 'bg-gray-100 text-gray-600';
+                };
+
+                const toggleLike = (post) => {
+                    post.isLiked = !post.isLiked;
+                    post.likes += post.isLiked ? 1 : -1;
+                    // Thực tế sẽ lưu state này xuống LocalStorage theo post.id
+                };
+
+                // BOTTOM SHEET LOGIC
+                const showCommentSheet = ref(false);
+                const activePost = ref(null);
+
+                const openComments = (post) => {
+                    activePost.value = post;
+                    showCommentSheet.value = true;
+                    document.body.style.overflow = 'hidden'; // Ngăn scroll nền
+                };
+
+                const closeComments = () => {
+                    showCommentSheet.value = false;
+                    setTimeout(() => { activePost.value = null; document.body.style.overflow = ''; }, 300);
+                };
+
+                // DATA: QUỸ TỘC
+                const funds = ref([
+                    { id: 1, ten_quy: "QUỸ CHUNG ĐÓNG GÓP", so_du_hien_tai: 45500000 },
+                    { id: 2, ten_quy: "QUỸ KHUYẾN HỌC", so_du_hien_tai: 12350000 },
+                    { id: 3, ten_quy: "QUỸ TU BỔ TỪ ĐƯỜNG", so_du_hien_tai: 5000000 }
+                ]);
+
+                const transactions = ref([
+                    { id: 101, ten_quy: 'QUỸ CHUNG ĐÓNG GÓP', noi_dung_giao_dich: 'Anh Tuấn (Chi 2) đóng góp quỹ họ', loai_giao_dich: 'THU', so_tien: 2000000, ngay_giao_dich: '20/05/2026' },
+                    { id: 102, ten_quy: 'QUỸ CHUNG ĐÓNG GÓP', noi_dung_giao_dich: 'Mua sắm nhang đèn, trái cây Rằm tháng 4', loai_giao_dich: 'CHI', so_tien: 500000, ngay_giao_dich: '15/05/2026' },
+                    { id: 103, ten_quy: 'QUỸ KHUYẾN HỌC', noi_dung_giao_dich: 'Bác Hùng tài trợ quỹ học bổng năm 2026', loai_giao_dich: 'THU', so_tien: 5000000, ngay_giao_dich: '10/05/2026' },
+                    { id: 104, ten_quy: 'QUỸ KHUYẾN HỌC', noi_dung_giao_dich: 'Phát thưởng các cháu đạt HSG học kỳ 1', loai_giao_dich: 'CHI', so_tien: 3500000, ngay_giao_dich: '05/05/2026' },
+                    { id: 105, ten_quy: 'QUỸ CHUNG ĐÓNG GÓP', noi_dung_giao_dich: 'Thu quỹ đinh định kỳ năm 2026', loai_giao_dich: 'THU', so_tien: 12000000, ngay_giao_dich: '01/05/2026' },
+                    { id: 106, ten_quy: 'QUỸ TU BỔ TỪ ĐƯỜNG', noi_dung_giao_dich: 'Sơn lại cánh cửa chính từ đường', loai_giao_dich: 'CHI', so_tien: 1800000, ngay_giao_dich: '20/04/2026' },
+                ]);
+
+                const formatCurrency = (value) => {
+                    // Định dạng tiền tệ có dấu chấm phân cách theo yêu cầu
+                    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                        .format(value)
+                        .replace('₫', 'đ'); // Chuyển ký hiệu ₫ mặc định thành chữ đ
+                };
+
+                onMounted(() => {
+                    // Logic lấy data từ LocalStorage hoặc fetch CSV sẽ để ở đây
+                });
+
+                return {
+                    currentTab, changeTab, handleTouchStart, handleTouchEnd,
+                    posts, getTagColor, toggleLike, 
+                    showCommentSheet, openComments, closeComments, activePost,
+                    funds, transactions, formatCurrency
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

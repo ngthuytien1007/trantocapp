@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sự Kiện & Tâm Linh - Trần Tộc</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet for Maps (Open Source, no API Key needed) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; background-color: #f9fafb; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .tab-active { border-bottom: 3px solid #d4af37; color: #b48600; font-weight: 600; }
+        .tab-inactive { color: #6b7280; font-weight: 500; }
+        
+        /* Map Styles */
+        #map { height: 100%; width: 100%; z-index: 1; }
+        
+        /* Typography for Tộc Ước */
+        .toc-uoc-content { line-height: 1.7; font-size: 17px; }
+        
+        /* Details summary styles */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        
+        /* Hide scrollbar for smooth UI */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Safe area for mobile notch */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    </style>
+</head>
+<body>
+    <div id="app" class="h-screen flex flex-col overflow-hidden bg-gray-50">
+        <!-- Top App Bar -->
+        <header class="bg-white shadow-sm z-10 flex-shrink-0 relative">
+            <div class="flex items-center justify-between px-4 py-3">
+                <a href="index.html" class="text-gray-600 p-2 hover:bg-gray-100 rounded-full transition"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-lg font-bold text-gray-800 font-serif">Sự Kiện & Tâm Linh</h1>
+                <div class="w-8"></div> <!-- Spacer for flex centering -->
+            </div>
+            
+            <!-- Top Tabs -->
+            <div class="flex border-b border-gray-200 bg-white">
+                <button @click="changeTab('lich')" :class="currentTab === 'lich' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
+                    <i class="far fa-calendar-alt mr-1"></i> Lịch Tộc
+                </button>
+                <button @click="changeTab('mophan')" :class="currentTab === 'mophan' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
+                    <i class="fas fa-map-marked-alt mr-1"></i> Mộ Phần
+                </button>
+                <button @click="changeTab('tocuoc')" :class="currentTab === 'tocuoc' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
+                    <i class="fas fa-book mr-1"></i> Tộc Ước
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area with Touch Gestures -->
+        <main class="flex-1 relative overflow-hidden" 
+              @touchstart="handleTouchStart" 
+              @touchend="handleTouchEnd">
+            
+            <!-- TAB 1: Lịch Tộc -->
+            <div v-show="currentTab === 'lich'" class="h-full overflow-y-auto no-scrollbar p-4 pb-24">
+                <div class="text-center mb-6 mt-2">
+                    <h2 class="text-xl font-bold text-yellow-700 font-serif">Dòng Thời Gian Sự Kiện</h2>
+                    <p class="text-sm text-gray-500">Các ngày lễ bái, giỗ chạp quan trọng của dòng tộc</p>
+                </div>
+                
+                <div class="relative border-l-2 border-yellow-500 ml-4 space-y-6">
+                    <div class="relative pl-6" v-for="(event, index) in sortedEvents" :key="index">
+                        <!-- Timeline Node -->
+                        <div class="absolute w-5 h-5 bg-yellow-500 rounded-full -left-[11px] top-1 border-4 border-gray-50 shadow"></div>
+                        
+                        <!-- Event Card -->
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-bold text-gray-800 text-lg leading-tight">{{ event.ten_su_kien }}</h3>
+                                <button @click="addToCalendar(event)" class="text-yellow-600 bg-yellow-50 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yellow-100 shadow-sm flex-shrink-0">
+                                    <i class="far fa-bell text-lg"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-1 mb-3 bg-gray-50 p-3 rounded-lg">
+                                <p class="text-[15px] text-red-600 font-semibold flex items-center">
+                                    <i class="fas fa-moon w-5 text-center mr-2 opacity-80"></i> Âm lịch: {{ event.ngay_am }}
+                                </p>
+                                <p class="text-[15px] text-blue-700 font-semibold flex items-center">
+                                    <i class="fas fa-sun w-5 text-center mr-2 opacity-80"></i> Dương lịch: {{ event.ngay_duong }}
+                                </p>
+                            </div>
+                            
+                            <p class="text-[15px] text-gray-700 mb-2 flex items-start">
+                                <i class="fas fa-map-marker-alt w-5 text-center mr-2 mt-1 text-gray-400"></i> 
+                                <span>{{ event.dia_diem }}</span>
+                            </p>
+                            <p class="text-[15px] text-gray-600 leading-relaxed border-t border-gray-100 pt-3 mt-3">
+                                {{ event.noi_dung }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Mộ Phần -->
+            <div v-show="currentTab === 'mophan'" class="h-full w-full relative">
+                <!-- Leaflet Map Container -->
+                <div id="map" class="h-full w-full z-0"></div>
+                
+                <!-- Floating Info Card -->
+                <div class="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg z-[1000] flex justify-between items-center pointer-events-none border border-white/50">
+                    <div class="text-sm">
+                        <p class="font-bold text-gray-800 flex items-center"><i class="fas fa-info-circle text-blue-500 mr-2 text-lg"></i> Bản đồ khu mộ</p>
+                        <p class="text-xs text-gray-500 mt-1">Chạm vào ghim màu để xem thông tin • Vuốt để di chuyển bản đồ</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Tộc Ước -->
+            <div v-show="currentTab === 'tocuoc'" class="h-full overflow-y-auto no-scrollbar p-4 pb-24 bg-gray-50">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 mb-4 relative overflow-hidden">
+                    <!-- Decorative background element -->
+                    <i class="fas fa-fan absolute -top-10 -right-10 text-9xl text-yellow-50 opacity-50"></i>
+                    
+                    <h2 class="text-2xl font-bold text-center text-yellow-700 mb-2 font-serif relative z-10">TỘC ƯỚC TRẦN TỘC</h2>
+                    <p class="text-center text-sm text-gray-500 mb-8 italic relative z-10">Những lời răn dạy và quy định của dòng họ truyền lại cho con cháu muôn đời.</p>
+                    
+                    <div class="space-y-4 relative z-10">
+                        <details class="group bg-gray-50 rounded-xl overflow-hidden border border-gray-100" v-for="(rule, i) in rules" :key="i" :open="i === 0">
+                            <summary class="flex justify-between items-center font-bold cursor-pointer text-[17px] text-gray-800 p-4 bg-white hover:bg-gray-50 transition-colors">
+                                <span>{{ rule.title }}</span>
+                                <span class="transition-transform duration-300 group-open:rotate-180 text-yellow-600 bg-yellow-50 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                            </summary>
+                            <div class="toc-uoc-content text-gray-700 p-5 pt-2 border-t border-gray-100 bg-white">
+                                {{ rule.content }}
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation Bar (App-wide) -->
+        <nav class="bg-white border-t border-gray-200 flex-shrink-0 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
+            <div class="flex justify-around items-center h-[68px]">
+                <a href="index.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Trang chủ</span>
+                </a>
+                <a href="gia-pha.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
+                    <i class="fas fa-sitemap text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Cây Gia Phả</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-yellow-600">
+                    <i class="fas fa-om text-2xl mb-1 drop-shadow-sm"></i>
+                    <span class="text-[10px] font-bold">Tâm Linh</span>
+                </a>
+                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
+                    <i class="fas fa-user-circle text-xl mb-1"></i>
+                    <span class="text-[10px] font-medium">Cá nhân</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted, computed, watch } = Vue;
+
+        createApp({
+            setup() {
+                // TAB STATE
+                const tabs = ['lich', 'mophan', 'tocuoc'];
+                const currentTab = ref('lich');
+                let map = null;
+                
+                // SWIPE GESTURE LOGIC
+                let touchStartX = 0;
+                let touchEndX = 0;
+                
+                const handleTouchStart = (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                };
+                
+                const handleTouchEnd = (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                };
+                
+                const handleSwipe = () => {
+                    // Do not process swipe if interacting with the map to avoid conflict
+                    if (currentTab.value === 'mophan') return;
+                    
+                    const SWIPE_THRESHOLD = 50;
+                    if (touchEndX < touchStartX - SWIPE_THRESHOLD) {
+                        // Swiped left (Next tab)
+                        const currentIndex = tabs.indexOf(currentTab.value);
+                        if (currentIndex < tabs.length - 1) {
+                            changeTab(tabs[currentIndex + 1]);
+                        }
+                    }
+                    if (touchEndX > touchStartX + SWIPE_THRESHOLD) {
+                        // Swiped right (Prev tab)
+                        const currentIndex = tabs.indexOf(currentTab.value);
+                        if (currentIndex > 0) {
+                            changeTab(tabs[currentIndex - 1]);
+                        }
+                    }
+                };
+
+                const changeTab = (tab) => {
+                    currentTab.value = tab;
+                };
+                
+                // MOCK DATA for Lịch Tộc
+                const events = ref([
+                    { id: 1, ten_su_kien: 'Giỗ Tổ Khảo (Trần Văn A)', ngay_am: '12 tháng 03', ngay_duong: '28/04/2026', dia_diem: 'Nhà thờ tộc, Liên Chiểu, Đà Nẵng', noi_dung: 'Con cháu tập trung lúc 08:00 làm lễ dâng hương, báo cáo thành tích dòng họ.' },
+                    { id: 2, ten_su_kien: 'Lễ Tảo Mộ Đầu Năm', ngay_am: '10 tháng Giêng', ngay_duong: '26/02/2026', dia_diem: 'Nghĩa trang dòng họ Đại Lộc, Quảng Nam', noi_dung: 'Dọn dẹp mồ mả tổ tiên, chuẩn bị đón tết Nguyên Tiêu.' }
+                ]);
+
+                // MOCK DATA for Tộc Ước
+                const rules = ref([
+                    { title: 'Điều 1: Kính tổ kính tông', content: 'Con cháu họ Trần phải luôn ghi nhớ công ơn sinh thành dưỡng dục của ông bà cha mẹ, giữ gìn phần mộ tổ tiên được khang trang, sạch sẽ. Hàng năm đến ngày giỗ chạp phải cố gắng sắp xếp về dự để gắn kết tình anh em dòng tộc.' },
+                    { title: 'Điều 2: Hiếu nghĩa phụ mẫu', content: 'Đạo làm con phải đặt chữ Hiếu lên hàng đầu. Phụng dưỡng cha mẹ lúc tuổi già, chăm sóc chu đáo khi ốm đau. Anh em trong gia đình phải hòa thuận, đùm bọc lẫn nhau.' },
+                    { title: 'Điều 3: Khuyến học khuyến tài', content: 'Khuyến khích con cháu trong dòng họ nỗ lực học tập, rèn luyện đạo đức để trở thành người có ích cho xã hội. Dòng họ sẽ có những phần thưởng xứng đáng cho các cháu đạt thành tích xuất sắc.' }
+                ]);
+
+                const sortedEvents = computed(() => {
+                    // Trong thực tế sẽ gọi thư viện amlich.js để convert ngày âm -> dương,
+                    // sau đó sort array dựa trên khoảng cách tới Date.now().
+                    // Hiện tại mock data đã được sắp xếp sẵn.
+                    return events.value;
+                });
+
+                // LEAFLET MAP LOGIC
+                const initMap = () => {
+                    if (map !== null) return; 
+                    
+                    // Tọa độ ví dụ (Đà Nẵng)
+                    const center = [16.0544, 108.2022];
+                    
+                    map = L.map('map', {
+                        center: center,
+                        zoom: 13,
+                        zoomControl: false, // Ẩn zoom control mặc định cho UI mobile gọn gàng
+                        dragging: !L.Browser.mobile, // Tối ưu mobile
+                        tap: true
+                    });
+                    
+                    // Thêm nút zoom tùy chỉnh vị trí
+                    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                    // Sử dụng OpenStreetMap Base
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    // Mock data: Mộ phần
+                    const graves = [
+                        { id: 1, name: 'Cụ Tổ Trần Văn A', title: 'Tổ Khảo đời 1', branch: 'Chi Nhất', lat: 16.0544, lng: 108.2022, color: '#dc2626' }, // Đỏ
+                        { id: 2, name: 'Cụ Trần Văn B', title: 'Tổ Khảo đời 2', branch: 'Chi Hai', lat: 16.0600, lng: 108.2100, color: '#d4af37' }  // Vàng
+                    ];
+
+                    // Hàm tạo Icon Marker màu sắc linh hoạt
+                    const getIcon = (color) => {
+                        return L.divIcon({
+                            className: 'custom-div-icon',
+                            html: `<div style="background-color:${color}; width:24px; height:24px; border-radius:50%; border:3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.4); position:relative;">
+                                     <div style="position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:6px solid ${color};"></div>
+                                   </div>`,
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 24],
+                            popupAnchor: [0, -26]
+                        });
+                    };
+
+                    // Add markers
+                    graves.forEach(g => {
+                        const marker = L.marker([g.lat, g.lng], { icon: getIcon(g.color) }).addTo(map);
+                        
+                        // Deep link mở Google Maps App
+                        const dirLink = `https://www.google.com/maps/dir/?api=1&destination=${g.lat},${g.lng}`;
+                        
+                        // Nội dung Popup HTML
+                        const popupContent = `
+                            <div class="text-center" style="width: 200px; padding: 4px;">
+                                <div class="bg-gray-100 rounded-lg mb-3 flex items-center justify-center text-gray-400 overflow-hidden" style="height: 100px; border: 1px solid #eee;">
+                                    <i class="fas fa-image text-3xl opacity-30"></i>
+                                    <!-- Thực tế sẽ dùng: <img src="${g.link_anh_mo}" class="w-full h-full object-cover"> -->
+                                </div>
+                                <h3 class="font-bold text-[16px] text-gray-800 leading-tight mb-1">${g.name}</h3>
+                                <p class="text-[13px] text-yellow-700 font-medium mb-1">${g.title}</p>
+                                <p class="text-[12px] text-gray-500 mb-3 border-b pb-2 border-gray-100">${g.branch}</p>
+                                <a href="${dirLink}" target="_blank" class="block w-full bg-[#4285F4] text-white text-[13px] py-2.5 rounded-lg text-center font-medium shadow-sm hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-directions mr-1"></i> Chỉ đường tới mộ
+                                </a>
+                            </div>
+                        `;
+                        
+                        marker.bindPopup(popupContent, {
+                            className: 'custom-popup',
+                            minWidth: 220
+                        });
+                    });
+                };
+
+                // ICS CALENDAR GENERATOR
+                const addToCalendar = (event) => {
+                    // Logic parse ngày để tạo file ICS hợp lệ
+                    const [day, month, year] = event.ngay_duong.split('/');
+                    const formattedDate = `${year}${month}${day}T010000Z`; // UTC 1:00 AM (8:00 AM VN)
+                    const formattedEndDate = `${year}${month}${day}T050000Z`; // UTC 5:00 AM (12:00 PM VN)
+
+                    const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TranToc//LichSuKien//VI
+BEGIN:VEVENT
+SUMMARY:${event.ten_su_kien}
+DTSTART:${formattedDate}
+DTEND:${formattedEndDate}
+LOCATION:${event.dia_diem}
+DESCRIPTION:${event.noi_dung}
+END:VEVENT
+END:VCALENDAR`;
+                    
+                    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `SuKien_${event.ten_su_kien.replace(/\s+/g, '')}.ics`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                };
+
+                // WATCHERS & LIFECYCLE
+                watch(currentTab, (newTab) => {
+                    if (newTab === 'mophan') {
+                        // Khởi tạo/Render lại Map khi tab active
+                        setTimeout(() => {
+                            initMap();
+                            if(map) map.invalidateSize();
+                        }, 100);
+                    }
+                });
+
+                onMounted(() => {
+                    // Caching Logic: Khôi phục Tộc Ước từ LocalStorage nếu có
+                    const cachedRules = localStorage.getItem('trantoc_tocuoc_cache');
+                    if (cachedRules) {
+                        rules.value = JSON.parse(cachedRules);
+                    } else {
+                        // Lưu cache lần đầu
+                        localStorage.setItem('trantoc_tocuoc_cache', JSON.stringify(rules.value));
+                    }
+                });
+
+                return {
+                    currentTab, changeTab, sortedEvents, rules, addToCalendar,
+                    handleTouchStart, handleTouchEnd
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
