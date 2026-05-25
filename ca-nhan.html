@@ -195,27 +195,10 @@
             
         </main>
 
-        <!-- Bottom Navigation Bar (App-wide) -->
-        <nav class="bg-white dark:bg-[#1a202c] border-t border-gray-200 dark:border-gray-800 flex-shrink-0 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.02)] relative z-0" :class="{'theme-light': theme === 'light', 'theme-dark': theme !== 'light'}">
-            <div class="flex justify-around items-center h-[68px]">
-                <a href="index.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 dark:hover:text-white transition">
-                    <i class="fas fa-home text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Trang chủ</span>
-                </a>
-                <a href="gia-pha.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 dark:hover:text-white transition">
-                    <i class="fas fa-sitemap text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Cây Gia Phả</span>
-                </a>
-                <a href="su-kien-tam-linh.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 dark:hover:text-white transition">
-                    <i class="fas fa-om text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Tâm Linh</span>
-                </a>
-                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-yellow-600">
-                    <i class="fas fa-user-circle text-2xl mb-1 drop-shadow-sm"></i>
-                    <span class="text-[10px] font-bold">Cá nhân</span>
-                </a>
-            </div>
-        </nav>
+
+        <!-- Shared Bottom Navigation Bar (App-wide) -->
+        <script src="js/shared-nav.js"></script>
+
 
         <!-- MODAL: Cập nhật thông tin con cháu -->
         <transition name="fade">

@@ -16,12 +16,53 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; background-color: #f9fafb; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .tab-active { border-bottom: 3px solid #d4af37; color: #b48600; font-weight: 600; }
-        .tab-inactive { color: #6b7280; font-weight: 500; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
+        /* ELDER-FRIENDLY & ACCESSIBILITY STYLING */
+        input, select, textarea, button, a {
+            font-size: 16px !important;
+        }
+
+        /* THEMES CONFIGURATION */
+        /* Dark Theme */
+        .theme-dark { background-color: #111827; color: #f9fafb; }
+        .theme-dark .card-bg { background-color: #1f2937; border-color: #374151; }
+        .theme-dark .text-muted { color: #9ca3af; }
+        .theme-dark .text-body { color: #f3f4f6; }
+        .theme-dark .divider { border-color: #374151; }
+        .theme-dark .input-bg { background-color: #111827; border-color: #4b5563; color: white; }
+        .theme-dark .tab-active { border-color: #ef4444; color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
+        .theme-dark .tab-inactive { color: #9ca3af; }
+        .theme-dark .event-card-bg { background-color: #1f2937; border-color: #374151; }
+
+        /* Light Theme */
+        .theme-light { background-color: #f3f4f6; color: #1f2937; }
+        .theme-light .card-bg { background-color: #ffffff; border-color: #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .theme-light .text-muted { color: #6b7280; }
+        .theme-light .text-body { color: #1f2937; }
+        .theme-light .divider { border-color: #e5e7eb; }
+        .theme-light .input-bg { background-color: #f9fafb; border-color: #d1d5db; color: #1f2937; }
+        .theme-light .tab-active { border-color: #dc2626; color: #dc2626; background-color: rgba(220, 38, 38, 0.08); }
+        .theme-light .tab-inactive { color: #6b7280; }
+        .theme-light .event-card-bg { background-color: #ffffff; border-color: #e5e7eb; }
+
+        /* Traditional Pattern Theme */
+        .theme-pattern { 
+            background-color: #2b1f15; 
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z' fill='%23d4af37' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            color: #fdfaf2; 
+        }
+        .theme-pattern .card-bg { background-color: rgba(43, 31, 21, 0.85); border-color: rgba(212, 175, 55, 0.25); backdrop-filter: blur(8px); }
+        .theme-pattern .text-muted { color: rgba(253, 250, 242, 0.6); }
+        .theme-pattern .theme-pattern .text-body { color: rgba(253, 250, 242, 0.95); }
+        .theme-pattern .divider { border-color: rgba(212, 175, 55, 0.15); }
+        .theme-pattern .input-bg { background-color: rgba(17, 12, 8, 0.6); border-color: rgba(212, 175, 55, 0.4); color: #fdfaf2; }
+        .theme-pattern .tab-active { border-color: #d4af37; color: #d4af37; background-color: rgba(212, 175, 55, 0.1); }
+        .theme-pattern .tab-inactive { color: rgba(253, 250, 242, 0.6); }
+        .theme-pattern .event-card-bg { background-color: rgba(43, 31, 21, 0.85); border-color: rgba(212, 175, 55, 0.2); }
+
         /* Map Styles */
         #map { height: 100%; width: 100%; z-index: 1; }
         
@@ -35,31 +76,32 @@
         /* Hide scrollbar for smooth UI */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+ 
         /* Safe area for mobile notch */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
     </style>
 </head>
 <body>
-    <div id="app" class="h-screen flex flex-col overflow-hidden bg-gray-50">
+    <div id="app" :class="themeClass" class="h-screen flex flex-col overflow-hidden transition-colors duration-300">
         <!-- Top App Bar -->
-        <header class="bg-white shadow-sm z-10 flex-shrink-0 relative">
+        <header class="card-bg border-b shadow-sm z-10 flex-shrink-0 relative pt-safe">
             <div class="flex items-center justify-between px-4 py-3">
-                <a href="index.html" class="text-gray-600 p-2 hover:bg-gray-100 rounded-full transition"><i class="fas fa-arrow-left"></i></a>
-                <h1 class="text-lg font-bold text-gray-800 font-serif">Sự Kiện & Tâm Linh</h1>
-                <div class="w-8"></div> <!-- Spacer for flex centering -->
+                <a href="index.html" class="text-muted p-2 hover:bg-black/5 rounded-full transition flex items-center justify-center w-10 h-10"><i class="fas fa-arrow-left text-xl"></i></a>
+                <h1 class="text-lg font-bold font-serif text-body">Sự Kiện & Tâm Linh</h1>
+                <div class="w-10"></div> <!-- Spacer for flex centering -->
             </div>
             
             <!-- Top Tabs -->
-            <div class="flex border-b border-gray-200 bg-white">
-                <button @click="changeTab('lich')" :class="currentTab === 'lich' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
-                    <i class="far fa-calendar-alt mr-1"></i> Lịch Tộc
+            <div class="flex border-t divider w-full overflow-x-auto no-scrollbar">
+                <button @click="changeTab('lich')" :class="currentTab === 'lich' ? 'tab-active border-b-2 font-bold' : 'tab-inactive'" class="flex-1 py-3.5 text-center text-[15px] transition-all flex items-center justify-center gap-1.5 min-h-[50px]">
+                    <i class="far fa-calendar-alt"></i> Lịch Tộc
                 </button>
-                <button @click="changeTab('mophan')" :class="currentTab === 'mophan' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
-                    <i class="fas fa-map-marked-alt mr-1"></i> Mộ Phần
+                <button @click="changeTab('mophan')" :class="currentTab === 'mophan' ? 'tab-active border-b-2 font-bold' : 'tab-inactive'" class="flex-1 py-3.5 text-center text-[15px] transition-all flex items-center justify-center gap-1.5 min-h-[50px]">
+                    <i class="fas fa-map-marked-alt"></i> Mộ Phần
                 </button>
-                <button @click="changeTab('tocuoc')" :class="currentTab === 'tocuoc' ? 'tab-active' : 'tab-inactive'" class="flex-1 py-3 text-[15px] transition-colors duration-200">
-                    <i class="fas fa-book mr-1"></i> Tộc Ước
+                <button @click="changeTab('tocuoc')" :class="currentTab === 'tocuoc' ? 'tab-active border-b-2 font-bold' : 'tab-inactive'" class="flex-1 py-3.5 text-center text-[15px] transition-all flex items-center justify-center gap-1.5 min-h-[50px]">
+                    <i class="fas fa-book"></i> Tộc Ước
                 </button>
             </div>
         </header>
@@ -79,31 +121,31 @@
                 <div class="relative border-l-2 border-yellow-500 ml-4 space-y-6">
                     <div class="relative pl-6" v-for="(event, index) in sortedEvents" :key="index">
                         <!-- Timeline Node -->
-                        <div class="absolute w-5 h-5 bg-yellow-500 rounded-full -left-[11px] top-1 border-4 border-gray-50 shadow"></div>
+                        <div class="absolute w-5 h-5 bg-yellow-500 rounded-full -left-[11px] top-1 border-4 card-bg shadow"></div>
                         
                         <!-- Event Card -->
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                        <div class="card-bg event-card-bg p-5 rounded-xl shadow-sm border">
                             <div class="flex justify-between items-start mb-3">
-                                <h3 class="font-bold text-gray-800 text-lg leading-tight">{{ event.ten_su_kien }}</h3>
-                                <button @click="addToCalendar(event)" class="text-yellow-600 bg-yellow-50 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yellow-100 shadow-sm flex-shrink-0">
+                                <h3 class="font-bold text-body text-lg leading-tight">{{ event.ten_su_kien }}</h3>
+                                <button @click="addToCalendar(event)" class="text-yellow-600 bg-yellow-500/10 w-10 h-10 flex items-center justify-center rounded-full hover:bg-yellow-500/20 shadow-sm flex-shrink-0">
                                     <i class="far fa-bell text-lg"></i>
                                 </button>
                             </div>
                             
-                            <div class="space-y-1 mb-3 bg-gray-50 p-3 rounded-lg">
-                                <p class="text-[15px] text-red-600 font-semibold flex items-center">
+                            <div class="space-y-1 mb-3 bg-black/5 p-3 rounded-lg">
+                                <p class="text-[15px] text-red-500 font-semibold flex items-center">
                                     <i class="fas fa-moon w-5 text-center mr-2 opacity-80"></i> Âm lịch: {{ event.ngay_am }}
                                 </p>
-                                <p class="text-[15px] text-blue-700 font-semibold flex items-center">
+                                <p class="text-[15px] text-blue-500 font-semibold flex items-center">
                                     <i class="fas fa-sun w-5 text-center mr-2 opacity-80"></i> Dương lịch: {{ event.ngay_duong }}
                                 </p>
                             </div>
                             
-                            <p class="text-[15px] text-gray-700 mb-2 flex items-start">
-                                <i class="fas fa-map-marker-alt w-5 text-center mr-2 mt-1 text-gray-400"></i> 
+                            <p class="text-[15px] text-body mb-2 flex items-start">
+                                <i class="fas fa-map-marker-alt w-5 text-center mr-2 mt-1 text-gray-400 text-muted"></i> 
                                 <span>{{ event.dia_diem }}</span>
                             </p>
-                            <p class="text-[15px] text-gray-600 leading-relaxed border-t border-gray-100 pt-3 mt-3">
+                            <p class="text-[15px] text-muted leading-relaxed border-t divider pt-3 mt-3">
                                 {{ event.noi_dung }}
                             </p>
                         </div>
@@ -151,34 +193,20 @@
             </div>
         </main>
 
-        <!-- Bottom Navigation Bar (App-wide) -->
-        <nav class="bg-white border-t border-gray-200 flex-shrink-0 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
-            <div class="flex justify-around items-center h-[68px]">
-                <a href="index.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
-                    <i class="fas fa-home text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Trang chủ</span>
-                </a>
-                <a href="gia-pha.html" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
-                    <i class="fas fa-sitemap text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Cây Gia Phả</span>
-                </a>
-                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-yellow-600">
-                    <i class="fas fa-om text-2xl mb-1 drop-shadow-sm"></i>
-                    <span class="text-[10px] font-bold">Tâm Linh</span>
-                </a>
-                <a href="#" class="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-800 transition">
-                    <i class="fas fa-user-circle text-xl mb-1"></i>
-                    <span class="text-[10px] font-medium">Cá nhân</span>
-                </a>
-            </div>
-        </nav>
     </div>
+
+    <!-- Shared Bottom Navigation Bar (App-wide) -->
+    <script src="js/shared-nav.js"></script>
 
     <script>
         const { createApp, ref, onMounted, computed, watch } = Vue;
 
         createApp({
             setup() {
+                // THEME SYSTEM
+                const theme = ref('dark'); // Default
+                const themeClass = computed(() => `theme-${theme.value}`);
+
                 // TAB STATE
                 const tabs = ['lich', 'mophan', 'tocuoc'];
                 const currentTab = ref('lich');
@@ -354,6 +382,16 @@ END:VCALENDAR`;
                 });
 
                 onMounted(() => {
+                    // Sync theme configuration from ca-nhan.html
+                    const savedTheme = localStorage.getItem('trantoc_theme');
+                    if (savedTheme) {
+                        theme.value = savedTheme;
+                    }
+                    window.addEventListener('theme_changed', () => {
+                        const newTheme = localStorage.getItem('trantoc_theme');
+                        if (newTheme) theme.value = newTheme;
+                    });
+
                     // Caching Logic: Khôi phục Tộc Ước từ LocalStorage nếu có
                     const cachedRules = localStorage.getItem('trantoc_tocuoc_cache');
                     if (cachedRules) {
@@ -365,6 +403,7 @@ END:VCALENDAR`;
                 });
 
                 return {
+                    theme, themeClass,
                     currentTab, changeTab, sortedEvents, rules, addToCalendar,
                     handleTouchStart, handleTouchEnd
                 };
