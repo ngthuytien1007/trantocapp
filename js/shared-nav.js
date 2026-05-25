@@ -14,17 +14,17 @@
      CẤU HÌNH MENU
      ═══════════════════════════════════════════════════ */
   var MAIN_TABS = [
-    { page: 'index.html',            label: 'Trang chủ', icon: 'fa-home' },
-    { page: 'gia-pha.html',          label: 'Gia Phả',   icon: 'fa-sitemap' },
-    { page: 'su-kien-tam-linh.html', label: 'Tâm Linh',  icon: 'fa-om' },
-    { page: 'quan-tri.html',         label: 'Quản Trị',   icon: 'fa-shield-halved' }
+    { page: 'index.html', label: 'Trang chủ', icon: 'fa-home' },
+    { page: 'gia-pha.html', label: 'Gia Phả', icon: 'fa-sitemap' },
+    { page: 'su-kien-tam-linh.html', label: 'Tâm Linh', icon: 'fa-om' },
+    { page: 'quan-tri.html', label: 'Quản Trị', icon: 'fa-shield-halved' }
   ];
 
   var MORE_TABS = [
-    { page: 'tin-tuc-quy-toc.html', label: 'Tin Tức & Quỹ Tộc',  icon: 'fa-newspaper' },
-    { page: 'lich-su-toc.html',     label: 'Lịch Sử Dòng Tộc',   icon: 'fa-landmark' },
-    { page: 'lien-he.html',         label: 'Liên Hệ Gia Tộc',    icon: 'fa-address-book' },
-    { page: 'ca-nhan.html',         label: 'Cá Nhân & Thiết Lập', icon: 'fa-user-gear' }
+    { page: 'tin-tuc-quy-toc.html', label: 'Tin Tức & Quỹ Tộc', icon: 'fa-newspaper' },
+    { page: 'lich-su-toc.html', label: 'Lịch Sử Dòng Tộc', icon: 'fa-landmark' },
+    { page: 'lien-he.html', label: 'Liên Hệ Gia Tộc', icon: 'fa-address-book' },
+    { page: 'ca-nhan.html', label: 'Cá Nhân & Thiết Lập', icon: 'fa-user-gear' }
   ];
 
   /* ═══════════════════════════════════════════════════
