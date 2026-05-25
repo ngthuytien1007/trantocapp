@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <title>Trần Tộc Gia Phả - Bản Đồ Gia Phả Mobile Web</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+    
+    <!-- Balkan FamilyTreeJS CDN -->
+    <script src="https://balkan.app/js/familytree.js"></script>
+
+    <style>
+      :root {
+        --primary-gold: #cca625;
+        --royal-red: #800000;
+        --deep-red-gradient: linear-gradient(135deg, #4a0000 0%, #1a0000 100%);
+        --glass-bg: rgba(255, 255, 255, 0.08);
+        --glass-border: rgba(255, 255, 255, 0.15);
+        --glass-text: #f3f4f6;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body, html {
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* Lock scroll defaults */
+        font-family: 'Inter', sans-serif;
+        background-color: #1a0000;
+      }
+
+       /* Background Styles */
+       .bg-royal-red {
+         background: radial-gradient(circle, #5c0606 0%, #1a0000 100%);
+       }
+       .bg-dark-luxury {
+         background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+       }
+       .bg-warm-sepia {
+         background: radial-gradient(circle, #fcfaf7 0%, #eaddcd 100%);
+       }
+       
+       /* Popup Modal for Node Details */
+       .node-popup {
+         position: fixed;
+         inset: 0;
+         display: none;
+         align-items: center;
+         justify-content: center;
+         background: rgba(0, 0, 0, 0.6);
+         backdrop-filter: blur(5px);
+         z-index: 10000;
+       }
+       .node-popup .popup-content {
+         background: var(--glass-bg);
+         border: 1px solid var(--glass-border);
+         border-radius: 16px;
+         padding: 20px 30px;
+         max-width: 90%;
+         width: 320px;
+         color: var(--glass-text);
+         backdrop-filter: blur(12px);
+         -webkit-backdrop-filter: blur(12px);
+         box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+       }
+       .node-popup .close-btn {
+         position: absolute;
+         top: 12px;
+         right: 12px;
+         font-size: 1.2rem;
+         cursor: pointer;
+         color: var(--glass-text);
+       }
+       
+       /* Search Bar */
+       .search-bar {
+         position: absolute;
+         top: 20px;
+         left: 50%;
+         transform: translateX(-50%);
+         display: flex;
+         gap: 8px;
+         z-index: 9999;
+       }
+       .search-bar input {
+         padding: 8px 12px;
+         border: 1px solid var(--glass-border);
+         border-radius: 8px;
+         background: rgba(255,255,255,0.08);
+         color: #fff;
+         outline: none;
+         width: 180px;
+       }
+       .search-bar button {
+         padding: 8px 12px;
+         background: var(--primary-gold);
+         border: none;
+         border-radius: 8px;
+         color: #1a0000;
+         cursor: pointer;
+       }
+      
+      /* Traditional Grid Pattern Overlay */
+      .bg-pattern::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.08;
+        pointer-events: none;
+        background-image: radial-gradient(circle at 1px 1px, var(--primary-gold) 1px, transparent 0);
+        background-size: 24px 24px;
+        z-index: 0;
+      }
+
+      /* Lock Screen Style */
+      #lock-screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        background: var(--deep-red-gradient);
+        padding: 20px;
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .lock-card::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, var(--primary-gold), transparent, var(--primary-gold));
+        z-index: -1;
+        opacity: 0.5;
+      }
+
+      .lock-card {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        background: rgba(26, 0, 0, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+
+      .lock-card h1 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary-gold);
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .lock-subtitle {
+        color: #e5e7eb;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 35px;
+        opacity: 0.8;
+      }
+
+      .input-group {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 16px 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1.5px solid var(--glass-border);
+        border-radius: 12px;
+        color: #fff;
+        font-size: 1rem;
+        text-align: center;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      .input-group input:focus {
+        border-color: var(--primary-gold);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 15px rgba(204, 166, 37, 0.2);
+      }
+
+      .btn-verify {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #d8b237 0%, #a4811a 100%);
+        border: none;
+        border-radius: 12px;
+        color: #1a0000;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(204, 166, 37, 0.3);
+      }
+
+      .btn-verify:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(204, 166, 37, 0.45);
+      }
+
+      .btn-verify:active {
+        transform: translateY(0);
+      }
+
+      .zalo-note {
+        margin-top: 30px;
+        color: #9ca3af;
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
+      .zalo-note a {
+        color: var(--primary-gold);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .error-msg {
+        color: #ef4444;
+        font-size: 0.85rem;
+        margin-top: -10px;
+        margin-bottom: 15px;
+        display: none;
+        animation: shake 0.3s ease-in-out;
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-6px); }
+        75% { transform: translateX(6px); }
+      }
+
+      /* App Container */
+      #app-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+      }
+
+      /* Main Family Tree Area */
+      #tree-canvas {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Balkan Custom Styling overrides */
+      #tree-canvas > svg {
+        background-color: transparent !important;
+      }
+
+      /* Floating Control Widgets */
+      .floating-controls {
+        position: absolute;
+        bottom: 25px;
+        right: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 999;
+      }
+
+      .floating-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .floating-btn:hover {
+        transform: scale(1.08);
+        background: rgba(30, 41, 59, 1);
+        color: var(--primary-gold);
+      }
+
+      /* Background Palette Drawer */
+      .bg-drawer {
+        position: absolute;
+        bottom: 25px;
+        right: 85px;
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 12px 16px;
+        border-radius: 16px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(15px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .bg-drawer.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+      }
+
+      .bg-option {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.4);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .bg-option:hover, .bg-option.active {
+        transform: scale(1.15);
+        border-color: var(--primary-gold);
+      }
+
+      /* Home Button Top Left */
+      .home-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px 16px;
+        background: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 999;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        transition: all 0.3s ease;
+      }
+
+      .home-btn:hover {
+        background: #fff;
+        color: #1a0000;
+        transform: translateY(-1px);
+      }
+
+      /* Header Info */
+      .tree-header {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        text-align: right;
+        z-index: 99;
+        pointer-events: none;
+      }
+
+      .tree-header h2 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary-gold);
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      }
+      
+      .tree-header p {
+        color: #cbd5e1;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      }
+
+      /* Balkan Node Custom styles */
+      .balkan-custom-node {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Loader */
+      #loader {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(26, 0, 0, 0.7);
+        z-index: 9998;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(204, 166, 37, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-gold);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body class="bg-royal-red bg-pattern">
+
+    <!-- Home Button -->
+    <a href="index.html" class="home-btn">
+      <i class="bi bi-house-fill"></i> Trang chủ
+    </a>
+
+    <!-- Header Info -->
+    <div class="tree-header">
+      <h2>TRẦN TỘC GIA PHẢ</h2>
+      <p id="data-status-text">Bản Đồ Gia Phả Sơ Khai</p>
+    </div>
+
+    <!-- LOCK SCREEN -->
+    <div id="lock-screen">
+      <div class="lock-card">
+        <h1>Gia Phả Dòng Tộc</h1>
+        <div class="lock-subtitle">Họ Trần Việt Nam</div>
+        <div class="input-group">
+          <input type="password" id="passcode-input" placeholder="Nhập mã truy cập" autofocus autocomplete="current-password" />
+        </div>
+        <div class="error-msg" id="error-msg">Mã truy cập không chính xác.</div>
+        <button class="btn-verify" onclick="verifyAccess()">Xác nhận</button>
+        <div class="zalo-note">
+          Để nhận mã truy cập, vui lòng liên hệ Zalo Ban Quản Trị dòng họ:<br/>
+          <a href="https://zalo.me/0795777607" target="_blank">
+            <i class="bi bi-chat-text-fill"></i> 0795.777.607 (A. Thành)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOADER -->
+    <div id="loader">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app-container">
+      <!-- Sơ đồ cây hiển thị tại đây -->
+      <div id="tree-canvas"></div>
+    </div>
+
+    <!-- FLOATING CONTROLS -->
+    <div class="floating-controls">
+      <!-- Background changer floating button -->
+      <div class="floating-btn" onclick="toggleBgDrawer()" title="Thay đổi hình nền">
+        <i class="bi bi-palette"></i>
+      </div>
+    </div>
+
+    <!-- Background Options Drawer -->
+    <div class="bg-drawer" id="bg-drawer">
+      <div class="bg-option bg-royal-red active" onclick="setBg('royal-red')" title="Đỏ Hoàng Gia"></div>
+      <div class="bg-option bg-dark-luxury" onclick="setBg('dark-luxury')" title="Tối Cao Cấp"></div>
+      <div class="bg-option bg-warm-sepia" onclick="setBg('warm-sepia')" title="Hoài Cổ"></div>
+    </div>
+
+    <script>
+      // 1. CONFIGURATION
+      const CONFIG = {
+        // You can use any of these hardcoded access codes
+        passcodes: ["trantoc2026", "trantoc", "0795777607", "123456", "admin"],
+        
+        // Dynamic CSV Endpoint URL from Google Sheets published to the web.
+        // E.g., 'https://docs.google.com/spreadsheets/d/e/2PACX-1v.../pub?output=csv'
+        googleSheetCsvUrl: '', 
+      };
+
+      // 2. FALLBACK DATA (Derived from gia-pha.html GoJS structure but aligned to Google Sheet column specifications)
+      const FALLBACK_CSV_DATA = `id,name,pid,mid,partnerId,title,dob,photo,isAlive
+1,Trần X,,,,Cụ Tổ (Đời 1),1865 - 1936,assets/img/avata.jpg,FALSE
+2,Trần Ngật,1,,,Đời 2,1895 - 1952,assets/img/avata.jpg,FALSE
+3,Trần Thị Nết,,2,,Đời 3,1895 - 1952,assets/img/avata.jpg,FALSE
+4,Trần Thu,2,,,Đời 3,1895 - 1952,assets/img/avata.jpg,FALSE
+5,Trần Thị Hoà,,2,,Đời 3,1895 - 1952,assets/img/avata.jpg,FALSE
+6,Trần Thị Năm,,2,,Đời 3,1895 - 1952,assets/img/avata.jpg,FALSE
+7,Trần Chiến,2,,,Đời 3,1895 - 1952,assets/img/avata.jpg,FALSE
+8,Trần Thắng,2,,,Đời 3,1895 - 1952,assets/img/avata.jpg,FALSE
+9,Dương Phương,,3,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+10,Dương X Phương,,3,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+11,Dương Phương 1,,9,,Đời 5,1895 - 1952,assets/img/avata.jpg,FALSE
+12,Dương Phương 2,,9,,Đời 5,1895 - 1952,assets/img/avata.jpg,FALSE
+13,Trần Quậy,4,,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+14,Trần X Y,4,,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+15,Trần Quậy 1,,13,,Đời 5,1895 - 1952,assets/img/avata.jpg,FALSE
+16,Nguyễn Hữu Thành,,5,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+17,Nguyễn Hữu Thịnh,,5,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+18,Nguyễn Hữu Thông,,5,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+19,Nguyễn Duy Hưng,,17,,Đời 5,1895 - 1952,assets/img/avata.jpg,FALSE
+20,Trần Út,,6,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+21,Trần Cưng,,6,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+22,Trần Xịn,7,,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+23,Trần F,,7,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+24,Trần J,8,,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE
+25,Trần FG,,8,,Đời 4,1895 - 1952,assets/img/avata.jpg,FALSE`;
+
+      // 3. BACKGROUND THEME MANAGEMENT
+      function setBg(themeName) {
+        document.body.className = ''; // Reset classes
+        document.body.classList.add('bg-pattern');
+        
+        const optionButtons = document.querySelectorAll('.bg-option');
+        optionButtons.forEach(btn => btn.classList.remove('active'));
+
+        if (themeName === 'royal-red') {
+          document.body.classList.add('bg-royal-red');
+          document.querySelector('.bg-royal-red').classList.add('active');
+        } else if (themeName === 'dark-luxury') {
+          document.body.classList.add('bg-dark-luxury');
+          document.querySelector('.bg-dark-luxury').classList.add('active');
+        } else if (themeName === 'warm-sepia') {
+          document.body.classList.add('bg-warm-sepia');
+          document.querySelector('.bg-warm-sepia').classList.add('active');
+        }
+
+        localStorage.setItem('giapha_bg', themeName);
+      }
+
+      function toggleBgDrawer() {
+        document.getElementById('bg-drawer').classList.toggle('open');
+      }
+
+      // Initialize background from local storage
+      const savedBg = localStorage.getItem('giapha_bg') || 'royal-red';
+      setBg(savedBg);
+
+      // Close drawer when clicking outside
+      document.addEventListener('click', function(e) {
+        const drawer = document.getElementById('bg-drawer');
+        const trigger = document.querySelector('.floating-btn');
+        if (!drawer.contains(e.target) && !trigger.contains(e.target)) {
+          drawer.classList.remove('open');
+        }
+      });
+
+      // 4. AUTHENTICATION LOGIC
+      function verifyAccess() {
+        const inputVal = document.getElementById('passcode-input').value.trim();
+        const errorMsg = document.getElementById('error-msg');
+        
+        if (CONFIG.passcodes.includes(inputVal.toLowerCase())) {
+          errorMsg.style.display = 'none';
+          localStorage.setItem('giapha_authenticated', 'true');
+          
+          // Animate and transition
+          const lockScreen = document.getElementById('lock-screen');
+          lockScreen.style.opacity = '0';
+          lockScreen.style.pointerEvents = 'none';
+          setTimeout(() => {
+            lockScreen.style.display = 'none';
+          }, 600);
+
+          loadFamilyData();
+        } else {
+          errorMsg.style.display = 'block';
+          // Shake input
+          const inputEl = document.getElementById('passcode-input');
+          inputEl.style.animation = 'none';
+          inputEl.offsetHeight; // Trigger reflow
+          inputEl.style.animation = 'shake 0.3s ease-in-out';
+          inputEl.focus();
+        }
+      }
+
+      // Listen for Enter key on lock screen
+      document.getElementById('passcode-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          verifyAccess();
+        }
+      });
+
+      // Check auth state on load
+      window.addEventListener('DOMContentLoaded', () => {
+        const isAuth = localStorage.getItem('giapha_authenticated') === 'true';
+        if (isAuth) {
+          document.getElementById('lock-screen').style.display = 'none';
+          loadFamilyData();
+        } else {
+          document.getElementById('passcode-input').focus();
+        }
+      });
+
+      // 5. DATA FETCHING & PARSING
+      function parseCSV(csvText) {
+        const lines = [];
+        let row = [""];
+        let inQuotes = false;
+
+        for (let i = 0; i < csvText.length; i++) {
+          const c = csvText[i];
+          const next = csvText[i+1];
+          if (c === '"') {
+            if (inQuotes && next === '"') {
+              row[row.length - 1] += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (c === ',') {
+            if (inQuotes) {
+              row[row.length - 1] += c;
+            } else {
+              row.push("");
+            }
+          } else if (c === '\r' || c === '\n') {
+            if (inQuotes) {
+              row[row.length - 1] += c;
+            } else {
+              if (c === '\r' && next === '\n') {
+                i++;
+              }
+              lines.push(row);
+              row = [""];
+            }
+          } else {
+            row[row.length - 1] += c;
+          }
+        }
+        if (row.length > 1 || row[0] !== "") {
+          lines.push(row);
+        }
+        
+        if (lines.length < 2) return [];
+        const headers = lines[0].map(h => h.trim().toLowerCase());
+        
+        return lines.slice(1).map(row => {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = row[index] ? row[index].trim() : "";
+          });
+          return obj;
+        });
+      }
+
+      // Convert Google Drive image link to direct download link (avoid CORS error)
+      function cleanPhotoUrl(url) {
+        if (!url) return 'assets/img/avata.jpg';
+        const driveRegExp = /drive\.google\.com\/(?:file\/d\/|open\?id=)([^/\?]+)/;
+        const match = url.match(driveRegExp);
+        if (match && match[1]) {
+          return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+        }
+        return url;
+      }
+
+      function loadFamilyData() {
+        const loader = document.getElementById('loader');
+        const statusText = document.getElementById('data-status-text');
+        loader.style.display = 'flex';
+
+        if (CONFIG.googleSheetCsvUrl && CONFIG.googleSheetCsvUrl.startsWith('http')) {
+          // Fetch from Google Sheet CSV
+          fetch(CONFIG.googleSheetCsvUrl)
+            .then(res => {
+              if (!res.ok) throw new Error("Cơ sở dữ liệu đám mây không khả dụng");
+              return res.text();
+            })
+            .then(csvText => {
+              const parsed = parseCSV(csvText);
+              initFamilyTree(parsed);
+              statusText.innerText = "Đã đồng bộ từ Google Sheets";
+            })
+            .catch(err => {
+              console.warn("Lỗi tải Google Sheet, tải dữ liệu dòng tộc mẫu:", err);
+              const parsedFallback = parseCSV(FALLBACK_CSV_DATA);
+              initFamilyTree(parsedFallback);
+              statusText.innerText = "Dữ liệu mẫu (Cột Google Sheet bị lỗi)";
+            })
+            .finally(() => {
+              loader.style.display = 'none';
+              document.getElementById('app-container').style.opacity = '1';
+            });
+        } else {
+          // No Google Sheet configured yet - load beautiful fallback offline data
+          setTimeout(() => {
+            const parsedFallback = parseCSV(FALLBACK_CSV_DATA);
+            initFamilyTree(parsedFallback);
+            statusText.innerText = "Dữ liệu mẫu dòng họ Trần";
+            loader.style.display = 'none';
+            document.getElementById('app-container').style.opacity = '1';
+          }, 300);
+        }
+      }
+
+      // 6. INITIALIZE BALKAN FAMILYTREE
+      function initFamilyTree(nodesData) {
+        // Map columns to Balkan-recognized properties
+        const balkanNodes = nodesData.map(node => {
+          const isAliveStatus = String(node.isalive).trim().toUpperCase() === 'TRUE';
+          
+          const mappedNode = {
+            id: Number(node.id),
+            name: node.name,
+            title: node.title || "Thành viên",
+            dob: node.dob || "Không rõ",
+            photo: cleanPhotoUrl(node.photo),
+            tags: [isAliveStatus ? "alive" : "deceased"]
+          };
+
+          // Parent‑child linkage
+          if (node.pid) mappedNode.fid = Number(node.pid);
+          if (node.mid) mappedNode.mid = Number(node.mid);
+          if (node.partnerid) mappedNode.pids = [Number(node.partnerid)];
+
+          return mappedNode;
+        });
+
+        // --- Templates (unchanged) ---
+        FamilyTree.templates.customBase = Object.assign({}, FamilyTree.templates.base);
+        FamilyTree.templates.customBase.size = [240, 100];
+        FamilyTree.templates.customBase.node =
+          '<rect x="0" y="0" width="240" height="100" rx="12" ry="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.06))"></rect>';
+        FamilyTree.templates.customBase.img_0 =
+          '<clipPath id="circleClip-{id}"><circle cx="45" cy="50" r="30"></circle></clipPath>' +
+          '<image preserveAspectRatio="xMidYMid slice" clip-path="url(#circleClip-{id})" xlink:href="{val}" x="15" y="20" width="60" height="60"></image>';
+        FamilyTree.templates.customBase.field_0 =
+          '<text style="font-size: 15px; font-weight: 700; font-family: \'Inter\', sans-serif;" fill="#0f172a" x="90" y="40">{val}</text>';
+        FamilyTree.templates.customBase.field_1 =
+          '<text style="font-size: 12px; font-family: \'Inter\', sans-serif;" fill="#64748b" x="90" y="60">{val}</text>';
+        FamilyTree.templates.customBase.field_2 =
+          '<text style="font-size: 11px; font-weight: 600; font-family: \'Inter\', sans-serif; text-transform: uppercase;" fill="#cca625" x="90" y="78">{val}</text>';
+        FamilyTree.templates.custom_alive = Object.assign({}, FamilyTree.templates.customBase);
+        FamilyTree.templates.custom_alive.node =
+          '<rect x="0" y="0" width="240" height="100" rx="12" ry="12" fill="#ffffff" stroke="#cca625" stroke-width="2.5" filter="drop-shadow(0px 4px 8px rgba(204, 166, 37, 0.15))"></rect>';
+        FamilyTree.templates.custom_deceased = Object.assign({}, FamilyTree.templates.customBase);
+        FamilyTree.templates.custom_deceased.node =
+          '<rect x="0" y="0" width="240" height="100" rx="12" ry="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" opacity="0.8"></rect>';
+        FamilyTree.templates.custom_deceased.field_0 =
+          '<text style="font-size: 15px; font-weight: 700; font-family: \'Inter\', sans-serif;" fill="#475569" x="90" y="40">{val}</text>';
+        FamilyTree.templates.custom_deceased.field_2 =
+          '<text style="font-size: 11px; font-weight: 600; font-family: \'Inter\', sans-serif; text-transform: uppercase;" fill="#64748b" x="90" y="78">{val}</text>';
+
+        // Initialize FamilyTree chart with refined zoom settings
+        const chart = new FamilyTree(document.getElementById("tree-canvas"), {
+          mouseScroller: { zoom: true, rotate: false },
+          // Limit zoom to a reasonable range for mobile readability
+          minScale: 0.4,
+          maxScale: 2.0,
+          // Start a bit zoomed‑in so the tree is legible on small screens
+          scaleInitial: 0.7,
+          siblingSeparation: 50,
+          nodeBinding: {
+            field_0: "name",
+            field_1: "dob",
+            field_2: "title",
+            img_0: "photo"
+          },
+          tags: {
+            "alive": { template: "custom_alive" },
+            "deceased": { template: "custom_deceased" }
+          },
+          nodes: balkanNodes,
+          // Click on a node opens a popup with details
+          nodeClick: (node) => {
+            const popup = document.getElementById('node-popup');
+            const content = document.getElementById('popup-content');
+            content.innerHTML = `
+              <h3>${node.data.name}</h3>
+              <p><strong>Tiêu đề:</strong> ${node.data.title}</p>
+              <p><strong>Năm sinh‑mất:</strong> ${node.data.dob}</p>
+            `;
+            popup.style.display = 'flex';
+          }
+        });
+
+        // Expose chart globally for search
+        window.familyChart = chart;
+      }
+    </script>
+  </body>
+</html>

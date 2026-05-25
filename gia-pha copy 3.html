@@ -290,14 +290,12 @@
     .gp-popup-card {
       background: #fff;
       border-radius: 20px;
-      padding: 25px;
-      max-width: 92%;
-      width: 440px;
+      padding: 30px;
+      max-width: 90%;
+      width: 380px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.25);
       position: relative;
       animation: popupSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      max-height: 85vh;
-      overflow-y: auto;
     }
     @keyframes popupSlideIn {
       from { opacity: 0; transform: scale(0.9) translateY(20px); }
@@ -336,6 +334,7 @@
       border-radius: 20px;
       font-size: 0.75rem;
       font-weight: 600;
+      margin-bottom: 16px;
     }
     .gp-popup-card .popup-badge.male {
       background: #A2DAFF;
@@ -625,60 +624,27 @@
     <div class="gp-popup-overlay" id="gp-popup-overlay" onclick="gpClosePopup(event)">
       <div class="gp-popup-card" onclick="event.stopPropagation()">
         <button class="popup-close" onclick="gpClosePopup()"><i class="bi bi-x-lg"></i></button>
-        
-        <!-- Header Info -->
-        <div style="text-align:center; padding-bottom: 15px; border-bottom: 1px solid #f0ece4;">
+        <div style="text-align:center;">
           <img src="assets/img/avata.jpg" class="popup-avatar" id="popup-avatar" alt="Avatar">
           <div class="popup-name" id="popup-name">—</div>
-          <div class="popup-sub-info" style="display:flex; justify-content:center; align-items:center; gap: 8px; margin-top: 6px;">
-            <span class="popup-badge male" id="popup-badge">Nam</span>
-            <span class="popup-title-badge" id="popup-title-badge" style="background:#f0ece4; color:#5c0606; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Đời 1</span>
-          </div>
+          <span class="popup-badge male" id="popup-badge">Nam</span>
         </div>
-
-        <!-- Body Info -->
-        <div class="popup-info" style="margin-top: 15px; display:flex; flex-direction:column; gap: 12px;">
-          <!-- Tên tự -->
-          <div class="popup-info-row" id="popup-row-courtesy">
-            <i class="bi bi-bookmark-star-fill"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tên tự</strong>
-              <span id="popup-courtesy">—</span>
-            </div>
-          </div>
-          <!-- Ngày sinh -->
+        <div class="popup-info">
           <div class="popup-info-row">
-            <i class="bi bi-calendar-check"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Ngày sinh</strong>
-              <span id="popup-birth-solar" style="display:block;">Dương lịch: —</span>
-              <span id="popup-birth-lunar" style="display:block; font-size:0.85rem; color:#666;">Âm lịch: —</span>
-            </div>
+            <i class="bi bi-calendar-event"></i>
+            <span id="popup-born">Năm sinh: —</span>
           </div>
-          <!-- Ngày mất (Ẩn nếu còn sống) -->
-          <div class="popup-info-row" id="popup-row-death">
-            <i class="bi bi-calendar-x-fill" style="color: #94a3b8;"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Ngày mất</strong>
-              <span id="popup-death-solar" style="display:block;">Dương lịch: —</span>
-              <span id="popup-death-lunar" style="display:block; font-size:0.85rem; color:#666;">Âm lịch: —</span>
-            </div>
+          <div class="popup-info-row">
+            <i class="bi bi-calendar-x"></i>
+            <span id="popup-death">Năm mất: —</span>
           </div>
-          <!-- Nơi an táng (Mộ phần - Ẩn nếu còn sống) -->
-          <div class="popup-info-row" id="popup-row-burial">
-            <i class="bi bi-geo-alt-fill"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Nơi an táng (Mộ phần)</strong>
-              <span id="popup-burial">—</span>
-            </div>
+          <div class="popup-info-row">
+            <i class="bi bi-diagram-3"></i>
+            <span id="popup-parent">Thuộc nhánh: —</span>
           </div>
-          <!-- Tiểu sử tóm tắt -->
-          <div class="popup-info-row" id="popup-row-bio" style="align-items: flex-start; margin-top: 4px;">
-            <i class="bi bi-file-text-fill" style="margin-top: 3px;"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tiểu sử tóm tắt</strong>
-              <span id="popup-bio" style="display:block; font-size:0.88rem; line-height: 1.4; color:#444; text-align: justify;">—</span>
-            </div>
+          <div class="popup-info-row">
+            <i class="bi bi-shield-fill-check"></i>
+            <span id="popup-status">Vai vế: —</span>
           </div>
         </div>
       </div>
@@ -732,19 +698,30 @@
     const IMAGE_TOP_MARGIN = 20;
     const IMAGE_DIAMETER = 40;
 
-    const getStrokeForNode = (data) => {
-      if (data.isAlive === false) return "#94a3b8"; // Mất: viền xám
-      return data.gender === "M" ? "#2b6cb0" : "#b83280"; // Sống: Nam viền xanh, Nữ viền hồng
+    const getStrokeForStatus = (status) => {
+      switch (status) {
+        case "king":
+        case "queen":
+          return theme.colors.kingQueenBorder;
+        case "prince":
+        case "princess":
+          return theme.colors.princePrincessBorder;
+        case "civilian":
+        default:
+          return theme.colors.civilianBorder;
+      }
     };
 
     const statusStrokeBinding = () =>
-      new go.Binding("stroke", "", (data) => getStrokeForNode(data));
+      new go.Binding("stroke", statusProperty, (status) =>
+        getStrokeForStatus(status)
+      );
 
     const highlightStrokeBinding = () =>
       new go.Binding("stroke", "isHighlighted", (isHighlighted, obj) =>
         isHighlighted
           ? theme.colors.selectionStroke
-          : getStrokeForNode(obj.part.data)
+          : getStrokeForStatus(obj.part.data.status)
       ).ofObject();
 
     const genderToText = (gender) => (gender === "M" ? "Nam" : "Nữ");
@@ -784,7 +761,10 @@
         font: theme.fonts.birthDeathFont,
         alignmentFocus: go.Spot.Top,
         alignment: new go.Spot(0.5, 1, 0, -35),
-      }).bind("text", "dob");
+      }).bind("text", "", ({ born, death }) => {
+        if (!born) return "";
+        return `${born} - ${death ?? ""}`;
+      });
 
     const personCounter = () =>
       new go.Panel("Auto", {
@@ -849,8 +829,7 @@
         alignment: new go.Spot(0, 0, STROKE_WIDTH / 2, IMAGE_TOP_MARGIN),
       })
         .add(
-          new go.Picture({ width: 55, height: 55 })
-            .bind("source", "photo", (p) => p || "assets/img/avata.jpg")
+          new go.Picture("assets/img/avata.jpg", { width: 55, height: 55 })
         )
         .add(
           new go.Picture({ scale: 0.9 })
@@ -932,31 +911,31 @@
     // 3. FAMILY DATA
     // ============================================
     const familyData = [
-      { id: 1, name: "Trần X", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1865 - 1936", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Thế Anh", dobSolar: "15/05/1865", dobLunar: "20/04/Ất Sửu", dodSolar: "12/10/1936", dodLunar: "28/08/Bính Tý", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Người đặt nền móng cho gia tộc Trần tại địa phương, chăm lo việc khai khẩn ruộng đất và xây dựng nhà thờ tổ." },
-      { id: 2, name: "Trần Ngật", pid: 1, gender: "M", status: "king", title: "Trưởng họ - Đời 2", dob: "1895 - 1952", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Minh", dobSolar: "12/03/1895", dobLunar: "16/02/Ất Mùi", dodSolar: "04/07/1952", dodLunar: "13/05/Nhâm Thìn", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Người tiếp quản gia nghiệp, có công lớn trong việc duy trì và mở rộng hương hỏa dòng tộc qua những năm kháng chiến khó khăn." },
-      { id: 3, name: "Trần Thị Nết", pid: 2, gender: "F", status: "king", title: "Đời 3", dob: "1918 - 1980", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/08/1918", dobLunar: "15/07/Mậu Ngọ", dodSolar: "11/02/1980", dodLunar: "25/12/Kỷ Mùi", burialPlace: "Nghĩa trang xã Điện Bàn, Quảng Nam", bio: "Người mẹ hiền đức, nổi tiếng nuôi dạy các con thành đạt, luôn hướng về cội nguồn." },
-      { id: 4, name: "Trần Thu", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1920 - 2005", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Thu Hùng", dobSolar: "05/10/1920", dobLunar: "24/08/Canh Thân", dodSolar: "15/12/2005", dodLunar: "14/11/Ất Dậu", burialPlace: "Nghĩa trang Dòng họ Trần", bio: "Đóng góp nhiều công sức xây dựng trung tâm văn hóa dòng tộc và trùng tu nhà thờ Trần tộc." },
-      { id: 5, name: "Trần Thị Hoà", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1922 - 2010", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/1922", dobLunar: "03/12/Tân Dậu", dodSolar: "08/09/2010", dodLunar: "30/07/Canh Dần", burialPlace: "Nghĩa trang Hòa Sơn, Đà Nẵng", bio: "Trọn đời vì con cháu, luôn tham gia tích cực các hoạt động hiếu hỷ của dòng tộc." },
-      { id: 6, name: "Trần Thị Năm", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1925 - 2012", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "10/06/1925", dobLunar: "19/04/Ất Sửu", dodSolar: "22/03/2012", dodLunar: "30/02/Nhâm Thìn", burialPlace: "Nghĩa trang quê nhà", bio: "Sống đôn hậu, yêu thương con cháu hết mực, lưu giữ nhiều điển tích xưa của dòng họ." },
-      { id: 7, name: "Trần Chiến", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1928 - 2015", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Quyết Chiến", dobSolar: "15/09/1928", dobLunar: "02/08/Mậu Thìn", dodSolar: "18/06/2015", dodLunar: "03/05/Ất Mùi", burialPlace: "Nghĩa trang dòng tộc", bio: "Cựu chiến binh thời kỳ chống Pháp, giữ chức vụ quan trọng trong hội khuyến học dòng họ Trần." },
-      { id: 8, name: "Trần Thắng", pid: 2, gender: "M", status: "king", title: "Chi Trưởng - Đời 3", dob: "1931 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Toàn Thắng", dobSolar: "02/02/1931", dobLunar: "15/12/Canh Ngọ", dodSolar: "29/10/2018", dodLunar: "21/09/Mậu Tuất", burialPlace: "Nghĩa trang quê nhà", bio: "Nhà giáo ưu tú, biên soạn cuốn 'Lược sử Trần tộc gia phả' lưu truyền cho thế hệ sau." },
-      { id: 9, name: "Dương Phương", pid: 3, gender: "F", status: "king", title: "Đời 4", dob: "1940 - 2021", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/04/1940", dobLunar: "05/03/Canh Thìn", dodSolar: "09/01/2021", dodLunar: "27/11/Canh Tý", burialPlace: "Nghĩa trang Hòa Sơn", bio: "Luôn gìn giữ nét đẹp gia phong, tận tụy chăm lo hương khói tổ tiên." },
-      { id: 10, name: "Dương X Phương", pid: 3, gender: "F", status: "king", title: "Đời 4", dob: "1942 - 2023", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1942", dobLunar: "03/06/Nhâm Ngọ", dodSolar: "22/10/2023", dodLunar: "08/09/Quý Mão", burialPlace: "Nghĩa trang Điện Bàn", bio: "Có nhiều đóng góp cho quỹ hỗ trợ gia đình khó khăn trong dòng tộc." },
-      { id: 11, name: "Dương Phương 1", pid: 9, gender: "M", status: "king", title: "Đời 5", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Dương Hoài Nam", dobSolar: "20/11/1965", dobLunar: "27/10/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Doanh nhân thành đạt, hỗ trợ kinh phí trùng tu tôn tạo di tích nhà thờ tổ dòng họ." },
-      { id: 12, name: "Dương Phương 2", pid: 9, gender: "M", status: "king", title: "Đời 5", dob: "1968 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Dương Hoài Bắc", dobSolar: "14/09/1968", dobLunar: "22/07/Mậu Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kỹ sư xây dựng, hỗ trợ tư vấn thiết kế và giám sát thi công nhà thờ Trần tộc." },
-      { id: 13, name: "Trần Quậy", pid: 4, gender: "F", status: "king", title: "Đời 4", dob: "1945 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Thị Tuyết", dobSolar: "03/08/1945", dobLunar: "26/06/Ất Dậu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Chuyên tâm chăm lo việc nội trợ gia đình, giữ gìn nếp sống gia phong." },
-      { id: 14, name: "Trần X Y", pid: 4, gender: "F", status: "king", title: "Đời 4", dob: "1948 - 2022", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/12/1948", dobLunar: "19/11/Mậu Tý", dodSolar: "05/05/2022", dodLunar: "05/04/Nhâm Dần", burialPlace: "Nghĩa trang dòng họ Trần", bio: "Người phụ nữ hiền lành, tần tảo nuôi con, có lòng từ thiện cứu giúp nhiều người." },
-      { id: 15, name: "Trần Quậy 1", pid: 13, gender: "M", status: "king", title: "Đời 5", dob: "1972 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Tiến", dobSolar: "11/11/1972", dobLunar: "06/10/Nhâm Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Tích cực hoạt động phong trào thanh niên dòng tộc, kết nối các thế hệ trẻ Trần tộc." },
-      { id: 16, name: "Nguyễn Hữu Thành", pid: 5, gender: "M", status: "king", title: "Đời 4", dob: "1945 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Thanh Nguyen", dobSolar: "05/05/1945", dobLunar: "24/03/Ất Dậu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kỹ sư công nghệ thông tin, xây dựng trang web gia phả online cho dòng tộc Trần." },
-      { id: 17, name: "Nguyễn Hữu Thịnh", pid: 5, gender: "F", status: "king", title: "Đời 4", dob: "1948 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/10/1948", dobLunar: "06/09/Mậu Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nữ doanh nhân, tài trợ chính cho giải thưởng khuyến học Trần tộc hàng năm." },
-      { id: 18, name: "Nguyễn Hữu Thông", pid: 5, gender: "F", status: "king", title: "Đời 4", dob: "1951 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "21/04/1951", dobLunar: "16/03/Tân Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giáo viên nghỉ hưu, đóng góp biên soạn các bài thơ, truyện lịch sử về nguồn gốc Trần tộc." },
-      { id: 19, name: "Nguyễn Duy Hưng", pid: 17, gender: "F", status: "king", title: "Đời 5", dob: "1975 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/09/1975", dobLunar: "04/08/Ất Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nhà báo, phụ trách truyền thông và quảng bá hoạt động ngày lễ giỗ tổ của dòng họ." },
-      { id: 20, name: "Trần Út", pid: 6, gender: "M", status: "king", title: "Đời 4", dob: "1950 - 2024", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Minh Út", dobSolar: "30/06/1950", dobLunar: "16/05/Canh Dần", dodSolar: "12/01/2024", dodLunar: "02/12/Quý Mão", burialPlace: "Nghĩa trang Hòa Sơn", bio: "Đội ngũ ban quản lý nhà thờ tổ, tận hiến cho công việc tôn tạo mộ phần tiên tổ." },
-      { id: 21, name: "Trần Cưng", pid: 6, gender: "F", status: "king", title: "Đời 4", dob: "1953 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/10/1953", dobLunar: "08/09/Quý Tị", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giữ lửa gia đình, đóng góp tích cực vào ban nữ công dòng tộc." },
-      { id: 22, name: "Trần Xịn", pid: 7, gender: "M", status: "king", title: "Đời 4", dob: "1955 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Công Xịn", dobSolar: "12/08/1955", dobLunar: "25/06/Ất Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Họa sĩ, đóng góp nhiều bức họa chân dung tiên tổ cho nhà thờ họ Trần." },
-      { id: 23, name: "Trần F", pid: 7, gender: "F", status: "king", title: "Đời 4", dob: "1958 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/05/1958", dobLunar: "13/03/Mậu Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Bác sĩ, tổ chức khám sức khỏe miễn phí cho người cao tuổi trong dòng tộc vào ngày hội xuân." },
-      { id: 24, name: "Trần J", pid: 8, gender: "M", status: "king", title: "Đời 4", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Văn Quốc", dobSolar: "24/12/1960", dobLunar: "07/11/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Chủ tịch Hội khuyến học dòng họ Trần tộc, hỗ trợ các cháu học sinh đỗ đạt cao." },
-      { id: 25, name: "Trần FG", pid: 8, gender: "F", status: "king", title: "Đời 4", dob: "1963 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "18/02/1963", dobLunar: "25/01/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nữ nghệ nhân cắm hoa nghệ thuật, phụ trách trang trí các ngày lễ lớn của dòng tộc." }
+      { name: "Trần X", gender: "M", status: "king", born: "1865", death: "1936" },
+      { name: "Trần Ngật", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần X" },
+      { name: "Trần Thị Nết", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Ngật" },
+      { name: "Trần Thu", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Ngật" },
+      { name: "Trần Thị Hoà", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Ngật" },
+      { name: "Trần Thị Năm", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Ngật" },
+      { name: "Trần Chiến", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Ngật" },
+      { name: "Trần Thắng", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Ngật" },
+      { name: "Dương Phương", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thị Nết" },
+      { name: "Dương X Phương", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thị Nết" },
+      { name: "Dương Phương 1", gender: "M", status: "king", born: "1895", death: "1952", parent: "Dương Phương" },
+      { name: "Dương Phương 2", gender: "M", status: "king", born: "1895", death: "1952", parent: "Dương Phương" },
+      { name: "Trần Quậy", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thu" },
+      { name: "Trần X Y", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thu" },
+      { name: "Trần Quậy 1", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Quậy" },
+      { name: "Nguyễn Hữu Thành", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Thị Hoà" },
+      { name: "Nguyễn Hữu Thịnh", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thị Hoà" },
+      { name: "Nguyễn Hữu Thông", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thị Hoà" },
+      { name: "Nguyễn Duy Hưng", gender: "F", status: "king", born: "1895", death: "1952", parent: "Nguyễn Hữu Thịnh" },
+      { name: "Trần Út", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Thị Năm" },
+      { name: "Trần Cưng", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thị Năm" },
+      { name: "Trần Xịn", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Chiến" },
+      { name: "Trần F", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Chiến" },
+      { name: "Trần J", gender: "M", status: "king", born: "1895", death: "1952", parent: "Trần Thắng" },
+      { name: "Trần FG", gender: "F", status: "king", born: "1895", death: "1952", parent: "Trần Thắng" },
     ];
 
     // ============================================
@@ -979,10 +958,7 @@
         }),
         "toolManager.hoverDelay": 100,
         linkTemplate: createLinkTemplate(),
-        model: new go.TreeModel({ 
-          nodeKeyProperty: "id",
-          nodeParentKeyProperty: "pid"
-        }),
+        model: new go.TreeModel({ nodeKeyProperty: "name" }),
         // Better interaction
         allowZoom: true,
         "animationManager.isEnabled": true,
@@ -993,7 +969,7 @@
       diagram.model.addNodeDataCollection(familyData);
 
       diagram.addDiagramListener("InitialLayoutCompleted", () => {
-        const root = diagram.findNodeForKey(1);
+        const root = diagram.findNodeForKey("Trần X");
         if (!root) return;
         diagram.scale = 0.7;
         diagram.scrollToRect(root.actualBounds);
@@ -1056,7 +1032,7 @@
       if (!gpDiagram) return;
       gpDiagram.scale = 1;
       gpDiagram.commandHandler.scrollToPart(
-        gpDiagram.findNodeForKey(1)
+        gpDiagram.findNodeForKey("Trần X")
       );
     }
 
@@ -1121,10 +1097,10 @@
       const query = searchInput.value.trim().toLowerCase();
       if (!query) return;
       const match = familyData.find(d => d.name.toLowerCase().includes(query));
-      if (match) gpGoToNode(match.id);
+      if (match) gpGoToNode(match.name);
     }
 
-    function gpGoToNode(id) {
+    function gpGoToNode(name) {
       if (!gpDiagram) return;
       searchResults.classList.remove('show');
 
@@ -1132,7 +1108,7 @@
       const searchBar = document.getElementById('gp-search-bar');
       if (searchBar) searchBar.classList.remove('show');
 
-      const node = gpDiagram.findNodeForKey(id);
+      const node = gpDiagram.findNodeForKey(name);
       if (node) {
         gpDiagram.select(node);
         gpDiagram.commandHandler.scrollToPart(node);
@@ -1146,60 +1122,21 @@
     // 7. NODE DETAIL POPUP
     // ============================================
     function gpShowPopup(data) {
-      document.getElementById('popup-avatar').src = data.photo || 'assets/img/avata.jpg';
       document.getElementById('popup-name').textContent = data.name || '—';
-      
       const badge = document.getElementById('popup-badge');
-      if (badge) {
-        if (data.gender === 'F') {
-          badge.textContent = 'Nữ';
-          badge.className = 'popup-badge female';
-        } else {
-          badge.textContent = 'Nam';
-          badge.className = 'popup-badge male';
-        }
-      }
-
-      const titleBadge = document.getElementById('popup-title-badge');
-      if (titleBadge) {
-        titleBadge.textContent = data.title || 'Thành viên';
-      }
-
-      // Tên tự
-      const courtesyRow = document.getElementById('popup-row-courtesy');
-      if (data.courtesyName) {
-        if (courtesyRow) courtesyRow.style.display = 'flex';
-        document.getElementById('popup-courtesy').textContent = data.courtesyName;
+      if (data.gender === 'F') {
+        badge.textContent = 'Nữ';
+        badge.className = 'popup-badge female';
       } else {
-        if (courtesyRow) courtesyRow.style.display = 'none';
+        badge.textContent = 'Nam';
+        badge.className = 'popup-badge male';
       }
+      document.getElementById('popup-born').textContent = 'Năm sinh: ' + (data.born || '—');
+      document.getElementById('popup-death').textContent = 'Năm mất: ' + (data.death || '—');
+      document.getElementById('popup-parent').textContent = 'Thuộc nhánh: ' + (data.parent || 'Thủy Tổ');
 
-      // Ngày sinh
-      document.getElementById('popup-birth-solar').textContent = 'Dương lịch: ' + (data.dobSolar || '—');
-      document.getElementById('popup-birth-lunar').textContent = 'Âm lịch: ' + (data.dobLunar || '—');
-
-      // Ngày mất & Mộ phần (Chỉ hiện nếu đã mất)
-      const deathRow = document.getElementById('popup-row-death');
-      const burialRow = document.getElementById('popup-row-burial');
-      if (data.isAlive === false) {
-        if (deathRow) deathRow.style.display = 'flex';
-        if (burialRow) burialRow.style.display = 'flex';
-        document.getElementById('popup-death-solar').textContent = 'Dương lịch: ' + (data.dodSolar || '—');
-        document.getElementById('popup-death-lunar').textContent = 'Âm lịch: ' + (data.dodLunar || '—');
-        document.getElementById('popup-burial').textContent = data.burialPlace || '—';
-      } else {
-        if (deathRow) deathRow.style.display = 'none';
-        if (burialRow) burialRow.style.display = 'none';
-      }
-
-      // Tiểu sử
-      const bioRow = document.getElementById('popup-row-bio');
-      if (data.bio) {
-        if (bioRow) bioRow.style.display = 'flex';
-        document.getElementById('popup-bio').textContent = data.bio;
-      } else {
-        if (bioRow) bioRow.style.display = 'none';
-      }
+      const statusMap = { king: 'Tiên Tổ / Trưởng Tộc', queen: 'Tiên Tổ / Trưởng Tộc', prince: 'Chi Trưởng', princess: 'Chi Trưởng', civilian: 'Thành viên' };
+      document.getElementById('popup-status').textContent = 'Vai vế: ' + (statusMap[data.status] || 'Thành viên');
 
       document.getElementById('gp-popup-overlay').classList.add('show');
     }
