@@ -1282,7 +1282,7 @@
             stroke: theme.colors.counterText,
             font: "bold 11px Poppins",
             textAlign: "center"
-          }).bind("", (data, textBlock) => {
+          }).bind("text", (data, textBlock) => {
             const node = textBlock.part;
             const count = countChildren(node);
             return data.isExpanded === false ? `+${count}` : "-";
@@ -1419,90 +1419,122 @@
     // ============================================
     // 3. FAMILY DATA SYSTEM - GRAPH LINKS MODEL (15 GENERATIONS)
     // ============================================
+    // ============================================
+    // SYSTEM FAMILY DATA - GRAPH LINKS MODEL (15 GENERATIONS DETAILED)
+    // Nút giao hôn nhân (LinkLabel) xử lý đa thê và phân nhánh con chính xác
+    // ============================================
     const familyData = {
       nodeDataArray: [
         // --- ĐỜI 1 ---
-        { id: 1, name: "Trần Thế Anh", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1630 - 1702", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Thế Anh", dobSolar: "15/05/1630", dobLunar: "18/04/Canh Ngọ", dodSolar: "12/10/1702", dodLunar: "27/08/Nhâm Thìn", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Thủy tổ khai sáng dòng họ Trần tại địa phương.", isExpanded: true },
-        { id: 2, name: "Lê Thị Sâm", gender: "F", status: "queen", title: "Vợ Cả - Đời 1", dob: "1635 - 1705", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/10/1635", dobLunar: "21/09/Ất Hợi", dodSolar: "05/06/1705", dodLunar: "19/04/Ất Mùi", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Hiền thê cả, phụ trách nội trợ dòng tộc." },
-        { id: 3, name: "Nguyễn Thị Mai", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1640 - 1710", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/03/1640", dobLunar: "15/02/Canh Thìn", dodSolar: "22/11/1710", dodLunar: "16/10/Canh Dần", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Vợ thứ hai của cụ Tổ." },
+        { id: 1, name: "Trần Thế Anh", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1630 - 1702", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Thế Anh", dobSolar: "15/05/1630", dobLunar: "18/04/Canh Ngọ", dodSolar: "12/10/1702", dodLunar: "27/08/Nhâm Thìn", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Thủy tổ khai sáng dòng họ Trần, đặt nền móng xây dựng tộc ước.", isExpanded: true },
+        { id: 2, name: "Lê Thị Sâm", gender: "F", status: "queen", title: "Vợ Cả - Đời 1", dob: "1635 - 1705", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/10/1635", dobLunar: "21/09/Ất Hợi", dodSolar: "05/06/1705", dodLunar: "19/04/Ất Mùi", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Hiền thê cả, đức độ bao dung, quán xuyến việc tộc." },
+        { id: 3, name: "Nguyễn Thị Mai", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1640 - 1710", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/03/1640", dobLunar: "15/02/Canh Thìn", dodSolar: "22/11/1710", dodLunar: "16/10/Canh Dần", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Vợ thứ hai của cụ Tổ, mẫu mực hiền hậu." },
+        { id: 4, name: "Phạm Thị Lan", gender: "F", status: "queen", title: "Vợ Út - Đời 1", dob: "1642 - 1715", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/12/1642", dobLunar: "14/11/Nhâm Ngọ", dodSolar: "18/07/1715", dodLunar: "22/06/Ất Mùi", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Vợ thứ ba của cụ Tổ, đồng cam cộng khổ thời kỳ khai hoang." },
 
-        // --- ĐỜI 2 ---
-        { id: 4, name: "Trần Hữu Đức", gender: "M", status: "prince", title: "Trưởng họ - Đời 2", dob: "1660 - 1732", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Đức Hùng", dobSolar: "10/04/1660", dobLunar: "18/03/Canh Tý", dodSolar: "15/05/1732", dodLunar: "20/04/Nhâm Tý", burialPlace: "Từ đường dòng họ Trần", bio: "Trưởng nam đời 2 gánh vác việc thờ tự.", isExpanded: true },
-        { id: 5, name: "Nguyễn Thu Hà", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1665 - 1740", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/11/1665", dobLunar: "12/10/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Từ đường dòng họ Trần", bio: "Hiền thê cụ Hữu Đức." },
+        // --- ĐỜI 2 (Yêu cầu: 5 người con trực hệ) ---
+        // Con của Vợ Cả (Lê Thị Sâm)
+        { id: 5, name: "Trần Hữu Đức", gender: "M", status: "prince", title: "Trưởng Họ - Đời 2", dob: "1660 - 1732", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Đức Hùng", dobSolar: "10/04/1660", dobLunar: "18/03/Canh Tý", dodSolar: "15/05/1732", dodLunar: "20/04/Nhâm Tý", burialPlace: "Từ đường dòng họ Trần", bio: "Trưởng nam đời 2, gánh vác việc thờ tự và xây dựng nhà thờ tộc.", isExpanded: true },
+        { id: 6, name: "Nguyễn Thu Hà", gender: "F", status: "princess", title: "Con Dâu Cả - Đời 2", dob: "1665 - 1740", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/11/1665", dobLunar: "12/10/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Tộc Trần", bio: "Hiền thê cụ Hữu Đức." },
+        { id: 7, name: "Trần Hữu Minh", gender: "M", status: "civilian", title: "Đời 2 (Nhánh 2)", dob: "1663 - 1735", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Minh Trí", dobSolar: "05/06/1663", dobLunar: "29/04/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Con trai thứ hai của cụ cả Lê Thị Sâm.", isExpanded: true },
+        { id: 8, name: "Lê Thị Hoa", gender: "F", status: "civilian", title: "Con Dâu - Đời 2", dob: "1668 - 1742", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/01/1668", dobLunar: "28/11/Đinh Mùi", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Vợ cụ Hữu Minh." },
+        { id: 9, name: "Trần Thị Thảo", gender: "F", status: "civilian", title: "Đời 2", dob: "1666 - 1730", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/08/1666", dobLunar: "16/07/Bính Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Con gái cụ cả Lê Thị Sâm." },
+        // Con của Vợ Thứ (Nguyễn Thị Mai)
+        { id: 10, name: "Trần Hữu Phước", gender: "M", status: "prince", title: "Đời 2 (Nhánh 3)", dob: "1670 - 1745", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Hữu Phước", dobSolar: "15/09/1670", dobLunar: "17/08/Canh Tuất", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Con cụ hai Nguyễn Thị Mai. Người mở mang bờ cõi đất canh tác.", isExpanded: true },
+        { id: 11, name: "Vũ Thị Tuyết", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1675 - 1750", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/1675", dobLunar: "29/11/Giáp Dần", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Hiền thê cụ Hữu Phước." },
+        // Con của Vợ Út (Phạm Thị Lan)
+        { id: 12, name: "Trần Hữu Nghĩa", gender: "M", status: "civilian", title: "Đời 2 (Nhánh 4)", dob: "1675 - 1748", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Nghĩa Nhân", dobSolar: "18/08/1675", dobLunar: "17/07/Ất Mão", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Con cụ ba Phạm Thị Lan. Thầy đồ dạy chữ Nho đầu tiên của làng.", isExpanded: true },
+        { id: 13, name: "Hoàng Thị Dung", gender: "F", status: "civilian", title: "Con Dâu - Đời 2", dob: "1680 - 1755", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/03/1680", dobLunar: "19/02/Canh Thân", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Hiền thê cụ Hữu Nghĩa." },
 
-        // --- ĐỜI 3 ---
-        { id: 6, name: "Trần Hữu Nghĩa", gender: "M", status: "civilian", title: "Đời 3", dob: "1690 - 1760", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Nghĩa Nhân", dobSolar: "18/08/1690", dobLunar: "17/07/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Khu mộ Đời 3, Đại Lộc", bio: "武 quan triều đình, có nhiều công trạng.", isExpanded: true },
-        { id: 7, name: "Phan Thị Diệu", gender: "F", status: "civilian", title: "Con Dâu - Đời 3", dob: "1695 - 1765", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/02/1695", dobLunar: "01/01/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Khu mộ Đời 3, Đại Lộc", bio: "Chính thất cụ Hữu Nghĩa." },
+        // --- ĐỜI 3 (Yêu cầu: 10 người con trực hệ phân bổ các nhánh) ---
+        // Nhánh cụ Hữu Đức (id 5) & Thu Hà (id 6) -> Có 3 con
+        { id: 14, name: "Trần Bảo Nam", gender: "M", status: "civilian", title: "Đời 3 (Trưởng Nhánh)", dob: "1690 - 1765", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Bảo Nam", dobSolar: "20/02/1690", dobLunar: "01/01/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Cháu đích tôn Thủy Tổ, tiếp tục phát triển kinh tế gia tộc.", isExpanded: true },
+        { id: 15, name: "Phan Thị Diệu", gender: "F", status: "civilian", title: "Con Dâu - Đời 3", dob: "1695 - 1770", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/02/1695", dobLunar: "01/01/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc", bio: "Chính thất cụ Bảo Nam." },
+        { id: 16, name: "Trần Bảo Quốc", gender: "M", status: "civilian", title: "Đời 3", dob: "1692 - 1760", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/05/1692", dobLunar: "27/03/Nhâm Thân", bio: "Lập nghiệp phương xa, giữ mối liên hệ dòng tộc." },
+        { id: 17, name: "Trần Khánh Vy", gender: "F", status: "civilian", title: "Đời 3", dob: "1695 - 1750", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1695", dobLunar: "02/06/Ất Hợi", bio: "Con gái cụ Hữu Đức." },
+        // Nhánh cụ Hữu Minh (id 7) & Lê Thị Hoa (id 8) -> Có 3 con
+        { id: 18, name: "Trần Minh Triết", gender: "M", status: "civilian", title: "Đời 3", dob: "1695 - 1772", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/12/1695", dobLunar: "12/11/Ất Hợi", bio: "Đội trưởng nghĩa binh bảo vệ xóm làng." },
+        { id: 19, name: "Trần Minh Tâm", gender: "M", status: "civilian", title: "Đời 3", dob: "1698 - 1766", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/04/1698", dobLunar: "09/03/Mậu Dần", bio: "Chuyên tâm nông nghiệp, tích trữ lương thực cho tộc." },
+        { id: 20, name: "Trần Thu Thủy", gender: "F", status: "civilian", title: "Đời 3", dob: "1700 - 1760", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/10/1700", dobLunar: "11/09/Canh Thin", bio: "Con gái cụ Hữu Minh." },
+        // Nhánh cụ Hữu Phước (id 10) & Vũ Thị Tuyết (id 11) -> Có 2 con
+        { id: 21, name: "Trần Quang Hải", gender: "M", status: "civilian", title: "Đời 3", dob: "1702 - 1775", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "14/03/1702", dobLunar: "16/02/Nhâm Ngọ", bio: "Phụ trách ban khánh tiết và lễ nghi dòng họ." },
+        { id: 22, name: "Trần Ngọc Anh", gender: "F", status: "civilian", title: "Đời 3", dob: "1705 - 1765", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/07/1705", dobLunar: "29/05/Ất Dậu", bio: "Con gái cụ Hữu Phước." },
+        // Nhánh cụ Hữu Nghĩa (id 12) & Hoàng Thị Dung (id 13) -> Có 2 con
+        { id: 23, name: "Trần Tiến Đạt", gender: "M", status: "civilian", title: "Đời 3", dob: "1708 - 1780", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/09/1708", dobLunar: "16/07/Mậu Tý", bio: "Đỗ tú tài, tiếp nối sự nghiệp dạy học của cha." },
+        { id: 24, name: "Trần Thục Quyên", gender: "F", status: "civilian", title: "Đời 3", dob: "1710 - 1772", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/11/1710", dobLunar: "20/09/Canh Dần", bio: "Con gái cụ Hữu Nghĩa." },
 
-        // --- ĐỜI 4 ---
-        { id: 8, name: "Trần Hữu Khang", gender: "M", status: "civilian", title: "Đời 4", dob: "1720 - 1795", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/03/1720", dobLunar: "04/02/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Người mở mang đất canh tác cho gia tộc.", isExpanded: true },
-        { id: 9, name: "Võ Thị Hoàng", gender: "F", status: "civilian", title: "Con Dâu - Đời 4", dob: "1725 - 1800", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/08/1725", dobLunar: "11/07/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Khang." },
+        // --- ĐỜI 4 (Duy trì mạch trực hệ lớn phát triển đến đời 15) ---
+        { id: 25, name: "Trần Hữu Khang", gender: "M", status: "civilian", title: "Đời 4", dob: "1720 - 1795", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/03/1720", dobLunar: "04/02/Canh Tý", burialPlace: "Đại Lộc, Quảng Nam", bio: "Xây dựng hệ thống thủy lợi ruộng tộc.", isExpanded: true },
+        { id: 26, name: "Võ Thị Hoàng", gender: "F", status: "civilian", title: "Con Dâu - Đời 4", dob: "1725 - 1800", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/08/1725", dobLunar: "11/07/Ất Tỵ", burialPlace: "Đại Lộc, Quảng Nam" },
 
-        // --- ĐỜI 5 --- (ĐA THÊ)
-        { id: 10, name: "Trần Hữu Trí", gender: "M", status: "civilian", title: "Đời 5", dob: "1750 - 1825", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trí Tuệ", dobSolar: "01/01/1750", dobLunar: "24/11/Kỷ Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Thầy thuốc nho y nổi tiếng trong vùng.", isExpanded: true },
-        { id: 11, name: "Đặng Thị Quy", gender: "F", status: "civilian", title: "Vợ Cả - Đời 5", dob: "1753 - 1810", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "14/05/1753", dobLunar: "12/04/Quý Dậu", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Tộc Trần", bio: "Vợ cả cụ Trí." },
-        { id: 12, name: "Bùi Thị Nguyệt", gender: "F", status: "civilian", title: "Vợ Thứ - Đời 5", dob: "1758 - 1830", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "23/09/1758", dobLunar: "22/08/Mậu Dần", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Tộc Trần", bio: "Vợ thứ hai cụ Trí." },
+        // --- ĐỜI 5 (ĐA THÊ) ---
+        { id: 27, name: "Trần Hữu Trí", gender: "M", status: "civilian", title: "Đời 5", dob: "1750 - 1825", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trí Tuệ", dobSolar: "01/01/1750", dobLunar: "24/11/Kỷ Tỵ", burialPlace: "Đại Lộc, Quảng Nam", bio: "Thầy thuốc nho y nổi tiếng, cứu giúp nhiều người nghèo.", isExpanded: true },
+        { id: 28, name: "Đặng Thị Quy", gender: "F", status: "civilian", title: "Vợ Cả - Đời 5", dob: "1753 - 1810", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "14/05/1753", dobLunar: "12/04/Quý Dậu", burialPlace: "Nghĩa trang Tộc Trần" },
+        { id: 29, name: "Bùi Thị Nguyệt", gender: "F", status: "civilian", title: "Vợ Thứ - Đời 5", dob: "1758 - 1830", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "23/09/1758", dobLunar: "22/08/Mậu Dần", burialPlace: "Nghĩa trang Tộc Trần" },
 
-        // --- ĐỜI 6 --- (Con vợ cả Đặng Thị Quy)
-        { id: 13, name: "Trần Hữu Tâm", gender: "M", status: "civilian", title: "Đời 6", dob: "1780 - 1855", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1780", dobLunar: "14/06/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Tiếp quản hiệu thuốc y học cổ truyền.", isExpanded: true },
-        { id: 14, name: "Hồ Thị Xuân", gender: "F", status: "civilian", title: "Con Dâu - Đời 6", dob: "1785 - 1860", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/02/1785", dobLunar: "01/01/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Tâm." },
+        // --- ĐỜI 6 (Con cụ cả Đặng Thị Quy) ---
+        { id: 30, name: "Trần Hữu Tâm", gender: "M", status: "civilian", title: "Đời 6", dob: "1780 - 1855", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1780", dobLunar: "14/06/Canh Tý", burialPlace: "Đại Lộc, Quảng Nam", bio: "Kế thừa tiệm thuốc, lập quỹ cứu tế dòng họ.", isExpanded: true },
+        { id: 31, name: "Hồ Thị Xuân", gender: "F", status: "civilian", title: "Con Dâu - Đời 6", dob: "1785 - 1860", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/02/1785", dobLunar: "01/01/Ất Tỵ", burialPlace: "Đại Lộc, Quảng Nam" },
 
         // --- ĐỜI 7 ---
-        { id: 15, name: "Trần Hữu Long", gender: "M", status: "civilian", title: "Đời 7", dob: "1810 - 1885", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/11/1810", dobLunar: "15/10/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Hương sư dạy chữ Nho cho con em họ tộc.", isExpanded: true },
-        { id: 16, name: "Trịnh Thị Thu", gender: "F", status: "civilian", title: "Con Dâu - Đời 7", dob: "1815 - 1890", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/04/1815", dobLunar: "26/02/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Long." },
+        { id: 32, name: "Trần Hữu Long", gender: "M", status: "civilian", title: "Đời 7", dob: "1810 - 1885", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/11/1810", dobLunar: "15/10/Canh Ngọ", burialPlace: "Đại Lộc, Quảng Nam", bio: "Hương sư đức độ, trùng tu văn bia từ đường.", isExpanded: true },
+        { id: 33, name: "Trịnh Thị Thu", gender: "F", status: "civilian", title: "Con Dâu - Đời 7", dob: "1815 - 1890", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/04/1815", dobLunar: "26/02/Ất Hợi", burialPlace: "Đại Lộc, Quảng Nam" },
 
         // --- ĐỜI 8 ---
-        { id: 17, name: "Trần Hữu Đạt", gender: "M", status: "civilian", title: "Đời 8", dob: "1840 - 1915", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Đạt Tiến", dobSolar: "20/08/1840", dobLunar: "23/07/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Đạt học vị Tú tài dưới triều Nguyễn.", isExpanded: true },
-        { id: 18, name: "Mai Thị Liên", gender: "F", status: "civilian", title: "Con Dâu - Đời 8", dob: "1845 - 1920", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/01/1845", dobLunar: "05/12/Giáp Thìn", dodSolar: "", dodLunar: "", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Đạt." },
+        { id: 34, name: "Trần Hữu Đạt", gender: "M", status: "civilian", title: "Đời 8", dob: "1840 - 1915", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Đạt Tiến", dobSolar: "20/08/1840", dobLunar: "23/07/Canh Tý", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Đạt học vị Tú tài, có công mở lớp dạy chữ cho con em trong tộc.", isExpanded: true },
+        { id: 35, name: "Mai Thị Liên", gender: "F", status: "civilian", title: "Con Dâu - Đời 8", dob: "1845 - 1920", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/01/1845", dobLunar: "05/12/Giáp Thìn", burialPlace: "Huyện Đại Lộc, Quảng Nam" },
 
         // --- ĐỜI 9 ---
-        { id: 19, name: "Trần Hữu Vĩnh", gender: "M", status: "civilian", title: "Đời 9", dob: "1870 - 1945", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Vĩnh An", dobSolar: "03/06/1870", dobLunar: "05/05/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Địa chủ yêu nước, hỗ trợ nghĩa quân phong trào Cần Vương.", isExpanded: true },
-        { id: 20, name: "Đỗ Thị Phúc", gender: "F", status: "civilian", title: "Con Dâu - Đời 9", dob: "1875 - 1950", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "27/12/1875", dobLunar: "30/11/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Vĩnh." },
+        { id: 36, name: "Trần Hữu Vĩnh", gender: "M", status: "civilian", title: "Đời 9", dob: "1870 - 1945", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Vĩnh An", dobSolar: "03/06/1870", dobLunar: "05/05/Canh Ngọ", burialPlace: "Đại Lộc, Quảng Nam", bio: "Vận động phong trào duy tân, hiến đất xây nghĩa trang tộc.", isExpanded: true },
+        { id: 37, name: "Đỗ Thị Phúc", gender: "F", status: "civilian", title: "Con Dâu - Đời 9", dob: "1875 - 1950", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "27/12/1875", dobLunar: "30/11/Ất Hợi", burialPlace: "Đại Lộc, Quảng Nam" },
 
-        // --- ĐỜI 10 --- (ĐA THÊ)
-        { id: 21, name: "Trần Hữu Tiến", gender: "M", status: "civilian", title: "Đời 10", dob: "1900 - 1975", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Tiến Bộ", dobSolar: "14/02/1900", dobLunar: "15/01/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Chiến sĩ cách mạng thời kỳ tiền khởi nghĩa.", isExpanded: true },
-        { id: 22, name: "Lý Thị Lành", gender: "F", status: "civilian", title: "Vợ Cả - Đời 10", dob: "1903 - 1960", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/08/1903", dobLunar: "17/06/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Vợ cả cụ Tiến." },
-        { id: 23, name: "Phan Thị Ngọt", gender: "F", status: "civilian", title: "Vợ Thứ - Đời 10", dob: "1908 - 1985", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/04/1908", dobLunar: "11/03/Mậu Thân", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Vợ thứ cụ Tiến." },
+        // --- ĐỜI 10 (ĐA THÊ) ---
+        { id: 38, name: "Trần Hữu Tiến", gender: "M", status: "civilian", title: "Đời 10", dob: "1900 - 1975", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Tiến Bộ", dobSolar: "14/02/1900", dobLunar: "15/01/Canh Tý", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Chiến sĩ cách mạng trung kiên, giữ vững liên lạc thời kỳ khó khăn.", isExpanded: true },
+        { id: 39, name: "Lý Thị Lành", gender: "F", status: "civilian", title: "Vợ Cả - Đời 10", dob: "1903 - 1960", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/08/1903", dobLunar: "17/06/Quý Mão", burialPlace: "Đại Lộc, Quảng Nam" },
+        { id: 40, name: "Phan Thị Ngọt", gender: "F", status: "civilian", title: "Vợ Thứ - Đời 10", dob: "1908 - 1985", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/04/1908", dobLunar: "11/03/Mậu Thân", burialPlace: "Đại Lộc, Quảng Nam" },
 
-        // --- ĐỜI 11 --- (Con vợ cả Lý Thị Lành)
-        { id: 24, name: "Trần Hữu Hải", gender: "M", status: "civilian", title: "Đời 11", dob: "1930 - 2005", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Hải Đường", dobSolar: "05/05/1930", dobLunar: "08/04/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Hòa Khương, Đà Nẵng", bio: "Kỹ sư cơ khí lừng danh thời kỳ thống nhất.", isExpanded: true },
-        { id: 25, name: "Ngô Thị Thanh", gender: "F", status: "civilian", title: "Con Dâu - Đời 11", dob: "1935 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/09/1935", dobLunar: "15/08/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Hòa Khương, Đà Nẵng", bio: "Chính thất cụ Hữu Hải." },
+        // --- ĐỜI 11 (Con cụ cả Lý Thị Lành) ---
+        { id: 41, name: "Trần Hữu Hải", gender: "M", status: "civilian", title: "Đời 11", dob: "1930 - 2005", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Hải Đường", dobSolar: "05/05/1930", dobLunar: "08/04/Canh Ngọ", burialPlace: "Nghĩa trang Hòa Khương, Đà Nẵng", bio: "Kỹ sư cơ khí, đóng góp khôi phục sản xuất sau chiến tranh.", isExpanded: true },
+        { id: 42, name: "Ngô Thị Thanh", gender: "F", status: "civilian", title: "Con Dâu - Đời 11", dob: "1935 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/09/1935", dobLunar: "15/08/Ất Hợi", burialPlace: "Nghĩa trang Hòa Khương, Đà Nẵng" },
 
         // --- ĐỜI 12 ---
-        { id: 26, name: "Trần Hữu Sơn", gender: "M", status: "civilian", title: "Đời 12", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Sơn Hà", dobSolar: "21/03/1960", dobLunar: "24/02/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cán bộ hưu trí ngành giáo dục tại Liên Chiểu, Đà Nẵng.", isExpanded: true },
-        { id: 27, name: "Trần Thị Minh", gender: "F", status: "civilian", title: "Con Dâu - Đời 12", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "18/07/1965", dobLunar: "20/06/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giáo viên tiểu học tại Đà Nẵng." },
+        { id: 43, name: "Trần Hữu Sơn", gender: "M", status: "civilian", title: "Đời 12", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Sơn Hà", dobSolar: "21/03/1960", dobLunar: "24/02/Canh Tý", burialPlace: "", bio: "Cán bộ hưu trí ngành giáo dục, tích cực hoạt động khuyến học tại Liên Chiểu, Đà Nẵng.", isExpanded: true },
+        { id: 44, name: "Trần Thị Minh", gender: "F", status: "civilian", title: "Con Dâu - Đời 12", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "18/07/1965", dobLunar: "20/06/Ất Tỵ", burialPlace: "" },
 
         // --- ĐỜI 13 ---
-        { id: 28, name: "Trần Hữu Huy", gender: "M", status: "civilian", title: "Đời 13", dob: "1988 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Quang Huy", dobSolar: "14/07/1988", dobLunar: "01/06/Mậu Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kỹ sư hệ thống cấp cao tại Đà Nẵng.", isExpanded: true },
-        { id: 29, name: "Phạm Ngọc Huyền", gender: "F", status: "civilian", title: "Con Dâu - Đời 13", dob: "1992 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/12/1992", dobLunar: "12/11/Nhâm Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Chuyên viên phân tích Business Analyst." },
+        { id: 45, name: "Trần Hữu Huy", gender: "M", status: "civilian", title: "Đời 13", dob: "1988 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Quang Huy", dobSolar: "14/07/1988", dobLunar: "01/06/Mậu Thìn", burialPlace: "", bio: "Kỹ sư kiến trúc hệ thống cao cấp tại Đà Nẵng.", isExpanded: true },
+        { id: 46, name: "Phạm Ngọc Huyền", gender: "F", status: "civilian", title: "Con Dâu - Đời 13", dob: "1992 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/12/1992", dobLunar: "12/11/Nhâm Thân", burialPlace: "" },
 
         // --- ĐỜI 14 ---
-        { id: 30, name: "Trần Bảo Lâm", gender: "M", status: "civilian", title: "Đời 14", dob: "2012 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Bảo Lâm", dobSolar: "10/10/2012", dobLunar: "25/08/Nhâm Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Học sinh trung học xuất sắc tại Đà Nẵng.", isExpanded: true },
-        { id: 31, name: "Lê Thu Thảo", gender: "F", status: "civilian", title: "Con Dâu tương lai - Đời 14", dob: "2014 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/2014", dobLunar: "01/12/Quý Tỵ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu giữ chỗ nhánh con." },
+        { id: 47, name: "Trần Bảo Lâm", gender: "M", status: "civilian", title: "Đời 14", dob: "2012 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Bảo Lâm", dobSolar: "10/10/2012", dobLunar: "25/08/Nhâm Thìn", burialPlace: "", bio: "Học sinh xuất sắc, đạt nhiều giải thưởng học thuật tại Đà Nẵng.", isExpanded: true },
+        { id: 48, name: "Lê Thu Thảo", gender: "F", status: "civilian", title: "Con Dâu Tương Lai - Đời 14", dob: "2014 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/2014", dobLunar: "01/12/Quý Tỵ", burialPlace: "" },
 
         // --- ĐỜI 15 ---
-        { id: 32, name: "Trần Minh Khôi", gender: "M", status: "civilian", title: "Hậu Duệ - Đời 15", dob: "2034 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Minh Khôi", dobSolar: "01/06/2034", dobLunar: "15/04/Giáp Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Thành viên nhỏ tuổi nhất trực hệ dòng họ Trần tại Liên Chiểu." },
+        { id: 49, name: "Trần Minh Khôi", gender: "M", status: "civilian", title: "Hậu Duệ - Đời 15", dob: "2034 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Minh Khôi", dobSolar: "01/06/2034", dobLunar: "15/04/Giáp Dần", burialPlace: "", bio: "Thành viên hậu duệ đời thứ 15 trực hệ dòng họ Trần tại Liên Chiểu." },
 
         // ============================================
-        // MARRIAGE LABEL NODES (Nút giao hôn nhân ẩn)
+        // MARRIAGE LABEL NODES (Nút thắt hôn nhân ẩn)
         // ============================================
-        { id: "M1_2", category: "LinkLabel" }, // Đời 1 - Vợ 1
-        { id: "M1_3", category: "LinkLabel" }, // Đời 1 - Vợ 2
-        { id: "M4_5", category: "LinkLabel" }, // Đời 2
-        { id: "M6_7", category: "LinkLabel" }, // Đời 3
-        { id: "M8_9", category: "LinkLabel" }, // Đời 4
-        { id: "M10_11", category: "LinkLabel" }, // Đời 5 - Vợ 1
-        { id: "M10_12", category: "LinkLabel" }, // Đời 5 - Vợ 2
-        { id: "M13_14", category: "LinkLabel" }, // Đời 6
-        { id: "M15_16", category: "LinkLabel" }, // Đời 7
-        { id: "M17_18", category: "LinkLabel" }, // Đời 8
-        { id: "M19_20", category: "LinkLabel" }, // Đời 9
-        { id: "M21_22", category: "LinkLabel" }, // Đời 10 - Vợ 1
-        { id: "M21_23", category: "LinkLabel" }, // Đời 10 - Vợ 2
-        { id: "M24_25", category: "LinkLabel" }, // Đời 11
-        { id: "M26_27", category: "LinkLabel" }, // Đời 12
-        { id: "M28_29", category: "LinkLabel" }, // Đời 13
-        { id: "M30_31", category: "LinkLabel" }  // Đời 14
+        { id: "M1_2", category: "LinkLabel" },   // Thủy tổ - Vợ Cả
+        { id: "M1_3", category: "LinkLabel" },   // Thủy tổ - Vợ Thứ
+        { id: "M1_4", category: "LinkLabel" },   // Thủy tổ - Vợ Út
+        { id: "M5_6", category: "LinkLabel" },   // Đời 2 - Nhánh Trưởng
+        { id: "M7_8", category: "LinkLabel" },   // Đời 2 - Nhánh Thứ 2
+        { id: "M10_11", category: "LinkLabel" }, // Đời 2 - Nhánh Thứ 3
+        { id: "M12_13", category: "LinkLabel" }, // Đời 2 - Nhánh Thứ 4
+        { id: "M14_15", category: "LinkLabel" }, // Đời 3 - Trưởng hệ
+        { id: "M25_26", category: "LinkLabel" }, // Đời 4
+        { id: "M27_28", category: "LinkLabel" }, // Đời 5 - Vợ Cả
+        { id: "M27_29", category: "LinkLabel" }, // Đời 5 - Vợ Thứ
+        { id: "M30_31", category: "LinkLabel" }, // Đời 6
+        { id: "M32_33", category: "LinkLabel" }, // Đời 7
+        { id: "M34_35", category: "LinkLabel" }, // Đời 8
+        { id: "M36_37", category: "LinkLabel" }, // Đời 9
+        { id: "M38_39", category: "LinkLabel" }, // Đời 10 - Vợ Cả
+        { id: "M38_40", category: "LinkLabel" }, // Đời 10 - Vợ Thứ
+        { id: "M41_42", category: "LinkLabel" }, // Đời 11
+        { id: "M43_44", category: "LinkLabel" }, // Đời 12
+        { id: "M45_46", category: "LinkLabel" }, // Đời 13
+        { id: "M47_48", category: "LinkLabel" }  // Đời 14
       ],
       linkDataArray: [
         // ============================================
@@ -1510,39 +1542,65 @@
         // ============================================
         { from: 1, to: 2, labelKeys: ["M1_2"], category: "Marriage" },
         { from: 1, to: 3, labelKeys: ["M1_3"], category: "Marriage" },
-        { from: 4, to: 5, labelKeys: ["M4_5"], category: "Marriage" },
-        { from: 6, to: 7, labelKeys: ["M6_7"], category: "Marriage" },
-        { from: 8, to: 9, labelKeys: ["M8_9"], category: "Marriage" },
+        { from: 1, to: 4, labelKeys: ["M1_4"], category: "Marriage" },
+        { from: 5, to: 6, labelKeys: ["M5_6"], category: "Marriage" },
+        { from: 7, to: 8, labelKeys: ["M7_8"], category: "Marriage" },
         { from: 10, to: 11, labelKeys: ["M10_11"], category: "Marriage" },
-        { from: 10, to: 12, labelKeys: ["M10_12"], category: "Marriage" },
-        { from: 13, to: 14, labelKeys: ["M13_14"], category: "Marriage" },
-        { from: 15, to: 16, labelKeys: ["M15_16"], category: "Marriage" },
-        { from: 17, to: 18, labelKeys: ["M17_18"], category: "Marriage" },
-        { from: 19, to: 20, labelKeys: ["M19_20"], category: "Marriage" },
-        { from: 21, to: 22, labelKeys: ["M21_22"], category: "Marriage" },
-        { from: 21, to: 23, labelKeys: ["M21_23"], category: "Marriage" },
-        { from: 24, to: 25, labelKeys: ["M24_25"], category: "Marriage" },
-        { from: 26, to: 27, labelKeys: ["M26_27"], category: "Marriage" },
-        { from: 28, to: 29, labelKeys: ["M28_29"], category: "Marriage" },
+        { from: 12, to: 13, labelKeys: ["M12_13"], category: "Marriage" },
+        { from: 14, to: 15, labelKeys: ["M14_15"], category: "Marriage" },
+        { from: 25, to: 26, labelKeys: ["M25_26"], category: "Marriage" },
+        { from: 27, to: 28, labelKeys: ["M27_28"], category: "Marriage" },
+        { from: 27, to: 29, labelKeys: ["M27_29"], category: "Marriage" },
         { from: 30, to: 31, labelKeys: ["M30_31"], category: "Marriage" },
+        { from: 32, to: 33, labelKeys: ["M32_33"], category: "Marriage" },
+        { from: 34, to: 35, labelKeys: ["M34_35"], category: "Marriage" },
+        { from: 36, to: 37, labelKeys: ["M36_37"], category: "Marriage" },
+        { from: 38, to: 39, labelKeys: ["M38_39"], category: "Marriage" },
+        { from: 38, to: 40, labelKeys: ["M38_40"], category: "Marriage" },
+        { from: 41, to: 42, labelKeys: ["M41_42"], category: "Marriage" },
+        { from: 43, to: 44, labelKeys: ["M43_44"], category: "Marriage" },
+        { from: 45, to: 46, labelKeys: ["M45_46"], category: "Marriage" },
+        { from: 47, to: 48, labelKeys: ["M47_48"], category: "Marriage" },
 
         // ============================================
         // DESCENT LINKS (Đường kẻ huyết thống dọc xuống)
         // ============================================
-        { from: "M1_2", to: 4, category: "Descent" },    // Con Đời 2 sinh ra từ Vợ Cả Đời 1
-        { from: "M4_5", to: 6, category: "Descent" },    // Con Đời 3 sinh ra từ Đời 2
-        { from: "M6_7", to: 8, category: "Descent" },    // Con Đời 4 sinh ra từ Đời 3
-        { from: "M8_9", to: 10, category: "Descent" },   // Con Đời 5 sinh ra từ Đời 4
-        { from: "M10_11", to: 13, category: "Descent" }, // Con Đời 6 sinh ra từ Vợ Cả Đời 5
-        { from: "M13_14", to: 15, category: "Descent" }, // Con Đời 7 sinh ra từ Đời 6
-        { from: "M15_16", to: 17, category: "Descent" }, // Con Đời 8 sinh ra từ Đời 7
-        { from: "M17_18", to: 19, category: "Descent" }, // Con Đời 9 sinh ra từ Đời 8
-        { from: "M19_20", to: 21, category: "Descent" }, // Con Đời 10 sinh ra từ Đời 9
-        { from: "M21_22", to: 24, category: "Descent" }, // Con Đời 11 sinh ra từ Vợ Cả Đời 10
-        { from: "M24_25", to: 26, category: "Descent" }, // Con Đời 12 sinh ra từ Đời 11
-        { from: "M26_27", to: 28, category: "Descent" }, // Con Đời 13 sinh ra từ Đời 12
-        { from: "M28_29", to: 30, category: "Descent" }, // Con Đời 14 sinh ra từ Đời 13
-        { from: "M30_31", to: 32, category: "Descent" }  // Hậu Duệ Đời 15 sinh ra từ Đời 14
+        // Từ Đời 1 xuống Đời 2 (5 con phân bổ chuẩn xác theo mẹ)
+        { from: "M1_2", to: 5, category: "Descent" },    // Trần Hữu Đức (Con mẹ Sâm)
+        { from: "M1_2", to: 7, category: "Descent" },    // Trần Hữu Minh (Con mẹ Sâm)
+        { from: "M1_2", to: 9, category: "Descent" },    // Trần Thị Thảo (Con mẹ Sâm)
+        { from: "M1_3", to: 10, category: "Descent" },   // Trần Hữu Phước (Con mẹ Mai)
+        { from: "M1_4", to: 12, category: "Descent" },   // Trần Hữu Nghĩa (Con mẹ Lan)
+
+        // Từ Đời 2 xuống Đời 3 (10 con phân bổ chuẩn xác theo các cụm bố mẹ)
+        // Con cụ Hữu Đức & Nguyễn Thu Hà (3 con)
+        { from: "M5_6", to: 14, category: "Descent" },
+        { from: "M5_6", to: 16, category: "Descent" },
+        { from: "M5_6", to: 17, category: "Descent" },
+        // Con cụ Hữu Minh & Lê Thị Hoa (3 con)
+        { from: "M7_8", to: 18, category: "Descent" },
+        { from: "M7_8", to: 19, category: "Descent" },
+        { from: "M7_8", to: 20, category: "Descent" },
+        // Con cụ Hữu Phước & Vũ Thị Tuyết (2 con)
+        { from: "M10_11", to: 21, category: "Descent" },
+        { from: "M10_11", to: 22, category: "Descent" },
+        // Con cụ Hữu Nghĩa & Hoàng Thị Dung (2 con)
+        { from: "M12_13", to: 23, category: "Descent" },
+        { from: "M12_13", to: 24, category: "Descent" },
+
+        // Mạch trực hệ chính nối tiếp chạy dài xuống Đời 15
+        { from: "M14_15", to: 25, category: "Descent" },  // Đời 3 -> Đời 4
+        { from: "M25_26", to: 27, category: "Descent" },  // Đời 4 -> Đời 5
+        { from: "M27_28", to: 30, category: "Descent" },  // Đời 5 (Vợ cả Quy) -> Đời 6
+        { from: "M30_31", to: 32, category: "Descent" },  // Đời 6 -> Đời 7
+        { from: "M32_33", to: 34, category: "Descent" },  // Đời 7 -> Đời 8
+        { from: "M34_35", to: 36, category: "Descent" },  // Đời 8 -> Đời 9
+        { from: "M36_37", to: 38, category: "Descent" },  // Đời 9 -> Đời 10
+        { from: "M38_39", to: 41, category: "Descent" },  // Đời 10 (Vợ cả Lành) -> Đời 11
+        { from: "M41_42", to: 43, category: "Descent" },  // Đời 11 -> Đời 12
+        { from: "M43_44", to: 45, category: "Descent" },  // Đời 12 -> Đời 13
+        { from: "M45_46", to: 47, category: "Descent" },  // Đời 13 -> Đời 14
+        { from: "M47_48", to: 49, category: "Descent" }   // Đời 14 -> Đời 15 (Hậu Duệ Minh Khôi)
       ]
     };
 
