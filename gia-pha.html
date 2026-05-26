@@ -696,6 +696,7 @@
 
     <!-- GoJS Diagram -->
     <div id="myDiagramDiv"></div>
+    <div id="myOverviewDiv" style="position: absolute; bottom: 20px; left: 20px; width: 180px; height: 130px; background: rgba(255, 255, 255, 0.95); border: 1.5px solid rgba(0,0,0,0.1); border-radius: 12px; z-index: 500; box-shadow: 0 8px 16px rgba(0,0,0,0.1); pointer-events: auto;"></div>
 
     <!-- Floating Controls -->
     <div class="gp-floating-controls" id="gp-floating-controls">
@@ -1066,26 +1067,27 @@
 
     const theme = {
       colors: {
-        femaleBadgeBackground: "#FFCBEA",
-        maleBadgeBackground: "#A2DAFF",
-        femaleBadgeText: "#7A005E",
-        maleBadgeText: "#001C76",
-        kingQueenBorder: "#FEBA00",
-        princePrincessBorder: "#679DDA",
-        civilianBorder: "#58ADA7",
-        personText: "#383838",
+        // Chuyển sang tone Đỏ bã trầu (Nữ) và Xanh rêu/Xám trầm (Nam)
+        femaleBadgeBackground: "#f9ebea",
+        maleBadgeBackground: "#eef2f3",
+        femaleBadgeText: "#7b241c",
+        maleBadgeText: "#1f618d",
+        kingQueenBorder: "#cca625", // Đồng bộ vàng kim
+        princePrincessBorder: "#d4ac0d",
+        civilianBorder: "#95a5a6",
+        personText: "#1a0000",
         personNodeBackground: "#FFFFFF",
-        selectionStroke: "#485670",
-        counterBackground: "#485670",
-        counterBorder: "#FFFFFF",
-        counterText: "#FFFFFF",
-        link: "#686E76",
+        selectionStroke: "#cca625",
+        counterBackground: "#ffffff", // Đổi nền nút Expand thành trắng
+        counterBorder: "#cca625", // Viền nút Expand màu vàng kim
+        counterText: "#5c0606",
+        link: "#8a7b66", // Làm dịu màu đường nối huyết thống
       },
       fonts: {
-        badgeFont: "bold 11px Poppins",
-        birthDeathFont: "13px Poppins",
-        nameFont: "bold 18px Poppins",
-        counterFont: "12px Poppins",
+        badgeFont: "600 11px Inter",
+        birthDeathFont: "12px Inter", // Nhỏ hơn font tên
+        nameFont: "bold 17px Playfair Display", // Chuyển font tên sang serif để trang trọng hơn
+        counterFont: "bold 14px Inter",
       },
     };
 
@@ -1185,8 +1187,8 @@
     // Expand/Collapse pill button under node (SRS Specification)
     const expandCollapseButton = () =>
       new go.Panel("Auto", {
-        alignmentFocus: go.Spot.Top,
-        alignment: new go.Spot(0.5, 1, 0, -10),
+        alignmentFocus: go.Spot.Center,
+        alignment: new go.Spot(0.5, 1, 0, 0), // Cân bằng ở mép dưới thẻ
         cursor: "pointer",
         click: (e, obj) => {
           e.handled = true;
@@ -1203,24 +1205,28 @@
       })
         .bindObject("visible", "", (node) => countChildren(node) > 0)
         .add(
-          new go.Shape("RoundedRectangle", {
-            parameter1: 10,
-            desiredSize: new go.Size(45, 20),
+          new go.Shape("Circle", {
+            desiredSize: new go.Size(26, 26),
             fill: theme.colors.counterBackground,
             stroke: theme.colors.counterBorder,
             strokeWidth: 1.5,
+            shadowVisible: true,
+            shadowColor: "rgba(0, 0, 0, 0.1)",
+            shadowOffset: new go.Point(0, 2),
+            shadowBlur: 4
           })
         )
         .add(
           new go.TextBlock({
             alignment: go.Spot.Center,
             stroke: theme.colors.counterText,
-            font: "bold 11px Poppins",
-            textAlign: "center"
+            font: theme.fonts.counterFont,
+            textAlign: "center",
+            margin: new go.Margin(1, 0, 0, 0) // Căn chỉnh chữ ra giữa hình tròn
           }).bind("text", (data, textBlock) => {
             const node = textBlock.part;
             const count = countChildren(node);
-            return data.isExpanded === false ? `+${count}` : "-";
+            return data.isExpanded === false ? "+" : "-";
           })
         );
 
@@ -1741,8 +1747,8 @@
       // Marriage relationships link template
       diagram.linkTemplateMap.add("Marriage",
         new go.Link({
-          routing: go.Routing.Orthogonal, // Orthogonal routing for marriage link
-          corner: 10,
+          routing: go.Routing.Orthogonal, 
+          corner: 15, // Tăng bo góc cho mềm
           fromSpot: go.Spot.LeftRightSides,
           toSpot: go.Spot.LeftRightSides,
           selectable: false,
@@ -1752,8 +1758,9 @@
           .bind("visible", "visible", (v) => v !== false)
           .add(
             new go.Shape({
-              strokeWidth: 3,
-              stroke: "#cca625"
+              strokeWidth: 2, // Thanh mảnh hơn
+              stroke: theme.colors.selectionStroke, 
+              strokeDashArray: [5, 5] // Render nét đứt
             })
           )
       );
@@ -1793,6 +1800,9 @@
           applyFocusView(null);
         }
       });
+
+      // Khởi tạo Minimap Overview
+      new go.Overview("myOverviewDiv").observed = diagram;
 
       gpDiagram = diagram;
     };
