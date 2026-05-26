@@ -687,234 +687,6 @@
   <!-- ======= GIA PHẢ GOJS LOGIC ======= -->
   <script>
     // ============================================
-    // 0. CUSTOM GENOGRAM LAYOUT
-    // ============================================
-    // A custom layout that shows spouses side-by-side and connects children from marriage node
-    class GenogramLayout extends go.LayeredDigraphLayout {
-      constructor() {
-        super();
-        this.initializeOption = go.LayeredDigraphInit.DepthFirstIn;
-        this.spouseSpacing = 30;  // minimum space between spouses
-        this.isRouting = false;
-      }
-
-      makeNetwork(coll) {
-        const net = this.createNetwork();
-        if (coll instanceof go.Diagram) {
-          this.add(net, coll.nodes, true);
-          this.add(net, coll.links, true);
-        } else if (coll instanceof go.Group) {
-          this.add(net, coll.memberParts, false);
-        } else if (coll.iterator) {
-          this.add(net, coll.iterator, false);
-        }
-        return net;
-      }
-
-      add(net, coll, nonmemberonly) {
-        const horiz = this.direction == 0.0 || this.direction == 180.0;
-        const multiSpousePeople = new go.Set();
-        const it = coll.iterator;
-        while (it.next()) {
-          const node = it.value;
-          if (!(node instanceof go.Node) || !node.data) continue;
-          if (!node.isLayoutPositioned || !node.isVisible()) continue;
-          if (nonmemberonly && node.containingGroup !== null) continue;
-          
-          if (node.isLinkLabel) {
-            const link = node.labeledLink;
-            if (link.category === "Marriage") {
-              const spouseA = link.fromNode;
-              const spouseB = link.toNode;
-              const vertex = net.addNode(node);
-              if (horiz) {
-                vertex.height = spouseA.actualBounds.height + this.spouseSpacing + spouseB.actualBounds.height;
-                vertex.width = Math.max(spouseA.actualBounds.width, spouseB.actualBounds.width);
-                vertex.focus = new go.Point(vertex.width / 2, spouseA.actualBounds.height + this.spouseSpacing / 2);
-              } else {
-                vertex.width = spouseA.actualBounds.width + this.spouseSpacing + spouseB.actualBounds.width;
-                vertex.height = Math.max(spouseA.actualBounds.height, spouseB.actualBounds.height);
-                vertex.focus = new go.Point(spouseA.actualBounds.width + this.spouseSpacing / 2, vertex.height / 2);
-              }
-            }
-          } else {
-            let marriages = 0;
-            node.linksConnected.each(l => {
-              if (l.category === "Marriage") marriages++;
-            });
-            if (marriages === 0) {
-              net.addNode(node);
-            } else if (marriages > 1) {
-              multiSpousePeople.add(node);
-            }
-          }
-        }
-
-        it.reset();
-        while (it.next()) {
-          const link = it.value;
-          if (!(link instanceof go.Link)) continue;
-          if (!link.isLayoutPositioned || !link.isVisible()) continue;
-          if (nonmemberonly && link.containingGroup !== null) continue;
-          
-          if (link.category === "" && link.data) {
-            const parent = net.findVertex(link.fromNode);
-            const child = net.findVertex(link.toNode);
-            if (child !== null) {
-              net.linkVertexes(parent, child, link);
-            } else {
-              link.toNode.linksConnected.each(l => {
-                if (l.category !== "Marriage" || !l.data) return;
-                const mlab = l.labelNodes.first();
-                const mlabvert = net.findVertex(mlab);
-                if (mlabvert !== null) {
-                  net.linkVertexes(parent, mlabvert, link);
-                }
-              });
-            }
-          }
-        }
-
-        while (multiSpousePeople.count > 0) {
-          const node = multiSpousePeople.first();
-          const cohort = new go.Set();
-          this.extendCohort(cohort, node);
-          const dummyvert = net.createVertex();
-          net.addVertex(dummyvert);
-          const marriages = new go.Set();
-          cohort.each(n => {
-            n.linksConnected.each(l => {
-              marriages.add(l);
-            })
-          });
-          marriages.each(link => {
-            const mlab = link.labelNodes.first()
-            const v = net.findVertex(mlab);
-            if (v !== null) {
-              net.linkVertexes(dummyvert, v, null);
-            }
-          });
-          multiSpousePeople.removeAll(cohort);
-        }
-      }
-
-      extendCohort(coll, node) {
-        if (coll.has(node)) return;
-        coll.add(node);
-        node.linksConnected.each(l => {
-          if (l.category === "Marriage") {
-            this.extendCohort(coll, l.fromNode);
-            this.extendCohort(coll, l.toNode);
-          }
-        });
-      }
-
-      assignLayers() {
-        super.assignLayers();
-        const horiz = this.direction == 0.0 || this.direction == 180.0;
-        const maxsizes = [];
-        this.network.vertexes.each(v => {
-          const lay = v.layer;
-          let max = maxsizes[lay];
-          if (max === undefined) max = 0;
-          const sz = (horiz ? v.width : v.height);
-          if (sz > max) maxsizes[lay] = sz;
-        });
-        this.network.vertexes.each(v => {
-          const lay = v.layer;
-          const max = maxsizes[lay];
-          if (horiz) {
-            v.focus = new go.Point(0, v.height / 2);
-            v.width = max;
-          } else {
-            v.focus = new go.Point(v.width / 2, 0);
-            v.height = max;
-          }
-        });
-      }
-
-      initializeIndices() {
-        super.initializeIndices();
-        const vertical = this.direction === 90 || this.direction === 270;
-        this.network.edges.each(e => {
-          if (e.fromVertex.node && e.fromVertex.node.isLinkLabel) {
-            e.portFromPos = vertical ? e.fromVertex.focusX : e.fromVertex.focusY;
-          }
-          if (e.toVertex.node && e.toVertex.node.isLinkLabel) {
-            e.portToPos = vertical ? e.toVertex.focusX : e.toVertex.focusY;
-          }
-        })
-      }
-
-      commitNodes() {
-        super.commitNodes();
-        this.network.vertexes.each(v => {
-          if (v.node !== null && !v.node.isLinkLabel) {
-            v.node.position = new go.Point(v.x, v.y);
-          }
-        });
-
-        const horiz = this.direction == 0.0 || this.direction == 180.0;
-        this.network.vertexes.each(v => {
-          if (v.node === null) return;
-          if (!v.node.isLinkLabel) return;
-          const labnode = v.node;
-          const lablink = labnode.labeledLink;
-          lablink.invalidateRoute();
-          let spouseA = lablink.fromNode;
-          let spouseB = lablink.toNode;
-          if (spouseA.opacity > 0 && spouseB.opacity > 0) {
-            if (spouseA.data.gender === "F") {
-              const temp = spouseA;
-              spouseA = spouseB;
-              spouseB = temp;
-            }
-            const aParentsNode = this.findParentsMarriageLabelNode(spouseA);
-            const bParentsNode = this.findParentsMarriageLabelNode(spouseB);
-            if (aParentsNode !== null && bParentsNode !== null &&
-              (horiz
-                ? aParentsNode.position.x > bParentsNode.position.x
-                : aParentsNode.position.y > bParentsNode.position.y)) {
-              const temp = spouseA;
-              spouseA = spouseB;
-              spouseB = temp;
-            }
-            spouseA.moveTo(v.x, v.y);
-            if (horiz) {
-              spouseB.moveTo(v.x, v.y + spouseA.actualBounds.height + this.spouseSpacing);
-            } else {
-              spouseB.moveTo(v.x + spouseA.actualBounds.width + this.spouseSpacing, v.y);
-            }
-          } else if (spouseA.opacity === 0) {
-            const pos = horiz
-              ? new go.Point(v.x, v.centerY - spouseB.actualBounds.height / 2)
-              : new go.Point(v.centerX - spouseB.actualBounds.width / 2, v.y);
-            spouseB.move(pos);
-            if (horiz) pos.y++; else pos.x++;
-            spouseA.move(pos);
-          } else if (spouseB.opacity === 0) {
-            const pos = horiz
-              ? new go.Point(v.x, v.centerY - spouseA.actualBounds.height / 2)
-              : new go.Point(v.centerX - spouseA.actualBounds.width / 2, v.y);
-            spouseA.move(pos);
-            if (horiz) pos.y++; else pos.x++;
-            spouseB.move(pos);
-          }
-          lablink.ensureBounds();
-        });
-      }
-
-      findParentsMarriageLabelNode(node) {
-        const it = node.findNodesInto();
-        while (it.next()) {
-          const n = it.value;
-          if (n.isLinkLabel) return n;
-        }
-        return null;
-      }
-    }
-
-    // ============================================
     // 1. GOJS THEME & HELPERS
     // ============================================
     const nameProperty = "name";
@@ -1014,27 +786,13 @@
         alignment: new go.Spot(0.5, 1, 0, -35),
       }).bind("text", "dob");
 
-    function countChildren(node) {
-      if (!(node instanceof go.Node)) return 0;
-      let count = 0;
-      node.linksConnected.each(l => {
-        if (l.category === "Marriage") {
-          const labelNode = l.labelNodes.first();
-          if (labelNode) {
-            count += labelNode.findNodesOutOf().count;
-          }
-        }
-      });
-      return count;
-    }
-
     const personCounter = () =>
       new go.Panel("Auto", {
         visible: false,
         alignmentFocus: go.Spot.Center,
         alignment: go.Spot.Bottom,
       })
-        .bindObject("visible", "", (node) => countChildren(node) > 0)
+        .bindObject("visible", "", (obj) => obj.findLinksOutOf().count > 0)
         .add(
           new go.Shape("Circle", {
             desiredSize: new go.Size(29, 29),
@@ -1049,7 +807,7 @@
             stroke: theme.colors.counterText,
             font: theme.fonts.counterFont,
             textAlign: "center",
-          }).bindObject("text", "", (node) => countChildren(node))
+          }).bindObject("text", "", (obj) => obj.findNodesOutOf().count)
         );
 
     const imageSourceBinding = () =>
@@ -1171,193 +929,132 @@
       );
 
     // ============================================
-    // 3. FAMILY DATA (3 ĐỜI DEMO)
+    // 3. FAMILY DATA
     // ============================================
     const familyData = [
-      // --- ĐỜI 1 ---
-      { id: 1, name: "Trần Thế Anh", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1930 - 2012", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Thế Anh", dobSolar: "15/05/1930", dobLunar: "18/04/Canh Ngọ", dodSolar: "12/10/2012", dodLunar: "27/08/Nhâm Thìn", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Thủy tổ khai sáng dòng họ Trần tại địa phương, người đặt nền móng và xây dựng nhà thờ tổ tiên.", ux: [2, 3, 4] },
-      { id: 2, name: "Lê Thị Sâm", gender: "F", status: "queen", title: "Vợ Cả - Đời 1", dob: "1932 - 2015", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/10/1932", dobLunar: "21/09/Nhâm Thân", dodSolar: "05/06/2015", dodLunar: "19/04/Ất Mùi", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Hiền thê cả của cụ Thế Anh, cả đời tháo vát lo toan việc gia đình và nuôi dạy các con khôn lớn.", vir: 1 },
-      { id: 3, name: "Nguyễn Thị Mai", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1936 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/03/1936", dobLunar: "15/02/Bính Tý", dodSolar: "22/11/2018", dodLunar: "16/10/Mậu Tuất", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Vợ thứ hai của cụ Thế Anh, người phụ nữ đôn hậu, hết mực yêu thương con cháu.", vir: 1 },
-      { id: 4, name: "Phạm Thị Lan", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1940 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/12/1940", dobLunar: "14/11/Canh Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ thứ ba của cụ Thế Anh, hiện đang sống an nhàn cùng con cháu tại Quảng Nam.", vir: 1 },
+      { id: 1, name: "Trần X", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1865 - 1936", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Thế Anh", dobSolar: "15/05/1865", dobLunar: "20/04/Ất Sửu", dodSolar: "12/10/1936", dodLunar: "28/08/Bính Tý", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Người đặt nền móng cho gia tộc Trần tại địa phương, chăm lo việc khai khẩn ruộng đất và xây dựng nhà thờ tổ." },
+      { id: 2, name: "Trần Ngật", pid: 1, gender: "M", status: "king", title: "Trưởng họ - Đời 2", dob: "1895 - 1952", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Minh", dobSolar: "12/03/1895", dobLunar: "16/02/Ất Mùi", dodSolar: "04/07/1952", dodLunar: "13/05/Nhâm Thìn", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Người tiếp quản gia nghiệp, có công lớn trong việc duy trì và mở rộng hương hỏa dòng tộc qua những năm kháng chiến khó khăn." },
+      { id: 3, name: "Trần Thị Nết", pid: 2, gender: "F", status: "king", title: "Đời 3", dob: "1918 - 1980", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/08/1918", dobLunar: "15/07/Mậu Ngọ", dodSolar: "11/02/1980", dodLunar: "25/12/Kỷ Mùi", burialPlace: "Nghĩa trang xã Điện Bàn, Quảng Nam", bio: "Người mẹ hiền đức, nổi tiếng nuôi dạy các con thành đạt, luôn hướng về cội nguồn." },
+      { id: 4, name: "Trần Thu", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1920 - 2005", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Thu Hùng", dobSolar: "05/10/1920", dobLunar: "24/08/Canh Thân", dodSolar: "15/12/2005", dodLunar: "14/11/Ất Dậu", burialPlace: "Nghĩa trang Dòng họ Trần", bio: "Đóng góp nhiều công sức xây dựng trung tâm văn hóa dòng tộc và trùng tu nhà thờ Trần tộc." },
+      { id: 5, name: "Trần Thị Hoà", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1922 - 2010", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/1922", dobLunar: "03/12/Tân Dậu", dodSolar: "08/09/2010", dodLunar: "30/07/Canh Dần", burialPlace: "Nghĩa trang Hòa Sơn, Đà Nẵng", bio: "Trọn đời vì con cháu, luôn tham gia tích cực các hoạt động hiếu hỷ của dòng tộc." },
+      { id: 6, name: "Trần Thị Năm", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1925 - 2012", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "10/06/1925", dobLunar: "19/04/Ất Sửu", dodSolar: "22/03/2012", dodLunar: "30/02/Nhâm Thìn", burialPlace: "Nghĩa trang quê nhà", bio: "Sống đôn hậu, yêu thương con cháu hết mực, lưu giữ nhiều điển tích xưa của dòng họ." },
+      { id: 7, name: "Trần Chiến", pid: 2, gender: "M", status: "king", title: "Đời 3", dob: "1928 - 2015", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Quyết Chiến", dobSolar: "15/09/1928", dobLunar: "02/08/Mậu Thìn", dodSolar: "18/06/2015", dodLunar: "03/05/Ất Mùi", burialPlace: "Nghĩa trang dòng tộc", bio: "Cựu chiến binh thời kỳ chống Pháp, giữ chức vụ quan trọng trong hội khuyến học dòng họ Trần." },
+      { id: 8, name: "Trần Thắng", pid: 2, gender: "M", status: "king", title: "Chi Trưởng - Đời 3", dob: "1931 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Toàn Thắng", dobSolar: "02/02/1931", dobLunar: "15/12/Canh Ngọ", dodSolar: "29/10/2018", dodLunar: "21/09/Mậu Tuất", burialPlace: "Nghĩa trang quê nhà", bio: "Nhà giáo ưu tú, biên soạn cuốn 'Lược sử Trần tộc gia phả' lưu truyền cho thế hệ sau." },
+      { id: 9, name: "Dương Phương", pid: 3, gender: "F", status: "king", title: "Đời 4", dob: "1940 - 2021", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/04/1940", dobLunar: "05/03/Canh Thìn", dodSolar: "09/01/2021", dodLunar: "27/11/Canh Tý", burialPlace: "Nghĩa trang Hòa Sơn", bio: "Luôn gìn giữ nét đẹp gia phong, tận tụy chăm lo hương khói tổ tiên." },
+      { id: 10, name: "Dương X Phương", pid: 3, gender: "F", status: "king", title: "Đời 4", dob: "1942 - 2023", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1942", dobLunar: "03/06/Nhâm Ngọ", dodSolar: "22/10/2023", dodLunar: "08/09/Quý Mão", burialPlace: "Nghĩa trang Điện Bàn", bio: "Có nhiều đóng góp cho quỹ hỗ trợ gia đình khó khăn trong dòng tộc." },
+      { id: 11, name: "Dương Phương 1", pid: 9, gender: "M", status: "king", title: "Đời 5", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Dương Hoài Nam", dobSolar: "20/11/1965", dobLunar: "27/10/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Doanh nhân thành đạt, hỗ trợ kinh phí trùng tu tôn tạo di tích nhà thờ tổ dòng họ." },
+      { id: 12, name: "Dương Phương 2", pid: 9, gender: "M", status: "king", title: "Đời 5", dob: "1968 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Dương Hoài Bắc", dobSolar: "14/09/1968", dobLunar: "22/07/Mậu Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kỹ sư xây dựng, hỗ trợ tư vấn thiết kế và giám sát thi công nhà thờ Trần tộc." },
+      { id: 13, name: "Trần Quậy", pid: 4, gender: "F", status: "king", title: "Đời 4", dob: "1945 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Thị Tuyết", dobSolar: "03/08/1945", dobLunar: "26/06/Ất Dậu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Chuyên tâm chăm lo việc nội trợ gia đình, giữ gìn nếp sống gia phong." },
+      { id: 14, name: "Trần X Y", pid: 4, gender: "F", status: "king", title: "Đời 4", dob: "1948 - 2022", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/12/1948", dobLunar: "19/11/Mậu Tý", dodSolar: "05/05/2022", dodLunar: "05/04/Nhâm Dần", burialPlace: "Nghĩa trang dòng họ Trần", bio: "Người phụ nữ hiền lành, tần tảo nuôi con, có lòng từ thiện cứu giúp nhiều người." },
+      { id: 15, name: "Trần Quậy 1", pid: 13, gender: "M", status: "king", title: "Đời 5", dob: "1972 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Tiến", dobSolar: "11/11/1972", dobLunar: "06/10/Nhâm Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Tích cực hoạt động phong trào thanh niên dòng tộc, kết nối các thế hệ trẻ Trần tộc." },
+      { id: 16, name: "Nguyễn Hữu Thành", pid: 5, gender: "M", status: "king", title: "Đời 4", dob: "1945 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Thanh Nguyen", dobSolar: "05/05/1945", dobLunar: "24/03/Ất Dậu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kỹ sư công nghệ thông tin, xây dựng trang web gia phả online cho dòng tộc Trần." },
+      { id: 17, name: "Nguyễn Hữu Thịnh", pid: 5, gender: "F", status: "king", title: "Đời 4", dob: "1948 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/10/1948", dobLunar: "06/09/Mậu Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nữ doanh nhân, tài trợ chính cho giải thưởng khuyến học Trần tộc hàng năm." },
+      { id: 18, name: "Nguyễn Hữu Thông", pid: 5, gender: "F", status: "king", title: "Đời 4", dob: "1951 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "21/04/1951", dobLunar: "16/03/Tân Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giáo viên nghỉ hưu, đóng góp biên soạn các bài thơ, truyện lịch sử về nguồn gốc Trần tộc." },
+      { id: 19, name: "Nguyễn Duy Hưng", pid: 17, gender: "F", status: "king", title: "Đời 5", dob: "1975 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/09/1975", dobLunar: "04/08/Ất Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nhà báo, phụ trách truyền thông và quảng bá hoạt động ngày lễ giỗ tổ của dòng họ." },
+      { id: 20, name: "Trần Út", pid: 6, gender: "M", status: "king", title: "Đời 4", dob: "1950 - 2024", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trần Minh Út", dobSolar: "30/06/1950", dobLunar: "16/05/Canh Dần", dodSolar: "12/01/2024", dodLunar: "02/12/Quý Mão", burialPlace: "Nghĩa trang Hòa Sơn", bio: "Đội ngũ ban quản lý nhà thờ tổ, tận hiến cho công việc tôn tạo mộ phần tiên tổ." },
+      { id: 21, name: "Trần Cưng", pid: 6, gender: "F", status: "king", title: "Đời 4", dob: "1953 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/10/1953", dobLunar: "08/09/Quý Tị", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giữ lửa gia đình, đóng góp tích cực vào ban nữ công dòng tộc." },
+      { id: 22, name: "Trần Xịn", pid: 7, gender: "M", status: "king", title: "Đời 4", dob: "1955 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Công Xịn", dobSolar: "12/08/1955", dobLunar: "25/06/Ất Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Họa sĩ, đóng góp nhiều bức họa chân dung tiên tổ cho nhà thờ họ Trần." },
+      { id: 23, name: "Trần F", pid: 7, gender: "F", status: "king", title: "Đời 4", dob: "1958 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/05/1958", dobLunar: "13/03/Mậu Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Bác sĩ, tổ chức khám sức khỏe miễn phí cho người cao tuổi trong dòng tộc vào ngày hội xuân." },
+      { id: 24, name: "Trần J", pid: 8, gender: "M", status: "king", title: "Đời 4", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Văn Quốc", dobSolar: "24/12/1960", dobLunar: "07/11/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Chủ tịch Hội khuyến học dòng họ Trần tộc, hỗ trợ các cháu học sinh đỗ đạt cao." },
+      { id: 25, name: "Trần FG", pid: 8, gender: "F", status: "king", title: "Đời 4", dob: "1963 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "18/02/1963", dobLunar: "25/01/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nữ nghệ nhân cắm hoa nghệ thuật, phụ trách trang trí các ngày lễ lớn của dòng tộc." },
+      // --- Đời 6 ---
+      { id: 26, name: "Dương Phương 3", pid: 11, gender: "M", status: "king", title: "Đời 6", dob: "1990 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Dương Khang", dobSolar: "10/05/1990", dobLunar: "16/04/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giám đốc công ty truyền thông, tích cực số hóa thông tin gia phả." },
+      { id: 27, name: "Dương Phương 4", pid: 11, gender: "F", status: "king", title: "Đời 6", dob: "1993 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/08/1993", dobLunar: "03/07/Quý Dậu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giảng viên đại học, hướng dẫn các sinh viên làm đề tài nghiên cứu về lịch sử gia tộc." },
+      { id: 28, name: "Dương Phương 5", pid: 12, gender: "M", status: "king", title: "Đời 6", dob: "1995 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Dương Kiên", dobSolar: "15/12/1995", dobLunar: "24/10/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kiến trúc sư trẻ, thiết kế quy hoạch lại khu lăng mộ gia tộc." },
+      { id: 29, name: "Trần Hạo", pid: 15, gender: "M", status: "king", title: "Đời 6", dob: "1998 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Trần Hạo Nam", dobSolar: "05/02/1998", dobLunar: "09/01/Mậu Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Lập trình viên, đồng phát triển ứng dụng di động cho gia phả họ Trần." },
+      { id: 30, name: "Nguyễn Duy Long", pid: 19, gender: "M", status: "king", title: "Đời 6", dob: "2000 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/10/2000", dobLunar: "15/09/Canh Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Sinh viên y khoa, thường xuyên hỗ trợ các hoạt động thiện nguyện của chi họ." },
+      { id: 31, name: "Nguyễn Duy Linh", pid: 19, gender: "F", status: "king", title: "Đời 6", dob: "2003 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/04/2003", dobLunar: "21/03/Quý Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Nhiếp ảnh gia tự do, ghi lại những khoảnh khắc quý giá trong các dịp hội ngộ dòng họ." },
+      // --- Đời 7 ---
+      { id: 32, name: "Dương Phương 6", pid: 26, gender: "M", status: "king", title: "Đời 7", dob: "2015 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/06/2015", dobLunar: "19/04/Ất Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Thành viên nhỏ tuổi, rất tích cực trong các hoạt động thiếu nhi của dòng họ." },
+      { id: 33, name: "Dương Phương 7", pid: 26, gender: "F", status: "king", title: "Đời 7", dob: "2018 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "14/02/2018", dobLunar: "29/12/Mậu Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu gái ngoan hiền, luôn tham gia các buổi sinh hoạt văn nghệ." },
+      { id: 34, name: "Dương Phương 8", pid: 27, gender: "M", status: "king", title: "Đời 7", dob: "2020 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "10/11/2020", dobLunar: "25/09/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Luôn được ông bà yêu thương, chăm sóc." },
+      { id: 35, name: "Dương Phương 9", pid: 28, gender: "M", status: "king", title: "Đời 7", dob: "2022 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/01/2022", dobLunar: "18/12/Tân Sửu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Hậu duệ trẻ tuổi của nhánh trưởng." },
+      { id: 36, name: "Trần Nam", pid: 29, gender: "M", status: "king", title: "Đời 7", dob: "2023 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/08/2023", dobLunar: "22/06/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Tương lai là kỹ sư công nghệ của gia tộc." },
+      { id: 37, name: "Nguyễn Bảo", pid: 30, gender: "M", status: "king", title: "Đời 7", dob: "2024 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/2024", dobLunar: "20/11/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Mầm non tương lai của chi Nguyễn trong họ Trần." },
+      // --- Đời 8 ---
+      { id: 38, name: "Dương Hạo", pid: 32, gender: "M", status: "king", title: "Đời 8", dob: "2040 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/03/2040", dobLunar: "01/02/Canh Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai." },
+      { id: 39, name: "Dương Hân", pid: 32, gender: "F", status: "king", title: "Đời 8", dob: "2042 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/2042", dobLunar: "08/06/Nhâm Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai." },
+      { id: 40, name: "Lê Minh", pid: 34, gender: "M", status: "king", title: "Đời 8", dob: "2045 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/10/2045", dobLunar: "10/09/Ất Sửu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai." },
+      { id: 41, name: "Dương Phúc", pid: 35, gender: "M", status: "king", title: "Đời 8", dob: "2046 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/12/2046", dobLunar: "07/11/Bính Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai." },
+      { id: 42, name: "Trần Khang", pid: 36, gender: "M", status: "king", title: "Đời 8", dob: "2048 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "02/02/2048", dobLunar: "18/12/Đinh Mão", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai." },
+      { id: 43, name: "Nguyễn An", pid: 37, gender: "M", status: "king", title: "Đời 8", dob: "2050 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/08/2050", dobLunar: "20/06/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai." },
+      // --- Đời 9 ---
+      { id: 44, name: "Dương Trí", pid: 38, gender: "M", status: "king", title: "Đời 9", dob: "2065 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "14/04/2065", dobLunar: "08/03/Ất Dậu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai xa." },
+      { id: 45, name: "Dương Tuệ", pid: 38, gender: "F", status: "king", title: "Đời 9", dob: "2068 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/09/2068", dobLunar: "27/08/Mậu Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai xa." },
+      { id: 46, name: "Lê Hưng", pid: 40, gender: "M", status: "king", title: "Đời 9", dob: "2070 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "25/12/2070", dobLunar: "03/12/Canh Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai xa." },
+      { id: 47, name: "Dương Bình", pid: 41, gender: "M", status: "king", title: "Đời 9", dob: "2072 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/2072", dobLunar: "11/11/Nhâm Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai xa." },
+      { id: 48, name: "Trần Toàn", pid: 42, gender: "M", status: "king", title: "Đời 9", dob: "2075 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/05/2075", dobLunar: "24/03/Ất Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai xa." },
+      { id: 49, name: "Nguyễn Lộc", pid: 43, gender: "M", status: "king", title: "Đời 9", dob: "2080 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "10/10/2080", dobLunar: "02/09/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu mô phỏng thế hệ tương lai xa." },
+      // =============================================
+      // --- Demo: 1 chồng 1 vợ, có 2 con ---
+      // =============================================
+      { id: 50, name: "Trần Một Vợ", pid: 44, gender: "M", status: "king", title: "Đời 10", dob: "2090 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/2090", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Demo 1 chồng 1 vợ, có 2 con." },
+      { id: 51, name: "Lê Thị Vợ", pid: 50, gender: "F", status: "king", title: "Vợ", dob: "2092 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "02/02/2092", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ của Trần Một Vợ." },
+      // Con của Trần Một Vợ & Lê Thị Vợ
+      { id: 57, name: "Trần Bảo Long", pid: 50, gender: "M", status: "king", title: "Đời 11", dob: "2115 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "10/03/2115", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai cả của Trần Một Vợ và Lê Thị Vợ." },
+      { id: 58, name: "Trần Bảo Ngọc", pid: 50, gender: "F", status: "king", title: "Đời 11", dob: "2118 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "25/08/2118", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con gái út của Trần Một Vợ và Lê Thị Vợ." },
 
-      // --- ĐỜI 2 ---
-      // Con của Vợ Cả (Lê Thị Sâm)
-      { id: 5, name: "Trần Hữu Đức", gender: "M", status: "prince", title: "Trưởng họ - Đời 2", dob: "1955 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Đức Hùng", dobSolar: "10/04/1955", dobLunar: "18/03/Ất Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai trưởng cụ cả Lê Thị Sâm. Trưởng nam dòng tộc, gánh vác các công việc cúng bái và duy trì nhà thờ họ.", f: 1, m: 2, ux: 6 },
-      { id: 6, name: "Nguyễn Thu Hà", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1958 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/11/1958", dobLunar: "12/10/Mậu Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Hiền thê của cụ Hữu Đức, tham gia tích cực các hoạt động của ban nữ công dòng họ.", vir: 5 },
-      { id: 7, name: "Trần Thị Thảo", gender: "F", status: "civilian", title: "Đời 2", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/05/1960", dobLunar: "10/04/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con gái của cụ cả Lê Thị Sâm, hiện đang định cư tại TP. Hồ Chí Minh.", f: 1, m: 2 },
-      
-      // Con của Vợ Hai (Nguyễn Thị Mai)
-      { id: 8, name: "Trần Hữu Phước", gender: "M", status: "prince", title: "Đời 2", dob: "1962 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Hữu Phước", dobSolar: "15/09/1962", dobLunar: "17/08/Nhâm Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con cụ hai Nguyễn Thị Mai. Doanh nhân thành đạt, tài trợ chính cho các quỹ khuyến học của dòng tộc.", f: 1, m: 3, ux: 9 },
-      { id: 9, name: "Vũ Thị Tuyết", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/1965", dobLunar: "29/11/Giáp Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Hiền thê của cụ Hữu Phước.", vir: 8 },
-
-      // Con của Vợ Ba (Phạm Thị Lan)
-      { id: 10, name: "Trần Hữu Nghĩa", gender: "M", status: "civilian", title: "Đời 2", dob: "1970 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Nghĩa Nhân", dobSolar: "18/08/1970", dobLunar: "17/07/Canh Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con cụ ba Phạm Thị Lan. Thầy giáo ưu tú, có nhiều đóng góp trong việc giáo dục con cháu dòng họ.", f: 1, m: 4 },
-
-      // --- ĐỜI 3 ---
-      // Con của Trần Hữu Đức & Nguyễn Thu Hà
-      { id: 11, name: "Trần Bảo Nam", gender: "M", status: "civilian", title: "Đời 3", dob: "1985 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Bảo Nam", dobSolar: "20/02/1985", dobLunar: "01/01/Ất Sửu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu đích tôn của dòng họ Trần, kỹ sư phần mềm, hỗ trợ xây dựng phần mềm gia phả dòng họ.", f: 5, m: 6 },
-      { id: 12, name: "Trần Khánh Vy", gender: "F", status: "civilian", title: "Đời 3", dob: "1988 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1988", dobLunar: "02/06/Mậu Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu gái cụ Thế Anh, hiện là bác sĩ tại bệnh viện đa khoa Đà Nẵng.", f: 5, m: 6 },
-
-      // Con của Trần Hữu Phước & Vũ Thị Tuyết
-      { id: 13, name: "Trần Minh Triết", gender: "M", status: "civilian", title: "Đời 3", dob: "1992 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Minh Triết", dobSolar: "05/12/1992", dobLunar: "12/11/Nhâm Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu trai cụ Thế Anh, tốt nghiệp thạc sĩ kinh tế tại Úc, hiện làm quản lý doanh nghiệp.", f: 8, m: 9 }
+      // =============================================
+      // --- Demo: Ông 4 vợ, mỗi bà có con ---
+      // =============================================
+      { id: 52, name: "Trần Đa Thê", pid: 48, gender: "M", status: "king", title: "Đời 10", dob: "2095 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/05/2095", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Demo ông có 4 vợ, mỗi bà đều có con." },
+      // -- Vợ Cả --
+      { id: 53, name: "Phạm Vợ Cả", pid: 52, gender: "F", status: "king", title: "Vợ Cả", dob: "2096 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "06/06/2096", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ cả của Trần Đa Thê." },
+      // Con của Vợ Cả
+      { id: 59, name: "Trần Đại Nghĩa", pid: 52, gender: "M", status: "king", title: "Đời 11 (Con Vợ Cả)", dob: "2116 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/01/2116", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai trưởng, mẹ là Phạm Vợ Cả." },
+      { id: 60, name: "Trần Thị Đào", pid: 52, gender: "F", status: "king", title: "Đời 11 (Con Vợ Cả)", dob: "2119 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "18/05/2119", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con gái, mẹ là Phạm Vợ Cả." },
+      // -- Vợ Hai --
+      { id: 54, name: "Hoàng Vợ Hai", pid: 52, gender: "F", status: "king", title: "Vợ Hai", dob: "2097 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "07/07/2097", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ hai của Trần Đa Thê." },
+      // Con của Vợ Hai
+      { id: 61, name: "Trần Hoàng Sơn", pid: 52, gender: "M", status: "king", title: "Đời 11 (Con Vợ Hai)", dob: "2118 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "03/03/2118", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai, mẹ là Hoàng Vợ Hai." },
+      // -- Vợ Ba --
+      { id: 55, name: "Vũ Vợ Ba", pid: 52, gender: "F", status: "king", title: "Vợ Ba", dob: "2098 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/08/2098", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ ba của Trần Đa Thê." },
+      // Con của Vợ Ba
+      { id: 62, name: "Trần Vũ Hải", pid: 52, gender: "M", status: "king", title: "Đời 11 (Con Vợ Ba)", dob: "2120 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/06/2120", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai, mẹ là Vũ Vợ Ba." },
+      { id: 63, name: "Trần Thị Mai", pid: 52, gender: "F", status: "king", title: "Đời 11 (Con Vợ Ba)", dob: "2123 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/09/2123", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con gái, mẹ là Vũ Vợ Ba." },
+      // -- Vợ Tư --
+      { id: 56, name: "Ngô Vợ Tư", pid: 52, gender: "F", status: "king", title: "Vợ Tư", dob: "2099 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/09/2099", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ tư của Trần Đa Thê." },
+      // Con của Vợ Tư
+      { id: 64, name: "Trần Ngô Phát", pid: 52, gender: "M", status: "king", title: "Đời 11 (Con Vợ Tư)", dob: "2121 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "30/11/2121", dobLunar: "", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai, mẹ là Ngô Vợ Tư." }
     ];
 
     // ============================================
-    // 4. DIAGRAM INIT & GENOGRAM HELPERS
+    // 4. DIAGRAM INIT
     // ============================================
     let gpDiagram = null;
 
-    function findMarriage(diagram, a, b) {
-      const nodeA = diagram.findNodeForKey(a);
-      const nodeB = diagram.findNodeForKey(b);
-      if (nodeA !== null && nodeB !== null) {
-        const it = nodeA.findLinksBetween(nodeB);
-        while (it.next()) {
-          const link = it.value;
-          if (link.data !== null && link.data.category === "Marriage") return link;
-        }
-      }
-      return null;
-    }
-
-    function setupMarriages(diagram) {
-      const model = diagram.model;
-      const nodeDataArray = model.nodeDataArray;
-      for (let i = 0; i < nodeDataArray.length; i++) {
-        const data = nodeDataArray[i];
-        const key = data.id;
-        if (key === undefined) continue;
-
-        let uxs = data.ux;
-        if (uxs !== undefined) {
-          if (typeof uxs === "number") uxs = [uxs];
-          for (let j = 0; j < uxs.length; j++) {
-            const wife = uxs[j];
-            const wdata = model.findNodeDataForKey(wife);
-            if (key === wife || !wdata || wdata.gender !== "F") {
-              console.log("cannot create Marriage relationship with self or unknown person " + wife);
-              continue;
-            }
-            const link = findMarriage(diagram, key, wife);
-            if (link === null) {
-              const mlab = { category: "LinkLabel" };
-              model.addNodeData(mlab);
-              const mdata = { from: key, to: wife, labelKeys: [mlab.id], category: "Marriage" };
-              model.addLinkData(mdata);
-            }
-          }
-        }
-        let virs = data.vir;
-        if (virs !== undefined) {
-          if (typeof virs === "number") virs = [virs];
-          for (let j = 0; j < virs.length; j++) {
-            const husband = virs[j];
-            const hdata = model.findNodeDataForKey(husband);
-            if (key === husband || !hdata || hdata.gender !== "M") {
-              console.log("cannot create Marriage relationship with self or unknown person " + husband);
-              continue;
-            }
-            const link = findMarriage(diagram, key, husband);
-            if (link === null) {
-              const mlab = { category: "LinkLabel" };
-              model.addNodeData(mlab);
-              const mdata = { from: husband, to: key, labelKeys: [mlab.id], category: "Marriage" };
-              model.addLinkData(mdata);
-            }
-          }
-        }
-      }
-    }
-
-    function setupParents(diagram) {
-      const model = diagram.model;
-      const nodeDataArray = model.nodeDataArray;
-      for (let i = 0; i < nodeDataArray.length; i++) {
-        const data = nodeDataArray[i];
-        const key = data.id;
-        const mother = data.m;
-        const father = data.f;
-        if (mother !== undefined && father !== undefined) {
-          const link = findMarriage(diagram, father, mother);
-          if (link === null) {
-            console.log("unknown marriage: " + father + " & " + mother);
-            continue;
-          }
-          const mdata = link.data;
-          if (mdata.labelKeys === undefined || mdata.labelKeys[0] === undefined) continue;
-          const mlabkey = mdata.labelKeys[0];
-          const cdata = { from: mlabkey, to: key };
-          model.addLinkData(cdata);
-        }
-      }
-    }
-
     const initDiagram = (divId) => {
-      const genLayout = new GenogramLayout();
-      genLayout.direction = 90;
-      genLayout.layerSpacing = 30;
-      genLayout.columnSpacing = 10;
-
       const diagram = new go.Diagram(divId, {
-        layout: genLayout,
+        layout: new go.TreeLayout({
+          angle: 90,
+          nodeSpacing: 20,
+          layerSpacing: 50,
+          layerStyle: go.TreeLayout.LayerUniform,
+          treeStyle: go.TreeStyle.LastParents,
+          alternateAngle: 90,
+          alternateLayerSpacing: 35,
+          alternateAlignment: go.TreeAlignment.BottomRightBus,
+          alternateNodeSpacing: 20,
+        }),
         "toolManager.hoverDelay": 100,
+        linkTemplate: createLinkTemplate(),
+        model: new go.TreeModel({ 
+          nodeKeyProperty: "id",
+          nodeParentKeyProperty: "pid"
+        }),
+        // Better interaction
         allowZoom: true,
         "animationManager.isEnabled": true,
         scrollMode: go.ScrollMode.Infinite,
       });
 
-      // Node Template
       diagram.nodeTemplate = createNodeTemplate();
-
-      // Node template for label node -- nothing shows
-      diagram.nodeTemplateMap.add("LinkLabel",
-        new go.Node({
-          selectable: false,
-          width: 1,
-          height: 1,
-          fromEndSegmentLength: 20
-        })
-      );
-
-      // Parent-child relationships (default)
-      diagram.linkTemplate = createLinkTemplate();
-
-      // Marriage relationships link template
-      diagram.linkTemplateMap.add("Marriage",
-        new go.Link({
-          routing: go.Routing.AvoidsNodes,
-          corner: 10,
-          fromSpot: go.Spot.LeftRightSides,
-          toSpot: go.Spot.LeftRightSides,
-          selectable: false,
-          isTreeLink: false,
-          layerName: "Background"
-        }).add(
-          new go.Shape({
-            strokeWidth: 3,
-            stroke: "#cca625"
-          })
-        )
-      );
-
-      // Use GraphLinksModel instead of TreeModel
-      diagram.model = new go.GraphLinksModel({
-        linkLabelKeysProperty: "labelKeys",
-        nodeKeyProperty: "id",
-        copiesArrays: true
-      });
-
-      // Load data
       diagram.model.addNodeDataCollection(familyData);
-
-      // Parse marriages and parents
-      setupMarriages(diagram);
-      setupParents(diagram);
 
       diagram.addDiagramListener("InitialLayoutCompleted", () => {
         const root = diagram.findNodeForKey(1);
         if (!root) return;
-        diagram.scale = 0.8;
+        diagram.scale = 0.7;
         diagram.scrollToRect(root.actualBounds);
       });
 
@@ -1443,9 +1140,9 @@
         return;
       }
       searchResults.innerHTML = matches.map(d =>
-        `<div class="result-item" onclick="gpGoToNode(${d.id})">
+        `<div class="result-item" onclick="gpGoToNode('${d.name.replace(/'/g, "\\'")}')">
           <i class="bi bi-person-fill"></i> ${d.name}
-          <span style="margin-left:auto;font-size:0.75rem;color:#aaa;">${d.dob || ''}</span>
+          <span style="margin-left:auto;font-size:0.75rem;color:#aaa;">${d.born || ''}</span>
         </div>`
       ).join('');
       searchResults.classList.add('show');
