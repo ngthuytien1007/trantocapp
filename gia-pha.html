@@ -123,9 +123,11 @@
       z-index: 100;
       max-width: 400px;
       width: 90%;
+      pointer-events: none; /* Khắc phục đơ canvas */
     }
 
     .gp-search-bar input {
+      pointer-events: auto; /* Bật lại tương tác cho input */
       flex: 1;
       padding: 10px 16px;
       border: 1.5px solid rgba(0, 0, 0, 0.15);
@@ -147,6 +149,7 @@
     }
 
     .gp-search-bar button {
+      pointer-events: auto; /* Bật lại tương tác cho button */
       padding: 10px 16px;
       background: linear-gradient(135deg, #d8b237 0%, #a4811a 100%);
       border: none;
@@ -189,9 +192,11 @@
       flex-direction: column;
       gap: 10px;
       z-index: 1000;
+      pointer-events: none; /* Khắc phục đơ canvas */
     }
 
     .gp-float-btn {
+      pointer-events: auto; /* Bật lại tương tác cho các nút */
       width: 48px;
       height: 48px;
       border-radius: 50%;
@@ -1326,6 +1331,13 @@
       new go.Panel("Spot", {
         alignmentFocus: go.Spot.Top,
         alignment: new go.Spot(0, 0, STROKE_WIDTH / 2, IMAGE_TOP_MARGIN),
+        cursor: "pointer", // Hiển thị bàn tay khi di chuột vào ảnh
+        click: (e, obj) => {
+          // Chỉ mở popup khi bấm vào ảnh (và đang không ở chế độ xác định xưng hô)
+          if (!relationSelectionMode) {
+            gpShowPopup(obj.part.data);
+          }
+        }
       })
         .add(
           new go.Picture({ width: 55, height: 55 })
@@ -1358,9 +1370,6 @@
         overflow: go.TextOverflow.Ellipsis,
         textAlign: "center",
         verticalAlignment: go.Spot.Center,
-        toolTip: go.GraphObject.build("ToolTip").add(
-          new go.TextBlock({ margin: 4 }).bind("text", nameProperty)
-        ),
         alignmentFocus: go.Spot.Top,
         alignment: new go.Spot(0.5, 0, 0, 25),
       }).bind("text", nameProperty);
@@ -1373,14 +1382,7 @@
         shadowVisible: true,
         shadowColor: "rgba(0, 0, 0, 0.15)",
         shadowOffset: new go.Point(2, 4),
-        shadowBlur: 8,
-        click: (e, node) => {
-          if (relationSelectionMode) {
-            handleRelationClick(node);
-          } else {
-            gpShowPopup(node.data);
-          }
-        },
+        shadowBlur: 8
       })
         .bind("visible", "visible", (v) => v !== false)
         .add(
@@ -1846,6 +1848,9 @@
             }
           }
         });
+        // Cập nhật lại khung nhìn để fix lỗi Event Listener trên Mobile/Web
+        diagram.requestUpdate();
+        diagram.layoutDiagram(true);
       });
 
       // Selection Listener for Auto-Focus (SRS Specification)
@@ -1859,12 +1864,29 @@
         }
       });
 
+      // Bắt sự kiện Click chuẩn xác trên Node (Fix lỗi Mobile nuốt event)
+      diagram.addDiagramListener("ObjectSingleClicked", (e) => {
+        const part = e.subject.part;
+        if (part instanceof go.Node && !part.isLinkLabel) {
+          if (relationSelectionMode) {
+            handleRelationClick(part);
+          }
+          // Đã xóa gpShowPopup ở đây để phần nền/tên khi click chỉ focus/highlight chứ không hiện popup
+        }
+      });
+
       gpDiagram = diagram;
     };
 
     window.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         initDiagram("myDiagramDiv");
+
+        // Gọi thêm hàm ép thư viện tính toán lại kích thước một lần nữa
+        if (gpDiagram) {
+          gpDiagram.requestUpdate();
+          gpDiagram.layoutDiagram(true);
+        }
 
         // Remove GoJS evaluation watermark DOM elements
         setTimeout(() => {
