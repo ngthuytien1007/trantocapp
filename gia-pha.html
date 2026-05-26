@@ -317,95 +317,50 @@
       border-color: rgba(255, 255, 255, 0.15);
     }
 
-    /* ===== SLIDE-UP BOTTOM SHEET (SRS SPECIFICATION) ===== */
-    .gp-bottom-sheet-overlay {
+    /* ===== NODE DETAIL POPUP ===== */
+    .gp-popup-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 10000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .gp-bottom-sheet-overlay.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .gp-bottom-sheet {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #fff;
-      border-top-left-radius: 24px;
-      border-top-right-radius: 24px;
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
-      z-index: 10001;
-      transform: translateY(100%);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      max-height: 80vh;
-      overflow-y: auto;
-      padding: 30px 24px 24px 24px;
-    }
-
-    .gp-bottom-sheet.show {
-      transform: translateY(0);
-    }
-
-    .gp-bottom-sheet-drag-handle {
-      width: 40px;
-      height: 4px;
-      background: #e2e8f0;
-      border-radius: 2px;
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .gp-bottom-sheet .sheet-close {
-      position: absolute;
-      top: 16px;
-      right: 20px;
-      background: #f1f5f9;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 10000;
+    }
+    .gp-popup-overlay.show {
+      display: flex;
+    }
+    .gp-popup-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 92%;
+      width: 450px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      position: relative;
+      animation: popupSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    @keyframes popupSlideIn {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to   { opacity: 1; transform: scale(1)   translateY(0); }
+    }
+    .gp-popup-card .popup-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      font-size: 1.3rem;
       cursor: pointer;
-      color: #64748b;
-      transition: all 0.2s;
+      color: #999;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      padding: 4px;
     }
-
-    .gp-bottom-sheet .sheet-close:hover {
-      background: #e2e8f0;
-      color: #334155;
-    }
-
-    /* Dark Theme Support for Bottom Sheet */
-    .theme-royal-red .gp-bottom-sheet,
-    .theme-dark-luxury .gp-bottom-sheet {
-      background: #0f172a;
-      color: #f8fafc;
-    }
-
-    .theme-royal-red .gp-bottom-sheet-drag-handle,
-    .theme-dark-luxury .gp-bottom-sheet-drag-handle {
-      background: #334155;
-    }
-
-    .theme-royal-red .gp-bottom-sheet .sheet-close,
-    .theme-dark-luxury .gp-bottom-sheet .sheet-close {
-      background: #1e293b;
-      color: #94a3b8;
-    }
+    .gp-popup-card .popup-close:hover { color: #333; }
 
     .popup-avatar {
       width: 80px;
@@ -418,15 +373,10 @@
 
     .popup-name {
       font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: #1a0000;
       margin-bottom: 4px;
-    }
-
-    .theme-royal-red .popup-name,
-    .theme-dark-luxury .popup-name {
-      color: #ffffff;
     }
 
     .popup-badge {
@@ -436,42 +386,28 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-
-    .popup-badge.male {
-      background: #A2DAFF;
-      color: #001C76;
-    }
-
-    .popup-badge.female {
-      background: #FFCBEA;
-      color: #7A005E;
-    }
+    .popup-badge.male   { background: #A2DAFF; color: #001C76; }
+    .popup-badge.female { background: #FFCBEA; color: #7A005E; }
 
     .popup-info {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid #f0ece4;
       padding-top: 16px;
     }
 
-    .gp-bottom-sheet .popup-info-row {
+    .popup-info-row {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: #475569;
     }
-
-    .theme-royal-red .gp-bottom-sheet .popup-info-row,
-    .theme-dark-luxury .gp-bottom-sheet .popup-info-row {
-      color: #cbd5e1;
-    }
-
-    .gp-bottom-sheet .popup-info-row i {
+    .popup-info-row i {
       color: var(--gp-gold);
-      font-size: 1.2rem;
-      width: 24px;
+      font-size: 1.1rem;
+      width: 22px;
       text-align: center;
     }
 
@@ -794,22 +730,19 @@
 
   </div>
 
-  <!-- Node Detail Bottom Sheet (SRS Specification) -->
-  <div class="gp-bottom-sheet-overlay" id="gp-popup-overlay" onclick="gpClosePopup(event)">
-    <div class="gp-bottom-sheet" id="gp-popup-sheet" onclick="event.stopPropagation()">
-      <div class="gp-bottom-sheet-drag-handle"></div>
-      <button class="sheet-close" onclick="gpClosePopup()"><i class="bi bi-x-lg"></i></button>
+  <!-- Node Detail Popup -->
+  <div class="gp-popup-overlay" id="gp-popup-overlay" onclick="gpClosePopup(event)">
+    <div class="gp-popup-card" onclick="event.stopPropagation()">
+      <button class="popup-close" onclick="gpClosePopup()"><i class="bi bi-x-lg"></i></button>
 
       <!-- Header Info -->
-      <div style="text-align:center; padding-bottom: 15px; border-bottom: 1px solid #f0ece4; margin-top: 10px;">
+      <div style="text-align:center; padding-bottom: 15px; border-bottom: 1px solid #f0ece4;">
         <img src="assets/img/avata.jpg" class="popup-avatar" id="popup-avatar" alt="Avatar">
         <div class="popup-name" id="popup-name">—</div>
-        <div class="popup-sub-info"
-          style="display:flex; justify-content:center; align-items:center; gap: 8px; margin-top: 6px;">
+        <div class="popup-sub-info" style="display:flex; justify-content:center; align-items:center; gap: 8px; margin-top: 6px;">
           <span class="popup-badge male" id="popup-badge">Nam</span>
           <span class="popup-title-badge" id="popup-title-badge"
-            style="background:#f0ece4; color:#5c0606; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Đời
-            1</span>
+            style="background:#f0ece4; color:#5c0606; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Đời 1</span>
         </div>
       </div>
 
@@ -845,8 +778,7 @@
         <div class="popup-info-row" id="popup-row-burial">
           <i class="bi bi-geo-alt-fill"></i>
           <div>
-            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Nơi an táng (Mộ
-              phần)</strong>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Nơi an táng (Mộ phần)</strong>
             <span id="popup-burial">—</span>
           </div>
         </div>
@@ -854,10 +786,8 @@
         <div class="popup-info-row" id="popup-row-bio" style="align-items: flex-start; margin-top: 4px;">
           <i class="bi bi-file-text-fill" style="margin-top: 3px;"></i>
           <div>
-            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tiểu sử tóm
-              tắt</strong>
-            <span id="popup-bio"
-              style="display:block; font-size:0.88rem; line-height: 1.4; color:#444; text-align: justify;">—</span>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tiểu sử tóm tắt</strong>
+            <span id="popup-bio" style="display:block; font-size:0.88rem; line-height: 1.4; color:#444; text-align: justify;">—</span>
           </div>
         </div>
       </div>
@@ -1329,10 +1259,8 @@
 
     const personImage = () =>
       new go.Panel("Spot", {
-        name: "personImagePanel",   // Đặt tên để ObjectSingleClicked nhận diện vùng ảnh
         alignmentFocus: go.Spot.Top,
         alignment: new go.Spot(0, 0, STROKE_WIDTH / 2, IMAGE_TOP_MARGIN),
-        cursor: "pointer",          // Hiển thị bàn tay khi di chuột vào ảnh (desktop)
       })
         .add(
           new go.Picture({ width: 55, height: 55 })
@@ -1377,7 +1305,14 @@
         shadowVisible: true,
         shadowColor: "rgba(0, 0, 0, 0.15)",
         shadowOffset: new go.Point(2, 4),
-        shadowBlur: 8
+        shadowBlur: 8,
+        click: (e, node) => {
+          if (relationSelectionMode) {
+            handleRelationClick(node);
+          } else {
+            gpShowPopup(node.data);
+          }
+        },
       })
         .bind("visible", "visible", (v) => v !== false)
         .add(
@@ -1859,30 +1794,6 @@
         }
       });
 
-      // Bắt sự kiện Click/Touch chuẩn xác (hoạt động cả Desktop lẫn Mobile)
-      diagram.addDiagramListener("ObjectSingleClicked", (e) => {
-        const obj = e.subject;          // GraphObject thực sự được chạm/click
-        const part = obj.part;
-        if (!(part instanceof go.Node) || part.isLinkLabel) return;
-
-        if (relationSelectionMode) {
-          handleRelationClick(part);
-          return;
-        }
-
-        // Đi ngược chuỗi panel để kiểm tra xem vùng chạm có nằm trong personImagePanel không
-        // Cách này đáng tin cậy trên cả mobile (touch) lẫn desktop (mouse)
-        let cur = obj;
-        while (cur && cur !== part) {
-          if (cur.name === "personImagePanel") {
-            gpShowPopup(part.data);   // Chỉ mở popup khi bấm đúng vào ảnh
-            return;
-          }
-          cur = cur.panel;
-        }
-        // Bấm vào tên, nền, badge... => chỉ focus/highlight, không hiện popup
-      });
-
       gpDiagram = diagram;
     };
 
@@ -2054,9 +1965,7 @@
       }
 
       const titleBadge = document.getElementById('popup-title-badge');
-      if (titleBadge) {
-        titleBadge.textContent = data.title || 'Thành viên';
-      }
+      if (titleBadge) titleBadge.textContent = data.title || 'Thành viên';
 
       // Tên tự
       const courtesyRow = document.getElementById('popup-row-courtesy');
@@ -2095,13 +2004,11 @@
       }
 
       document.getElementById('gp-popup-overlay').classList.add('show');
-      document.getElementById('gp-popup-sheet').classList.add('show');
     }
 
     function gpClosePopup(event) {
       if (event && event.target !== document.getElementById('gp-popup-overlay')) return;
       document.getElementById('gp-popup-overlay').classList.remove('show');
-      document.getElementById('gp-popup-sheet').classList.remove('show');
     }
 
     // ============================================
