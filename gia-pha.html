@@ -1329,15 +1329,10 @@
 
     const personImage = () =>
       new go.Panel("Spot", {
+        name: "personImagePanel",   // Đặt tên để ObjectSingleClicked nhận diện vùng ảnh
         alignmentFocus: go.Spot.Top,
         alignment: new go.Spot(0, 0, STROKE_WIDTH / 2, IMAGE_TOP_MARGIN),
-        cursor: "pointer", // Hiển thị bàn tay khi di chuột vào ảnh
-        click: (e, obj) => {
-          // Chỉ mở popup khi bấm vào ảnh (và đang không ở chế độ xác định xưng hô)
-          if (!relationSelectionMode) {
-            gpShowPopup(obj.part.data);
-          }
-        }
+        cursor: "pointer",          // Hiển thị bàn tay khi di chuột vào ảnh (desktop)
       })
         .add(
           new go.Picture({ width: 55, height: 55 })
@@ -1864,15 +1859,28 @@
         }
       });
 
-      // Bắt sự kiện Click chuẩn xác trên Node (Fix lỗi Mobile nuốt event)
+      // Bắt sự kiện Click/Touch chuẩn xác (hoạt động cả Desktop lẫn Mobile)
       diagram.addDiagramListener("ObjectSingleClicked", (e) => {
-        const part = e.subject.part;
-        if (part instanceof go.Node && !part.isLinkLabel) {
-          if (relationSelectionMode) {
-            handleRelationClick(part);
-          }
-          // Đã xóa gpShowPopup ở đây để phần nền/tên khi click chỉ focus/highlight chứ không hiện popup
+        const obj = e.subject;          // GraphObject thực sự được chạm/click
+        const part = obj.part;
+        if (!(part instanceof go.Node) || part.isLinkLabel) return;
+
+        if (relationSelectionMode) {
+          handleRelationClick(part);
+          return;
         }
+
+        // Đi ngược chuỗi panel để kiểm tra xem vùng chạm có nằm trong personImagePanel không
+        // Cách này đáng tin cậy trên cả mobile (touch) lẫn desktop (mouse)
+        let cur = obj;
+        while (cur && cur !== part) {
+          if (cur.name === "personImagePanel") {
+            gpShowPopup(part.data);   // Chỉ mở popup khi bấm đúng vào ảnh
+            return;
+          }
+          cur = cur.panel;
+        }
+        // Bấm vào tên, nền, badge... => chỉ focus/highlight, không hiện popup
       });
 
       gpDiagram = diagram;
