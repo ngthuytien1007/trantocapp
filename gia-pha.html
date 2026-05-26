@@ -16,7 +16,9 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
 
   <!-- Bootstrap Icons only -->
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -25,14 +27,22 @@
   <script src="https://unpkg.com/gojs@3.0.4/release/go.js"></script>
 
   <!-- Poppins for GoJS nodes -->
-  <link href="https://fonts.googleapis.com/css?family=Poppins:regular,medium,bold&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:regular,medium,bold&subset=latin,latin-ext"
+    rel="stylesheet" type="text/css">
 
   <style>
     /* ============================================
        GIA PHẢ PAGE — PREMIUM CUSTOM STYLES
        ============================================ */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+    }
 
     :root {
       --gp-gold: #cca625;
@@ -56,9 +66,11 @@
     .gia-pha-wrapper.theme-warm-sepia {
       background: linear-gradient(135deg, #fcfaf7 0%, #eaddcd 50%, #d4c5a9 100%);
     }
+
     .gia-pha-wrapper.theme-royal-red {
       background: radial-gradient(ellipse at center, #5c0606 0%, #1a0000 100%);
     }
+
     .gia-pha-wrapper.theme-dark-luxury {
       background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%);
     }
@@ -84,10 +96,10 @@
     }
 
     /* Hide GoJS evaluation watermark */
-    #myDiagramDiv > div > div:first-child,
+    #myDiagramDiv>div>div:first-child,
     .gojs-control-left,
     a[href*="gojs.net"],
-    div[id=""] > a {
+    div[id=""]>a {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
@@ -112,12 +124,13 @@
       max-width: 400px;
       width: 90%;
     }
+
     .gp-search-bar input {
       flex: 1;
       padding: 10px 16px;
-      border: 1.5px solid rgba(0,0,0,0.15);
+      border: 1.5px solid rgba(0, 0, 0, 0.15);
       border-radius: 10px;
-      background: rgba(255,255,255,0.92);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       color: #1a0000;
@@ -125,12 +138,14 @@
       font-family: 'Inter', sans-serif;
       outline: none;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
+
     .gp-search-bar input:focus {
       border-color: var(--gp-gold);
-      box-shadow: 0 4px 20px rgba(204,166,37,0.2);
+      box-shadow: 0 4px 20px rgba(204, 166, 37, 0.2);
     }
+
     .gp-search-bar button {
       padding: 10px 16px;
       background: linear-gradient(135deg, #d8b237 0%, #a4811a 100%);
@@ -140,27 +155,29 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(204,166,37,0.25);
+      box-shadow: 0 4px 12px rgba(204, 166, 37, 0.25);
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 0.85rem;
     }
+
     .gp-search-bar button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(204,166,37,0.4);
+      box-shadow: 0 6px 20px rgba(204, 166, 37, 0.4);
     }
 
     /* Dark theme search adjustments */
     .theme-royal-red .gp-search-bar input,
     .theme-dark-luxury .gp-search-bar input {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
       color: #fff;
     }
+
     .theme-royal-red .gp-search-bar input::placeholder,
     .theme-dark-luxury .gp-search-bar input::placeholder {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.5);
     }
 
     /* ===== FLOATING CONTROLS ===== */
@@ -173,6 +190,7 @@
       gap: 10px;
       z-index: 1000;
     }
+
     .gp-float-btn {
       width: 48px;
       height: 48px;
@@ -180,22 +198,24 @@
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      border: 1.5px solid rgba(0,0,0,0.1);
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
       color: #333;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.2rem;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
       transition: all 0.3s ease;
     }
+
     .gp-float-btn:hover {
       transform: scale(1.1);
       background: var(--gp-gold);
       color: #1a0000;
       border-color: var(--gp-gold);
     }
+
     .gp-float-btn.active {
       background: #ef4444 !important;
       color: white !important;
@@ -206,9 +226,10 @@
     .theme-royal-red .gp-float-btn,
     .theme-dark-luxury .gp-float-btn {
       background: rgba(30, 41, 59, 0.88);
-      border-color: rgba(255,255,255,0.1);
+      border-color: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
+
     .theme-royal-red .gp-float-btn:hover,
     .theme-dark-luxury .gp-float-btn:hover {
       background: var(--gp-gold);
@@ -220,6 +241,7 @@
     .gp-search-toggle-btn {
       display: none;
     }
+
     .gp-controls-group {
       display: flex;
       flex-direction: column;
@@ -231,50 +253,63 @@
       position: absolute;
       bottom: 75px;
       right: 85px;
-      background: rgba(255,255,255,0.95);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1.5px solid rgba(0,0,0,0.1);
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
       padding: 12px 16px;
       border-radius: 16px;
       display: flex;
       gap: 12px;
       align-items: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       opacity: 0;
       pointer-events: none;
       transform: translateX(15px);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 1001;
     }
+
     .gp-theme-drawer.open {
       opacity: 1;
       pointer-events: auto;
       transform: translateX(0);
     }
+
     .gp-theme-opt {
       width: 34px;
       height: 34px;
       border-radius: 50%;
-      border: 2.5px solid rgba(0,0,0,0.15);
+      border: 2.5px solid rgba(0, 0, 0, 0.15);
       cursor: pointer;
       transition: all 0.2s ease;
       position: relative;
     }
-    .gp-theme-opt:hover, .gp-theme-opt.active {
+
+    .gp-theme-opt:hover,
+    .gp-theme-opt.active {
       transform: scale(1.2);
       border-color: var(--gp-gold);
-      box-shadow: 0 0 0 3px rgba(204,166,37,0.3);
+      box-shadow: 0 0 0 3px rgba(204, 166, 37, 0.3);
     }
-    .gp-theme-opt.opt-sepia { background: linear-gradient(135deg, #fcfaf7, #eaddcd); }
-    .gp-theme-opt.opt-red { background: radial-gradient(circle, #5c0606, #1a0000); }
-    .gp-theme-opt.opt-dark { background: radial-gradient(circle, #1e293b, #0f172a); }
+
+    .gp-theme-opt.opt-sepia {
+      background: linear-gradient(135deg, #fcfaf7, #eaddcd);
+    }
+
+    .gp-theme-opt.opt-red {
+      background: radial-gradient(circle, #5c0606, #1a0000);
+    }
+
+    .gp-theme-opt.opt-dark {
+      background: radial-gradient(circle, #1e293b, #0f172a);
+    }
 
     /* Dark theme drawer */
     .theme-royal-red .gp-theme-drawer,
     .theme-dark-luxury .gp-theme-drawer {
       background: rgba(15, 23, 42, 0.92);
-      border-color: rgba(255,255,255,0.15);
+      border-color: rgba(255, 255, 255, 0.15);
     }
 
     /* ===== SLIDE-UP BOTTOM SHEET (SRS SPECIFICATION) ===== */
@@ -289,10 +324,12 @@
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
+
     .gp-bottom-sheet-overlay.show {
       opacity: 1;
       pointer-events: auto;
     }
+
     .gp-bottom-sheet {
       position: fixed;
       left: 0;
@@ -301,7 +338,7 @@
       background: #fff;
       border-top-left-radius: 24px;
       border-top-right-radius: 24px;
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.15);
       z-index: 10001;
       transform: translateY(100%);
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -309,9 +346,11 @@
       overflow-y: auto;
       padding: 30px 24px 24px 24px;
     }
+
     .gp-bottom-sheet.show {
       transform: translateY(0);
     }
+
     .gp-bottom-sheet-drag-handle {
       width: 40px;
       height: 4px;
@@ -322,6 +361,7 @@
       left: 50%;
       transform: translateX(-50%);
     }
+
     .gp-bottom-sheet .sheet-close {
       position: absolute;
       top: 16px;
@@ -338,6 +378,7 @@
       color: #64748b;
       transition: all 0.2s;
     }
+
     .gp-bottom-sheet .sheet-close:hover {
       background: #e2e8f0;
       color: #334155;
@@ -349,10 +390,12 @@
       background: #0f172a;
       color: #f8fafc;
     }
+
     .theme-royal-red .gp-bottom-sheet-drag-handle,
     .theme-dark-luxury .gp-bottom-sheet-drag-handle {
       background: #334155;
     }
+
     .theme-royal-red .gp-bottom-sheet .sheet-close,
     .theme-dark-luxury .gp-bottom-sheet .sheet-close {
       background: #1e293b;
@@ -367,6 +410,7 @@
       border: 3px solid var(--gp-gold);
       margin-bottom: 14px;
     }
+
     .popup-name {
       font-family: 'Playfair Display', serif;
       font-size: 1.6rem;
@@ -374,10 +418,12 @@
       color: #1a0000;
       margin-bottom: 4px;
     }
+
     .theme-royal-red .popup-name,
     .theme-dark-luxury .popup-name {
       color: #ffffff;
     }
+
     .popup-badge {
       display: inline-block;
       padding: 3px 12px;
@@ -385,14 +431,17 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
+
     .popup-badge.male {
       background: #A2DAFF;
       color: #001C76;
     }
+
     .popup-badge.female {
       background: #FFCBEA;
       color: #7A005E;
     }
+
     .popup-info {
       display: flex;
       flex-direction: column;
@@ -400,6 +449,7 @@
       border-top: 1px solid #e2e8f0;
       padding-top: 16px;
     }
+
     .gp-bottom-sheet .popup-info-row {
       display: flex;
       align-items: center;
@@ -407,10 +457,12 @@
       font-size: 0.95rem;
       color: #475569;
     }
+
     .theme-royal-red .gp-bottom-sheet .popup-info-row,
     .theme-dark-luxury .gp-bottom-sheet .popup-info-row {
       color: #cbd5e1;
     }
+
     .gp-bottom-sheet .popup-info-row i {
       color: var(--gp-gold);
       font-size: 1.2rem;
@@ -427,26 +479,30 @@
       z-index: 50;
       pointer-events: none;
     }
+
     .gp-tree-title h2 {
       font-family: 'Playfair Display', serif;
       font-size: 1.3rem;
       font-weight: 700;
       color: #5c0606;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
       margin: 0;
     }
+
     .gp-tree-title p {
       font-size: 0.78rem;
       color: #888;
       letter-spacing: 0.5px;
       margin: 0;
     }
+
     /* Dark theme title */
     .theme-royal-red .gp-tree-title h2,
     .theme-dark-luxury .gp-tree-title h2 {
       color: var(--gp-gold);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
+
     .theme-royal-red .gp-tree-title p,
     .theme-dark-luxury .gp-tree-title p {
       color: #aaa;
@@ -459,16 +515,20 @@
       left: 0;
       right: 0;
       margin-top: 4px;
-      background: rgba(255,255,255,0.96);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(8px);
       border-radius: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       max-height: 220px;
       overflow-y: auto;
       display: none;
       z-index: 101;
     }
-    .gp-search-results.show { display: block; }
+
+    .gp-search-results.show {
+      display: block;
+    }
+
     .gp-search-results .result-item {
       padding: 10px 16px;
       cursor: pointer;
@@ -480,22 +540,33 @@
       align-items: center;
       gap: 8px;
     }
-    .gp-search-results .result-item:last-child { border-bottom: none; }
-    .gp-search-results .result-item:hover { background: #fdf8e8; }
-    .gp-search-results .result-item i { color: var(--gp-gold); }
+
+    .gp-search-results .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .gp-search-results .result-item:hover {
+      background: #fdf8e8;
+    }
+
+    .gp-search-results .result-item i {
+      color: var(--gp-gold);
+    }
 
     .theme-royal-red .gp-search-results,
     .theme-dark-luxury .gp-search-results {
       background: rgba(15, 23, 42, 0.95);
     }
+
     .theme-royal-red .gp-search-results .result-item,
     .theme-dark-luxury .gp-search-results .result-item {
       color: #ddd;
-      border-bottom-color: rgba(255,255,255,0.1);
+      border-bottom-color: rgba(255, 255, 255, 0.1);
     }
+
     .theme-royal-red .gp-search-results .result-item:hover,
     .theme-dark-luxury .gp-search-results .result-item:hover {
-      background: rgba(204,166,37,0.15);
+      background: rgba(204, 166, 37, 0.15);
     }
 
     /* ===== RESPONSIVE ===== */
@@ -507,7 +578,7 @@
       z-index: 1000;
       padding: 10px 16px;
       border-radius: 10px;
-      background: rgba(255,255,255,0.92);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       color: #1a0000;
@@ -518,24 +589,27 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      border: 1.5px solid rgba(0,0,0,0.1);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
       transition: all 0.3s ease;
     }
+
     .gp-home-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
       background: var(--gp-gold);
       color: #1a0000;
       border-color: var(--gp-gold);
     }
+
     /* Dark theme home button */
     .theme-royal-red .gp-home-btn,
     .theme-dark-luxury .gp-home-btn {
       background: rgba(30, 41, 59, 0.88);
-      border-color: rgba(255,255,255,0.1);
+      border-color: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
+
     .theme-royal-red .gp-home-btn:hover,
     .theme-dark-luxury .gp-home-btn:hover {
       background: var(--gp-gold);
@@ -543,7 +617,10 @@
     }
 
     @media (max-width: 768px) {
-      .gia-pha-wrapper { height: 100vh; }
+      .gia-pha-wrapper {
+        height: 100vh;
+      }
+
       /* Search bar → slide down from top overlay on mobile */
       .gp-search-bar {
         position: absolute;
@@ -559,13 +636,23 @@
         pointer-events: none;
         transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
+
       .gp-search-bar.show {
         top: 20px;
         opacity: 1;
         pointer-events: auto;
       }
-      .gp-search-bar input { padding: 10px 16px; font-size: 0.9rem; }
-      .gp-search-bar button { padding: 10px 16px; font-size: 0.85rem; }
+
+      .gp-search-bar input {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+      }
+
+      .gp-search-bar button {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+      }
+
       /* Search results open downward below the slid-down bar */
       .gp-search-results {
         top: 100%;
@@ -573,6 +660,7 @@
         margin-top: 4px;
         margin-bottom: 0;
       }
+
       /* Floating controls safe at bottom, prevents layout shift or overlapping */
       .gp-floating-controls {
         bottom: 135px;
@@ -581,10 +669,12 @@
         align-items: center;
         gap: 12px;
       }
+
       .gp-master-btn {
         display: flex;
         z-index: 1002;
       }
+
       .gp-controls-group {
         display: flex;
         flex-direction: row-reverse;
@@ -594,150 +684,180 @@
         transform: translateX(20px);
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
+
       .gp-floating-controls.expanded .gp-controls-group {
         opacity: 1;
         pointer-events: auto;
         transform: translateX(0);
       }
+
       .gp-search-toggle-btn {
         display: flex;
       }
+
       .gp-float-btn {
         width: 44px;
         height: 44px;
         font-size: 1.1rem;
       }
+
       .gp-theme-drawer {
         right: 20px;
         bottom: 195px;
         transform: translateY(15px);
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
+
       .gp-theme-drawer.open {
         transform: translateY(0);
       }
-      .gp-tree-title { top: 10px; right: 12px; left: auto; }
-      .gp-tree-title h2 { font-size: 1.1rem; }
-      .gp-home-btn { top: 10px; left: 10px; padding: 8px 12px; font-size: 0.82rem; }
+
+      .gp-tree-title {
+        top: 10px;
+        right: 12px;
+        left: auto;
+      }
+
+      .gp-tree-title h2 {
+        font-size: 1.1rem;
+      }
+
+      .gp-home-btn {
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+      }
     }
   </style>
 </head>
 
 <body>
 
-    <!-- ======= Gia Phả Section ======= -->
-    <div class="gia-pha-wrapper theme-warm-sepia" id="gia-pha-wrapper">
+  <!-- ======= Gia Phả Section ======= -->
+  <div class="gia-pha-wrapper theme-warm-sepia" id="gia-pha-wrapper">
 
-      <!-- Home Button -->
-      <a href="index.html" class="gp-home-btn"><i class="bi bi-house-fill"></i> Trang chủ</a>
+    <!-- Home Button -->
+    <a href="index.html" class="gp-home-btn"><i class="bi bi-house-fill"></i> Trang chủ</a>
 
-      <!-- Search Bar -->
-      <div class="gp-search-bar" id="gp-search-bar">
-        <input type="text" id="gp-search-input" placeholder="Tìm kiếm theo tên..." autocomplete="off">
-        <button onclick="gpSearch()" id="gp-search-btn"><i class="bi bi-search"></i> Tìm</button>
-        <div class="gp-search-results" id="gp-search-results"></div>
-      </div>
-
-      <!-- Tree Title -->
-      <div class="gp-tree-title">
-        <h2>TRẦN TỘC GIA PHẢ</h2>
-        <p>Sơ Đồ Cây Phả Hệ Dòng Họ</p>
-      </div>
-
-      <!-- GoJS Diagram -->
-      <div id="myDiagramDiv"></div>
-
-      <!-- Floating Controls -->
-      <div class="gp-floating-controls" id="gp-floating-controls">
-        <!-- Master Menu Toggle (Mobile Only) -->
-        <div class="gp-float-btn gp-master-btn" onclick="gpToggleMenu()" id="gp-master-btn" title="Điều khiển">
-          <i class="bi bi-sliders"></i>
-        </div>
-        <!-- Group of Control Buttons -->
-        <div class="gp-controls-group">
-          <div class="gp-float-btn gp-search-toggle-btn" onclick="gpToggleSearch()" title="Tìm kiếm"><i class="bi bi-search"></i></div>
-          <div class="gp-float-btn" onclick="gpZoomIn()" title="Phóng to"><i class="bi bi-plus-lg"></i></div>
-          <div class="gp-float-btn" onclick="gpZoomOut()" title="Thu nhỏ"><i class="bi bi-dash-lg"></i></div>
-          <div class="gp-float-btn" onclick="gpZoomFit()" title="Vừa khung hình"><i class="bi bi-arrows-fullscreen"></i></div>
-          <div class="gp-float-btn" onclick="gpCenterRoot()" title="Về gốc"><i class="bi bi-house-fill"></i></div>
-          <div class="gp-float-btn" onclick="gpToggleTheme()" title="Đổi hình nền"><i class="bi bi-palette-fill"></i></div>
-          <div class="gp-float-btn" onclick="gpExpandAll()" title="Mở rộng toàn bộ"><i class="bi bi-diagram-3-fill"></i></div>
-          <div class="gp-float-btn" onclick="gpStartRelationCheck()" id="relation-btn" title="Xác định xưng hô"><i class="bi bi-people-fill"></i></div>
-        </div>
-      </div>
-
-      <!-- Theme Drawer -->
-      <div class="gp-theme-drawer" id="gp-theme-drawer">
-        <div class="gp-theme-opt opt-sepia active" onclick="gpSetTheme('warm-sepia')" title="Hoài Cổ"></div>
-        <div class="gp-theme-opt opt-red" onclick="gpSetTheme('royal-red')" title="Đỏ Hoàng Gia"></div>
-        <div class="gp-theme-opt opt-dark" onclick="gpSetTheme('dark-luxury')" title="Tối Cao Cấp"></div>
-      </div>
-
+    <!-- Search Bar -->
+    <div class="gp-search-bar" id="gp-search-bar">
+      <input type="text" id="gp-search-input" placeholder="Tìm kiếm theo tên..." autocomplete="off">
+      <button onclick="gpSearch()" id="gp-search-btn"><i class="bi bi-search"></i> Tìm</button>
+      <div class="gp-search-results" id="gp-search-results"></div>
     </div>
 
-    <!-- Node Detail Bottom Sheet (SRS Specification) -->
-    <div class="gp-bottom-sheet-overlay" id="gp-popup-overlay" onclick="gpClosePopup(event)">
-      <div class="gp-bottom-sheet" id="gp-popup-sheet" onclick="event.stopPropagation()">
-        <div class="gp-bottom-sheet-drag-handle"></div>
-        <button class="sheet-close" onclick="gpClosePopup()"><i class="bi bi-x-lg"></i></button>
-        
-        <!-- Header Info -->
-        <div style="text-align:center; padding-bottom: 15px; border-bottom: 1px solid #f0ece4; margin-top: 10px;">
-          <img src="assets/img/avata.jpg" class="popup-avatar" id="popup-avatar" alt="Avatar">
-          <div class="popup-name" id="popup-name">—</div>
-          <div class="popup-sub-info" style="display:flex; justify-content:center; align-items:center; gap: 8px; margin-top: 6px;">
-            <span class="popup-badge male" id="popup-badge">Nam</span>
-            <span class="popup-title-badge" id="popup-title-badge" style="background:#f0ece4; color:#5c0606; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Đời 1</span>
+    <!-- Tree Title -->
+    <div class="gp-tree-title">
+      <h2>TRẦN TỘC GIA PHẢ</h2>
+      <p>Sơ Đồ Cây Phả Hệ Dòng Họ</p>
+    </div>
+
+    <!-- GoJS Diagram -->
+    <div id="myDiagramDiv"></div>
+
+    <!-- Floating Controls -->
+    <div class="gp-floating-controls" id="gp-floating-controls">
+      <!-- Master Menu Toggle (Mobile Only) -->
+      <div class="gp-float-btn gp-master-btn" onclick="gpToggleMenu()" id="gp-master-btn" title="Điều khiển">
+        <i class="bi bi-sliders"></i>
+      </div>
+      <!-- Group of Control Buttons -->
+      <div class="gp-controls-group">
+        <div class="gp-float-btn gp-search-toggle-btn" onclick="gpToggleSearch()" title="Tìm kiếm"><i
+            class="bi bi-search"></i></div>
+        <div class="gp-float-btn" onclick="gpZoomIn()" title="Phóng to"><i class="bi bi-plus-lg"></i></div>
+        <div class="gp-float-btn" onclick="gpZoomOut()" title="Thu nhỏ"><i class="bi bi-dash-lg"></i></div>
+        <div class="gp-float-btn" onclick="gpZoomFit()" title="Vừa khung hình"><i class="bi bi-arrows-fullscreen"></i>
+        </div>
+        <div class="gp-float-btn" onclick="gpCenterRoot()" title="Về gốc"><i class="bi bi-house-fill"></i></div>
+        <div class="gp-float-btn" onclick="gpToggleTheme()" title="Đổi hình nền"><i class="bi bi-palette-fill"></i>
+        </div>
+        <div class="gp-float-btn" onclick="gpExpandAll()" title="Mở rộng toàn bộ"><i class="bi bi-diagram-3-fill"></i>
+        </div>
+        <div class="gp-float-btn" onclick="gpStartRelationCheck()" id="relation-btn" title="Xác định xưng hô"><i
+            class="bi bi-people-fill"></i></div>
+      </div>
+    </div>
+
+    <!-- Theme Drawer -->
+    <div class="gp-theme-drawer" id="gp-theme-drawer">
+      <div class="gp-theme-opt opt-sepia active" onclick="gpSetTheme('warm-sepia')" title="Hoài Cổ"></div>
+      <div class="gp-theme-opt opt-red" onclick="gpSetTheme('royal-red')" title="Đỏ Hoàng Gia"></div>
+      <div class="gp-theme-opt opt-dark" onclick="gpSetTheme('dark-luxury')" title="Tối Cao Cấp"></div>
+    </div>
+
+  </div>
+
+  <!-- Node Detail Bottom Sheet (SRS Specification) -->
+  <div class="gp-bottom-sheet-overlay" id="gp-popup-overlay" onclick="gpClosePopup(event)">
+    <div class="gp-bottom-sheet" id="gp-popup-sheet" onclick="event.stopPropagation()">
+      <div class="gp-bottom-sheet-drag-handle"></div>
+      <button class="sheet-close" onclick="gpClosePopup()"><i class="bi bi-x-lg"></i></button>
+
+      <!-- Header Info -->
+      <div style="text-align:center; padding-bottom: 15px; border-bottom: 1px solid #f0ece4; margin-top: 10px;">
+        <img src="assets/img/avata.jpg" class="popup-avatar" id="popup-avatar" alt="Avatar">
+        <div class="popup-name" id="popup-name">—</div>
+        <div class="popup-sub-info"
+          style="display:flex; justify-content:center; align-items:center; gap: 8px; margin-top: 6px;">
+          <span class="popup-badge male" id="popup-badge">Nam</span>
+          <span class="popup-title-badge" id="popup-title-badge"
+            style="background:#f0ece4; color:#5c0606; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Đời
+            1</span>
+        </div>
+      </div>
+
+      <!-- Body Info -->
+      <div class="popup-info" style="margin-top: 15px; display:flex; flex-direction:column; gap: 12px;">
+        <!-- Tên tự -->
+        <div class="popup-info-row" id="popup-row-courtesy">
+          <i class="bi bi-bookmark-star-fill"></i>
+          <div>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tên tự</strong>
+            <span id="popup-courtesy">—</span>
           </div>
         </div>
-
-        <!-- Body Info -->
-        <div class="popup-info" style="margin-top: 15px; display:flex; flex-direction:column; gap: 12px;">
-          <!-- Tên tự -->
-          <div class="popup-info-row" id="popup-row-courtesy">
-            <i class="bi bi-bookmark-star-fill"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tên tự</strong>
-              <span id="popup-courtesy">—</span>
-            </div>
+        <!-- Ngày sinh -->
+        <div class="popup-info-row">
+          <i class="bi bi-calendar-check"></i>
+          <div>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Ngày sinh</strong>
+            <span id="popup-birth-solar" style="display:block;">Dương lịch: —</span>
+            <span id="popup-birth-lunar" style="display:block; font-size:0.85rem; color:#666;">Âm lịch: —</span>
           </div>
-          <!-- Ngày sinh -->
-          <div class="popup-info-row">
-            <i class="bi bi-calendar-check"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Ngày sinh</strong>
-              <span id="popup-birth-solar" style="display:block;">Dương lịch: —</span>
-              <span id="popup-birth-lunar" style="display:block; font-size:0.85rem; color:#666;">Âm lịch: —</span>
-            </div>
+        </div>
+        <!-- Ngày mất (Ẩn nếu còn sống) -->
+        <div class="popup-info-row" id="popup-row-death">
+          <i class="bi bi-calendar-x-fill" style="color: #94a3b8;"></i>
+          <div>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Ngày mất</strong>
+            <span id="popup-death-solar" style="display:block;">Dương lịch: —</span>
+            <span id="popup-death-lunar" style="display:block; font-size:0.85rem; color:#666;">Âm lịch: —</span>
           </div>
-          <!-- Ngày mất (Ẩn nếu còn sống) -->
-          <div class="popup-info-row" id="popup-row-death">
-            <i class="bi bi-calendar-x-fill" style="color: #94a3b8;"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Ngày mất</strong>
-              <span id="popup-death-solar" style="display:block;">Dương lịch: —</span>
-              <span id="popup-death-lunar" style="display:block; font-size:0.85rem; color:#666;">Âm lịch: —</span>
-            </div>
+        </div>
+        <!-- Nơi an táng (Mộ phần - Ẩn nếu còn sống) -->
+        <div class="popup-info-row" id="popup-row-burial">
+          <i class="bi bi-geo-alt-fill"></i>
+          <div>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Nơi an táng (Mộ
+              phần)</strong>
+            <span id="popup-burial">—</span>
           </div>
-          <!-- Nơi an táng (Mộ phần - Ẩn nếu còn sống) -->
-          <div class="popup-info-row" id="popup-row-burial">
-            <i class="bi bi-geo-alt-fill"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Nơi an táng (Mộ phần)</strong>
-              <span id="popup-burial">—</span>
-            </div>
-          </div>
-          <!-- Tiểu sử tóm tắt -->
-          <div class="popup-info-row" id="popup-row-bio" style="align-items: flex-start; margin-top: 4px;">
-            <i class="bi bi-file-text-fill" style="margin-top: 3px;"></i>
-            <div>
-              <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tiểu sử tóm tắt</strong>
-              <span id="popup-bio" style="display:block; font-size:0.88rem; line-height: 1.4; color:#444; text-align: justify;">—</span>
-            </div>
+        </div>
+        <!-- Tiểu sử tóm tắt -->
+        <div class="popup-info-row" id="popup-row-bio" style="align-items: flex-start; margin-top: 4px;">
+          <i class="bi bi-file-text-fill" style="margin-top: 3px;"></i>
+          <div>
+            <strong style="display:block; font-size: 0.78rem; color:#888; text-transform: uppercase;">Tiểu sử tóm
+              tắt</strong>
+            <span id="popup-bio"
+              style="display:block; font-size:0.88rem; line-height: 1.4; color:#444; text-align: justify;">—</span>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
   <!-- ======= GIA PHẢ GOJS LOGIC ======= -->
   <script>
@@ -775,7 +895,7 @@
           if (!(node instanceof go.Node) || !node.data) continue;
           if (!node.isLayoutPositioned || !node.isVisible()) continue;
           if (nonmemberonly && node.containingGroup !== null) continue;
-          
+
           if (node.isLinkLabel) {
             const link = node.labeledLink;
             if (link.category === "Marriage") {
@@ -811,7 +931,7 @@
           if (!(link instanceof go.Link)) continue;
           if (!link.isLayoutPositioned || !link.isVisible()) continue;
           if (nonmemberonly && link.containingGroup !== null) continue;
-          
+
           if (link.category === "Descent" && link.data) {
             const parent = net.findVertex(link.fromNode);
             const child = net.findVertex(link.toNode);
@@ -903,7 +1023,7 @@
 
       commitNodes() {
         super.commitNodes();
-        
+
         const positioned = new Set();
         const horiz = this.direction == 0.0 || this.direction == 180.0;
 
@@ -913,7 +1033,7 @@
           if (!v.node.isLinkLabel) return;
           const labnode = v.node;
           const lablink = labnode.labeledLink;
-          
+
           lablink.invalidateRoute();
           let spouseA = lablink.fromNode;
           let spouseB = lablink.toNode;
@@ -1146,28 +1266,28 @@
           diagram.commitTransaction("toggleExpand");
         }
       })
-      .bindObject("visible", "", (node) => countChildren(node) > 0)
-      .add(
-        new go.Shape("RoundedRectangle", {
-          parameter1: 10,
-          desiredSize: new go.Size(45, 20),
-          fill: theme.colors.counterBackground,
-          stroke: theme.colors.counterBorder,
-          strokeWidth: 1.5,
-        })
-      )
-      .add(
-        new go.TextBlock({
-          alignment: go.Spot.Center,
-          stroke: theme.colors.counterText,
-          font: "bold 11px Poppins",
-          textAlign: "center"
-        }).bind("", (data, textBlock) => {
-          const node = textBlock.part;
-          const count = countChildren(node);
-          return data.isExpanded === false ? `+${count}` : "-";
-        })
-      );
+        .bindObject("visible", "", (node) => countChildren(node) > 0)
+        .add(
+          new go.Shape("RoundedRectangle", {
+            parameter1: 10,
+            desiredSize: new go.Size(45, 20),
+            fill: theme.colors.counterBackground,
+            stroke: theme.colors.counterBorder,
+            strokeWidth: 1.5,
+          })
+        )
+        .add(
+          new go.TextBlock({
+            alignment: go.Spot.Center,
+            stroke: theme.colors.counterText,
+            font: "bold 11px Poppins",
+            textAlign: "center"
+          }).bind("", (data, textBlock) => {
+            const node = textBlock.part;
+            const count = countChildren(node);
+            return data.isExpanded === false ? `+${count}` : "-";
+          })
+        );
 
     const imageSourceBinding = () =>
       new go.Binding("source", "", ({ status, gender }) => {
@@ -1297,69 +1417,132 @@
         );
 
     // ============================================
-    // 3. FAMILY DATA (3 ĐỜI DEMO)
+    // 3. FAMILY DATA SYSTEM - GRAPH LINKS MODEL (15 GENERATIONS)
     // ============================================
     const familyData = {
       nodeDataArray: [
         // --- ĐỜI 1 ---
-        { id: 1, name: "Trần Thế Anh", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1930 - 2012", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Thế Anh", dobSolar: "15/05/1930", dobLunar: "18/04/Canh Ngọ", dodSolar: "12/10/2012", dodLunar: "27/08/Nhâm Thìn", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Thủy tổ khai sáng dòng họ Trần tại địa phương, người đặt nền móng và xây dựng nhà thờ tổ tiên.", isExpanded: true },
-        { id: 2, name: "Lê Thị Sâm", gender: "F", status: "queen", title: "Vợ Cả - Đời 1", dob: "1932 - 2015", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/10/1932", dobLunar: "21/09/Nhâm Thân", dodSolar: "05/06/2015", dodLunar: "19/04/Ất Mùi", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Hiền thê cả của cụ Thế Anh, cả đời tháo vát lo toan việc gia đình và nuôi dạy các con khôn lớn." },
-        { id: 3, name: "Nguyễn Thị Mai", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1936 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/03/1936", dobLunar: "15/02/Bính Tý", dodSolar: "22/11/2018", dodLunar: "16/10/Mậu Tuất", burialPlace: "Nghĩa trang Dòng họ Trần, Quảng Nam", bio: "Vợ thứ hai của cụ Thế Anh, người phụ nữ đôn hậu, hết mực yêu thương con cháu." },
-        { id: 4, name: "Phạm Thị Lan", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1940 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/12/1940", dobLunar: "14/11/Canh Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Vợ thứ ba của cụ Thế Anh, hiện đang sống an nhàn cùng con cháu tại Quảng Nam." },
+        { id: 1, name: "Trần Thế Anh", gender: "M", status: "king", title: "Thủy Tổ - Đời 1", dob: "1630 - 1702", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Thế Anh", dobSolar: "15/05/1630", dobLunar: "18/04/Canh Ngọ", dodSolar: "12/10/1702", dodLunar: "27/08/Nhâm Thìn", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Thủy tổ khai sáng dòng họ Trần tại địa phương.", isExpanded: true },
+        { id: 2, name: "Lê Thị Sâm", gender: "F", status: "queen", title: "Vợ Cả - Đời 1", dob: "1635 - 1705", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "20/10/1635", dobLunar: "21/09/Ất Hợi", dodSolar: "05/06/1705", dodLunar: "19/04/Ất Mùi", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Hiền thê cả, phụ trách nội trợ dòng tộc." },
+        { id: 3, name: "Nguyễn Thị Mai", gender: "F", status: "queen", title: "Vợ Thứ - Đời 1", dob: "1640 - 1710", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "08/03/1640", dobLunar: "15/02/Canh Thìn", dodSolar: "22/11/1710", dodLunar: "16/10/Canh Dần", burialPlace: "Nghĩa trang Thượng Tổ, Đại Lộc, Quảng Nam", bio: "Vợ thứ hai của cụ Tổ." },
 
         // --- ĐỜI 2 ---
-        // Con của Vợ Cả (Lê Thị Sâm)
-        { id: 5, name: "Trần Hữu Đức", gender: "M", status: "prince", title: "Trưởng họ - Đời 2", dob: "1955 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Đức Hùng", dobSolar: "10/04/1955", dobLunar: "18/03/Ất Mùi", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con trai trưởng cụ cả Lê Thị Sâm. Trưởng nam dòng tộc, gánh vác các công việc cúng bái và duy trì nhà thờ họ.", isExpanded: false },
-        { id: 6, name: "Nguyễn Thu Hà", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1958 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/11/1958", dobLunar: "12/10/Mậu Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Hiền thê của cụ Hữu Đức, tham gia tích cực các hoạt động của ban nữ công dòng họ." },
-        { id: 7, name: "Trần Thị Thảo", gender: "F", status: "civilian", title: "Đời 2", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/05/1960", dobLunar: "10/04/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con gái của cụ cả Lê Thị Sâm, hiện đang định cư tại TP. Hồ Chí Minh." },
-        
-        // Con của Vợ Hai (Nguyễn Thị Mai)
-        { id: 8, name: "Trần Hữu Phước", gender: "M", status: "prince", title: "Đời 2", dob: "1962 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Hữu Phước", dobSolar: "15/09/1962", dobLunar: "17/08/Nhâm Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con cụ hai Nguyễn Thị Mai. Doanh nhân thành đạt, tài trợ chính cho các quỹ khuyến học của dòng tộc.", isExpanded: false },
-        { id: 9, name: "Vũ Thị Tuyết", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/1965", dobLunar: "29/11/Giáp Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Hiền thê của cụ Hữu Phước." },
-
-        // Con của Vợ Ba (Phạm Thị Lan)
-        { id: 10, name: "Trần Hữu Nghĩa", gender: "M", status: "civilian", title: "Đời 2", dob: "1970 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Nghĩa Nhân", dobSolar: "18/08/1970", dobLunar: "17/07/Canh Tuất", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Con cụ ba Phạm Thị Lan. Thầy giáo ưu tú, có nhiều đóng góp trong việc giáo dục con cháu dòng họ." },
+        { id: 4, name: "Trần Hữu Đức", gender: "M", status: "prince", title: "Trưởng họ - Đời 2", dob: "1660 - 1732", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Đức Hùng", dobSolar: "10/04/1660", dobLunar: "18/03/Canh Tý", dodSolar: "15/05/1732", dodLunar: "20/04/Nhâm Tý", burialPlace: "Từ đường dòng họ Trần", bio: "Trưởng nam đời 2 gánh vác việc thờ tự.", isExpanded: true },
+        { id: 5, name: "Nguyễn Thu Hà", gender: "F", status: "princess", title: "Con Dâu - Đời 2", dob: "1665 - 1740", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "22/11/1665", dobLunar: "12/10/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Từ đường dòng họ Trần", bio: "Hiền thê cụ Hữu Đức." },
 
         // --- ĐỜI 3 ---
-        // Con của Trần Hữu Đức & Nguyễn Thu Hà
-        { id: 11, name: "Trần Bảo Nam", gender: "M", status: "civilian", title: "Đời 3", dob: "1985 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Bảo Nam", dobSolar: "20/02/1985", dobLunar: "01/01/Ất Sửu", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu đích tôn của dòng họ Trần, kỹ sư phần mềm, hỗ trợ xây dựng phần mềm gia phả dòng họ." },
-        { id: 12, name: "Trần Khánh Vy", gender: "F", status: "civilian", title: "Đời 3", dob: "1988 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1988", dobLunar: "02/06/Mậu Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu gái cụ Thế Anh, hiện là bác sĩ tại bệnh viện đa khoa Đà Nẵng." },
+        { id: 6, name: "Trần Hữu Nghĩa", gender: "M", status: "civilian", title: "Đời 3", dob: "1690 - 1760", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Nghĩa Nhân", dobSolar: "18/08/1690", dobLunar: "17/07/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Khu mộ Đời 3, Đại Lộc", bio: "武 quan triều đình, có nhiều công trạng.", isExpanded: true },
+        { id: 7, name: "Phan Thị Diệu", gender: "F", status: "civilian", title: "Con Dâu - Đời 3", dob: "1695 - 1765", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/02/1695", dobLunar: "01/01/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Khu mộ Đời 3, Đại Lộc", bio: "Chính thất cụ Hữu Nghĩa." },
 
-        // Con của Trần Hữu Phước & Vũ Thị Tuyết
-        { id: 13, name: "Trần Minh Triết", gender: "M", status: "civilian", title: "Đời 3", dob: "1992 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Minh Triết", dobSolar: "05/12/1992", dobLunar: "12/11/Nhâm Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cháu trai cụ Thế Anh, tốt nghiệp thạc sĩ kinh tế tại Úc, hiện làm quản lý doanh nghiệp." },
+        // --- ĐỜI 4 ---
+        { id: 8, name: "Trần Hữu Khang", gender: "M", status: "civilian", title: "Đời 4", dob: "1720 - 1795", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/03/1720", dobLunar: "04/02/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Người mở mang đất canh tác cho gia tộc.", isExpanded: true },
+        { id: 9, name: "Võ Thị Hoàng", gender: "F", status: "civilian", title: "Con Dâu - Đời 4", dob: "1725 - 1800", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "19/08/1725", dobLunar: "11/07/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Khang." },
 
-        // Marriage label nodes
-        { id: "M1_2", category: "LinkLabel" },
-        { id: "M1_3", category: "LinkLabel" },
-        { id: "M1_4", category: "LinkLabel" },
-        { id: "M5_6", category: "LinkLabel" },
-        { id: "M8_9", category: "LinkLabel" }
+        // --- ĐỜI 5 --- (ĐA THÊ)
+        { id: 10, name: "Trần Hữu Trí", gender: "M", status: "civilian", title: "Đời 5", dob: "1750 - 1825", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Trí Tuệ", dobSolar: "01/01/1750", dobLunar: "24/11/Kỷ Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Thầy thuốc nho y nổi tiếng trong vùng.", isExpanded: true },
+        { id: 11, name: "Đặng Thị Quy", gender: "F", status: "civilian", title: "Vợ Cả - Đời 5", dob: "1753 - 1810", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "14/05/1753", dobLunar: "12/04/Quý Dậu", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Tộc Trần", bio: "Vợ cả cụ Trí." },
+        { id: 12, name: "Bùi Thị Nguyệt", gender: "F", status: "civilian", title: "Vợ Thứ - Đời 5", dob: "1758 - 1830", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "23/09/1758", dobLunar: "22/08/Mậu Dần", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Tộc Trần", bio: "Vợ thứ hai cụ Trí." },
+
+        // --- ĐỜI 6 --- (Con vợ cả Đặng Thị Quy)
+        { id: 13, name: "Trần Hữu Tâm", gender: "M", status: "civilian", title: "Đời 6", dob: "1780 - 1855", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "15/07/1780", dobLunar: "14/06/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Tiếp quản hiệu thuốc y học cổ truyền.", isExpanded: true },
+        { id: 14, name: "Hồ Thị Xuân", gender: "F", status: "civilian", title: "Con Dâu - Đời 6", dob: "1785 - 1860", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/02/1785", dobLunar: "01/01/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Tâm." },
+
+        // --- ĐỜI 7 ---
+        { id: 15, name: "Trần Hữu Long", gender: "M", status: "civilian", title: "Đời 7", dob: "1810 - 1885", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/11/1810", dobLunar: "15/10/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Hương sư dạy chữ Nho cho con em họ tộc.", isExpanded: true },
+        { id: 16, name: "Trịnh Thị Thu", gender: "F", status: "civilian", title: "Con Dâu - Đời 7", dob: "1815 - 1890", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/04/1815", dobLunar: "26/02/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Long." },
+
+        // --- ĐỜI 8 ---
+        { id: 17, name: "Trần Hữu Đạt", gender: "M", status: "civilian", title: "Đời 8", dob: "1840 - 1915", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Đạt Tiến", dobSolar: "20/08/1840", dobLunar: "23/07/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Đạt học vị Tú tài dưới triều Nguyễn.", isExpanded: true },
+        { id: 18, name: "Mai Thị Liên", gender: "F", status: "civilian", title: "Con Dâu - Đời 8", dob: "1845 - 1920", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/01/1845", dobLunar: "05/12/Giáp Thìn", dodSolar: "", dodLunar: "", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Đạt." },
+
+        // --- ĐỜI 9 ---
+        { id: 19, name: "Trần Hữu Vĩnh", gender: "M", status: "civilian", title: "Đời 9", dob: "1870 - 1945", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Vĩnh An", dobSolar: "03/06/1870", dobLunar: "05/05/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Địa chủ yêu nước, hỗ trợ nghĩa quân phong trào Cần Vương.", isExpanded: true },
+        { id: 20, name: "Đỗ Thị Phúc", gender: "F", status: "civilian", title: "Con Dâu - Đời 9", dob: "1875 - 1950", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "27/12/1875", dobLunar: "30/11/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Chính thất cụ Hữu Vĩnh." },
+
+        // --- ĐỜI 10 --- (ĐA THÊ)
+        { id: 21, name: "Trần Hữu Tiến", gender: "M", status: "civilian", title: "Đời 10", dob: "1900 - 1975", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Tiến Bộ", dobSolar: "14/02/1900", dobLunar: "15/01/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "Huyện Đại Lộc, Quảng Nam", bio: "Chiến sĩ cách mạng thời kỳ tiền khởi nghĩa.", isExpanded: true },
+        { id: 22, name: "Lý Thị Lành", gender: "F", status: "civilian", title: "Vợ Cả - Đời 10", dob: "1903 - 1960", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "09/08/1903", dobLunar: "17/06/Quý Mão", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Vợ cả cụ Tiến." },
+        { id: 23, name: "Phan Thị Ngọt", gender: "F", status: "civilian", title: "Vợ Thứ - Đời 10", dob: "1908 - 1985", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "11/04/1908", dobLunar: "11/03/Mậu Thân", dodSolar: "", dodLunar: "", burialPlace: "Đại Lộc, Quảng Nam", bio: "Vợ thứ cụ Tiến." },
+
+        // --- ĐỜI 11 --- (Con vợ cả Lý Thị Lành)
+        { id: 24, name: "Trần Hữu Hải", gender: "M", status: "civilian", title: "Đời 11", dob: "1930 - 2005", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "Hải Đường", dobSolar: "05/05/1930", dobLunar: "08/04/Canh Ngọ", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Hòa Khương, Đà Nẵng", bio: "Kỹ sư cơ khí lừng danh thời kỳ thống nhất.", isExpanded: true },
+        { id: 25, name: "Ngô Thị Thanh", gender: "F", status: "civilian", title: "Con Dâu - Đời 11", dob: "1935 - 2018", isAlive: false, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "12/09/1935", dobLunar: "15/08/Ất Hợi", dodSolar: "", dodLunar: "", burialPlace: "Nghĩa trang Hòa Khương, Đà Nẵng", bio: "Chính thất cụ Hữu Hải." },
+
+        // --- ĐỜI 12 ---
+        { id: 26, name: "Trần Hữu Sơn", gender: "M", status: "civilian", title: "Đời 12", dob: "1960 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Sơn Hà", dobSolar: "21/03/1960", dobLunar: "24/02/Canh Tý", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Cán bộ hưu trí ngành giáo dục tại Liên Chiểu, Đà Nẵng.", isExpanded: true },
+        { id: 27, name: "Trần Thị Minh", gender: "F", status: "civilian", title: "Con Dâu - Đời 12", dob: "1965 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "18/07/1965", dobLunar: "20/06/Ất Tỵ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Giáo viên tiểu học tại Đà Nẵng." },
+
+        // --- ĐỜI 13 ---
+        { id: 28, name: "Trần Hữu Huy", gender: "M", status: "civilian", title: "Đời 13", dob: "1988 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Quang Huy", dobSolar: "14/07/1988", dobLunar: "01/06/Mậu Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Kỹ sư hệ thống cấp cao tại Đà Nẵng.", isExpanded: true },
+        { id: 29, name: "Phạm Ngọc Huyền", gender: "F", status: "civilian", title: "Con Dâu - Đời 13", dob: "1992 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "05/12/1992", dobLunar: "12/11/Nhâm Thân", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Chuyên viên phân tích Business Analyst." },
+
+        // --- ĐỜI 14 ---
+        { id: 30, name: "Trần Bảo Lâm", gender: "M", status: "civilian", title: "Đời 14", dob: "2012 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Bảo Lâm", dobSolar: "10/10/2012", dobLunar: "25/08/Nhâm Thìn", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Học sinh trung học xuất sắc tại Đà Nẵng.", isExpanded: true },
+        { id: 31, name: "Lê Thu Thảo", gender: "F", status: "civilian", title: "Con Dâu tương lai - Đời 14", dob: "2014 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "", dobSolar: "01/01/2014", dobLunar: "01/12/Quý Tỵ", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Dữ liệu giữ chỗ nhánh con." },
+
+        // --- ĐỜI 15 ---
+        { id: 32, name: "Trần Minh Khôi", gender: "M", status: "civilian", title: "Hậu Duệ - Đời 15", dob: "2034 - nay", isAlive: true, photo: "assets/img/avata.jpg", courtesyName: "Minh Khôi", dobSolar: "01/06/2034", dobLunar: "15/04/Giáp Dần", dodSolar: "", dodLunar: "", burialPlace: "", bio: "Thành viên nhỏ tuổi nhất trực hệ dòng họ Trần tại Liên Chiểu." },
+
+        // ============================================
+        // MARRIAGE LABEL NODES (Nút giao hôn nhân ẩn)
+        // ============================================
+        { id: "M1_2", category: "LinkLabel" }, // Đời 1 - Vợ 1
+        { id: "M1_3", category: "LinkLabel" }, // Đời 1 - Vợ 2
+        { id: "M4_5", category: "LinkLabel" }, // Đời 2
+        { id: "M6_7", category: "LinkLabel" }, // Đời 3
+        { id: "M8_9", category: "LinkLabel" }, // Đời 4
+        { id: "M10_11", category: "LinkLabel" }, // Đời 5 - Vợ 1
+        { id: "M10_12", category: "LinkLabel" }, // Đời 5 - Vợ 2
+        { id: "M13_14", category: "LinkLabel" }, // Đời 6
+        { id: "M15_16", category: "LinkLabel" }, // Đời 7
+        { id: "M17_18", category: "LinkLabel" }, // Đời 8
+        { id: "M19_20", category: "LinkLabel" }, // Đời 9
+        { id: "M21_22", category: "LinkLabel" }, // Đời 10 - Vợ 1
+        { id: "M21_23", category: "LinkLabel" }, // Đời 10 - Vợ 2
+        { id: "M24_25", category: "LinkLabel" }, // Đời 11
+        { id: "M26_27", category: "LinkLabel" }, // Đời 12
+        { id: "M28_29", category: "LinkLabel" }, // Đời 13
+        { id: "M30_31", category: "LinkLabel" }  // Đời 14
       ],
       linkDataArray: [
-        // Marriage links
+        // ============================================
+        // MARRIAGE LINKS (Đường nối hôn nhân ngang - màu vàng)
+        // ============================================
         { from: 1, to: 2, labelKeys: ["M1_2"], category: "Marriage" },
         { from: 1, to: 3, labelKeys: ["M1_3"], category: "Marriage" },
-        { from: 1, to: 4, labelKeys: ["M1_4"], category: "Marriage" },
-        { from: 5, to: 6, labelKeys: ["M5_6"], category: "Marriage" },
+        { from: 4, to: 5, labelKeys: ["M4_5"], category: "Marriage" },
+        { from: 6, to: 7, labelKeys: ["M6_7"], category: "Marriage" },
         { from: 8, to: 9, labelKeys: ["M8_9"], category: "Marriage" },
+        { from: 10, to: 11, labelKeys: ["M10_11"], category: "Marriage" },
+        { from: 10, to: 12, labelKeys: ["M10_12"], category: "Marriage" },
+        { from: 13, to: 14, labelKeys: ["M13_14"], category: "Marriage" },
+        { from: 15, to: 16, labelKeys: ["M15_16"], category: "Marriage" },
+        { from: 17, to: 18, labelKeys: ["M17_18"], category: "Marriage" },
+        { from: 19, to: 20, labelKeys: ["M19_20"], category: "Marriage" },
+        { from: 21, to: 22, labelKeys: ["M21_22"], category: "Marriage" },
+        { from: 21, to: 23, labelKeys: ["M21_23"], category: "Marriage" },
+        { from: 24, to: 25, labelKeys: ["M24_25"], category: "Marriage" },
+        { from: 26, to: 27, labelKeys: ["M26_27"], category: "Marriage" },
+        { from: 28, to: 29, labelKeys: ["M28_29"], category: "Marriage" },
+        { from: 30, to: 31, labelKeys: ["M30_31"], category: "Marriage" },
 
-        // Descent links
-        // Children of Trần Thế Anh & Lê Thị Sâm (M1_2)
-        { from: "M1_2", to: 5, category: "Descent" },
-        { from: "M1_2", to: 7, category: "Descent" },
-
-        // Children of Trần Thế Anh & Nguyễn Thị Mai (M1_3)
-        { from: "M1_3", to: 8, category: "Descent" },
-
-        // Children of Trần Thế Anh & Phạm Thị Lan (M1_4)
-        { from: "M1_4", to: 10, category: "Descent" },
-
-        // Children of Trần Hữu Đức & Nguyễn Thu Hà (M5_6)
-        { from: "M5_6", to: 11, category: "Descent" },
-        { from: "M5_6", to: 12, category: "Descent" },
-
-        // Children of Trần Hữu Phước & Vũ Thị Tuyết (M8_9)
-        { from: "M8_9", to: 13, category: "Descent" }
+        // ============================================
+        // DESCENT LINKS (Đường kẻ huyết thống dọc xuống)
+        // ============================================
+        { from: "M1_2", to: 4, category: "Descent" },    // Con Đời 2 sinh ra từ Vợ Cả Đời 1
+        { from: "M4_5", to: 6, category: "Descent" },    // Con Đời 3 sinh ra từ Đời 2
+        { from: "M6_7", to: 8, category: "Descent" },    // Con Đời 4 sinh ra từ Đời 3
+        { from: "M8_9", to: 10, category: "Descent" },   // Con Đời 5 sinh ra từ Đời 4
+        { from: "M10_11", to: 13, category: "Descent" }, // Con Đời 6 sinh ra từ Vợ Cả Đời 5
+        { from: "M13_14", to: 15, category: "Descent" }, // Con Đời 7 sinh ra từ Đời 6
+        { from: "M15_16", to: 17, category: "Descent" }, // Con Đời 8 sinh ra từ Đời 7
+        { from: "M17_18", to: 19, category: "Descent" }, // Con Đời 9 sinh ra từ Đời 8
+        { from: "M19_20", to: 21, category: "Descent" }, // Con Đời 10 sinh ra từ Đời 9
+        { from: "M21_22", to: 24, category: "Descent" }, // Con Đời 11 sinh ra từ Vợ Cả Đời 10
+        { from: "M24_25", to: 26, category: "Descent" }, // Con Đời 12 sinh ra từ Đời 11
+        { from: "M26_27", to: 28, category: "Descent" }, // Con Đời 13 sinh ra từ Đời 12
+        { from: "M28_29", to: 30, category: "Descent" }, // Con Đời 14 sinh ra từ Đời 13
+        { from: "M30_31", to: 32, category: "Descent" }  // Hậu Duệ Đời 15 sinh ra từ Đời 14
       ]
     };
 
@@ -1371,22 +1554,22 @@
     // Recursive helper to set visibility of descendants
     function setPersonVisibility(node, visible) {
       const model = node.diagram.model;
-      
+
       // Toggle node visibility
       model.setDataProperty(node.data, "visible", visible);
-      
+
       node.linksConnected.each(l => {
         if (l.category === "Marriage") {
           const spouse = (l.fromNode === node) ? l.toNode : l.fromNode;
           const labelNode = l.labelNodes.first();
-          
+
           // Toggle marriage link visibility
           model.setDataProperty(l.data, "visible", visible);
-          
+
           if (labelNode) {
             // Toggle LinkLabel visibility
             model.setDataProperty(labelNode.data, "visible", visible);
-            
+
             // Recurse to children
             labelNode.findNodesOutOf().each(child => {
               child.findLinksInto().each(pl => {
@@ -1394,13 +1577,13 @@
                   model.setDataProperty(pl.data, "visible", visible);
                 }
               });
-              
+
               // Children are only visible if the parent is visible AND expanded
               const childVisible = visible && node.data.isExpanded !== false;
               setPersonVisibility(child, childVisible);
             });
           }
-          
+
           // Toggle spouse visibility
           if (spouse && spouse !== node) {
             model.setDataProperty(spouse.data, "visible", visible);
@@ -1412,7 +1595,7 @@
     // Recursively expand ancestors to make sure the target node is visible
     function expandAncestors(node) {
       const model = node.diagram.model;
-      
+
       node.findNodesInto().each(parentOrLabel => {
         if (parentOrLabel.isLinkLabel) {
           // Set parent-child link visible
@@ -1421,18 +1604,18 @@
               model.setDataProperty(l.data, "visible", true);
             }
           });
-          
+
           // Set parent expanded and visible, and recurse
           parentOrLabel.findNodesInto().each(parent => {
             model.setDataProperty(parent.data, "isExpanded", true);
             model.setDataProperty(parent.data, "visible", true);
-            
+
             // Set marriage link and label node visible
             parentOrLabel.labeledLink.labelNodes.each(ln => {
               model.setDataProperty(ln.data, "visible", true);
             });
             model.setDataProperty(parentOrLabel.labeledLink.data, "visible", true);
-            
+
             expandAncestors(parent);
           });
         }
@@ -1497,7 +1680,7 @@
       } else {
         const { ancestors, descendants } = findAncestorsAndDescendants(selectedNode);
         const relatives = new Set([...ancestors, ...descendants, selectedNode]);
-        
+
         // Include spouses of ancestors
         ancestors.forEach(anc => {
           anc.linksConnected.each(l => {
@@ -1576,13 +1759,13 @@
           isTreeLink: false,
           layerName: "Background"
         })
-        .bind("visible", "visible", (v) => v !== false)
-        .add(
-          new go.Shape({
-            strokeWidth: 3,
-            stroke: "#cca625"
-          })
-        )
+          .bind("visible", "visible", (v) => v !== false)
+          .add(
+            new go.Shape({
+              strokeWidth: 3,
+              stroke: "#cca625"
+            })
+          )
       );
 
       // Use GraphLinksModel
@@ -1738,7 +1921,7 @@
     function gpSearch() {
       const query = searchInput.value.trim().toLowerCase();
       if (!query) return;
-      const match = familyData.nodeDataArray.find(d => 
+      const match = familyData.nodeDataArray.find(d =>
         d.name && d.name.toLowerCase().includes(query) && d.category !== "LinkLabel"
       );
       if (match) gpGoToNode(match.id);
@@ -1770,7 +1953,7 @@
     function gpShowPopup(data) {
       document.getElementById('popup-avatar').src = data.photo || 'assets/img/avata.jpg';
       document.getElementById('popup-name').textContent = data.name || '—';
-      
+
       const badge = document.getElementById('popup-badge');
       if (badge) {
         if (data.gender === 'F') {
@@ -1924,12 +2107,12 @@
       relationSelectionMode = true;
       selectedPersonA = null;
       selectedPersonB = null;
-      
+
       const btn = document.getElementById('relation-btn');
       if (btn) btn.classList.add('active');
-      
+
       if (gpDiagram) gpDiagram.clearSelection();
-      
+
       alert("Chế độ xác định quan hệ đã bật: Vui lòng chạm chọn Người thứ nhất trên sơ đồ.");
     }
 
@@ -1939,11 +2122,11 @@
         alert(`Đã chọn Người thứ nhất: ${node.data.name}.\nVui lòng chạm chọn Người thứ hai.`);
       } else if (!selectedPersonB) {
         selectedPersonB = node;
-        
+
         const relationText = calculateRelation(selectedPersonA, selectedPersonB);
-        
+
         alert(`KẾT QUẢ XƯNG HÔ:\n\n${relationText}`);
-        
+
         // Reset
         relationSelectionMode = false;
         selectedPersonA = null;
@@ -2006,10 +2189,10 @@
         } else {
           const pathA = ancestorsA[lcaNode.data.id].path;
           const pathB = ancestorsB[lcaNode.data.id].path;
-          
+
           const parentA = pathA[pathA.length - 2];
           const parentB = pathB[pathB.length - 2];
-          
+
           if (parentA && parentB) {
             const yrParentA = getBirthYear(parentA.data);
             const yrParentB = getBirthYear(parentB.data);
@@ -2092,7 +2275,7 @@
       function traverse(curr, path, depth) {
         if (!curr) return;
         results[curr.data.id] = { node: curr, depth, path: [...path, curr] };
-        
+
         curr.findNodesInto().each(parentOrLabel => {
           if (parentOrLabel.isLinkLabel) {
             parentOrLabel.findNodesInto().each(parent => {
@@ -2110,4 +2293,5 @@
   <script src="js/shared-nav.js"></script>
 
 </body>
+
 </html>
